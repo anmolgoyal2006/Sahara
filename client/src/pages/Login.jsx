@@ -5,6 +5,7 @@ import SaharaButton from '../components/SaharaButton'
 import { supabase } from '../lib/supabase'
 import { checkUser } from '../lib/api'
 
+
 const FEATURES = [
   { iconBg: '#1D9E75', iconColor: 'white',   icon: 'ti-user-check', title: 'Verified Care Workers', sub: 'Background-checked helpers near you' },
   { iconBg: '#EBF4FF', iconColor: '#185FA5', icon: 'ti-brain',      title: 'AI Health Companion',  sub: 'Hindi, English & Punjabi support' },
@@ -98,7 +99,7 @@ export default function Login() {
         </div>
 
         {/* Right: form */}
-        <div style={{ background: 'white', padding: '40px 40px 48px', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ background: 'white', padding: '40px 40px 0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <h2 style={{ fontSize: 24, fontWeight: 900, color: '#0A2540', margin: '0 0 6px' }}>
             Welcome to Sahara
           </h2>
@@ -111,7 +112,7 @@ export default function Login() {
             Continue with Google
           </SaharaButton>
 
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 24, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 24, marginBottom: 12, flexWrap: 'wrap' }}>
             {[
               { icon: 'ti ti-check', text: 'Verified workers' },
               { icon: 'ti ti-lock',  text: '100% Secure' },
@@ -122,6 +123,20 @@ export default function Login() {
                 <span style={{ fontSize: 10, fontWeight: 700, color: '#185FA5' }}>{t.text}</span>
               </div>
             ))}
+          </div>
+
+          {/* Image + quote */}
+          <div style={{ marginTop: 0, textAlign: 'center' }}>
+            <img
+              src="/Gemini_Generated_Image_12cykd12cykd12cy.png"
+              alt="Happy elderly couple"
+              style={{ width: '75%', borderRadius: 16, display: 'block', margin: '0 auto' }}
+            />
+            <div style={{ background: '#185FA5', borderRadius: 12, padding: '12px 20px', margin: '16px 0 0' }}>
+              <p style={{ margin: 0, fontSize: 12, fontStyle: 'italic', color: 'white', textAlign: 'center', lineHeight: 1.6 }}>
+                "Because every parent deserves care, dignity, and companionship."
+              </p>
+            </div>
           </div>
         </div>
       </div>
