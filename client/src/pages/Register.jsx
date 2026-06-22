@@ -38,12 +38,6 @@ function Step1({ onSuccess }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // If we returned from OAuth and sahara_uid is set, skip to step 2
-  useEffect(() => {
-    const uid = sessionStorage.getItem('sahara_uid')
-    if (uid) onSuccess('', uid)
-  }, [onSuccess])
-
   async function handleGoogle() {
     setLoading(true)
     setError('')
@@ -305,13 +299,13 @@ function LangSelect({ value, onChange }) {
 
 /* ── Main Register Page ────────────────────────────────── */
 export default function Register() {
-  const [step, setStep] = useState(1)
+  const uid = sessionStorage.getItem('sahara_uid') || ''
+  const [step, setStep] = useState(uid ? 2 : 1)  // skip Step1 if uid already set
   const [phone, setPhone] = useState('')
-  const [uid, setUid] = useState('')
   const [role, setRole] = useState('elder')
   const navigate = useNavigate()
 
-  function handleStep1(p, u) { setPhone(p); setUid(u); setStep(2) }
+  function handleStep1(p, u) { setPhone(p); setStep(2) }
   function handleStep2(r) { setRole(r); setStep(3) }
   function handleRegistered(name, r) {
     sessionStorage.setItem('sahara_welcome_name', name)
@@ -366,8 +360,7 @@ export default function Register() {
             <button type="button" onClick={() => setStep(2)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', color: '#1D9E75', fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: 0, marginBottom: 24, fontFamily: 'inherit' }}>
               <i className="ti ti-arrow-left" style={{ fontSize: 14 }} /> Back
             </button>
-            <Step3 role={role} phone={phone} uid={uid} onSuccess={handleRegistered} />
-          </div>
+            <Step3 role={role} phone={phone} uid={uid} onSuccess={handleRegistered} />          </div>
         </div>
       )}
 
