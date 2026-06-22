@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import SaharaButton from '../components/SaharaButton'
 import { supabase } from '../lib/supabase'
@@ -59,6 +61,30 @@ function HeroPanel() {
 }
 
 export default function Login() {
+  const navigate = useNavigate()
+
+  // If user is already signed in, route them to their dashboard
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!session?.user) return
+      try {
+        const res = await fetch('/api/auth/check-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: session.user.id }),
+        })
+        const userData = await res.json()
+        if (userData.exists) {
+          if (userData.role === 'elder') navigate('/elder/home')
+          else if (userData.role === 'family') navigate('/family/dashboard')
+          else navigate('/worker/jobs')
+        } else {
+          navigate('/register')
+        }
+      } catch {}
+    })
+    return () => subscription.unsubscribe()
+  }, [navigate])
   async function handleGoogleLogin() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',

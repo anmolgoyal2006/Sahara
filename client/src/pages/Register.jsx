@@ -38,11 +38,13 @@ function Step1({ onSuccess }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // Handle returning from Google OAuth — check if user already registered
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
-      const user = data?.session?.user
-      if (!user) return
+    // Listen for auth state change — fires after Supabase processes the OAuth hash
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!session?.user) return
+      if (event !== 'SIGNED_IN' && event !== 'INITIAL_SESSION') return
+
+      const user = session.user
       try {
         const res = await fetch('/api/auth/check-user', {
           method: 'POST',
@@ -58,8 +60,12 @@ function Step1({ onSuccess }) {
           sessionStorage.setItem('sahara_uid', user.id)
           onSuccess('', user.id)
         }
-      } catch {}
+      } catch {
+        setError('Could not verify account. Please try again.')
+      }
     })
+
+    return () => subscription.unsubscribe()
   }, [navigate, onSuccess])
 
   async function handleGoogle() {
