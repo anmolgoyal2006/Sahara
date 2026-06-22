@@ -7,7 +7,6 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 )
 
-// Check if user exists and get their role
 router.post('/check-user', async (req, res) => {
   const { user_id } = req.body
   try {
@@ -23,14 +22,10 @@ router.post('/check-user', async (req, res) => {
   }
 })
 
-// Create a new user profile after OTP verification
 router.post('/create-user', async (req, res) => {
-  const {
-    id, phone, name, role, language,
-    age, conditions, elder_id,
-    experience_years
-  } = req.body
-
+  const { id, phone, name, role, language,
+          age, conditions, elder_id,
+          experience_years } = req.body
   try {
     const { error: userError } = await supabase
       .from('users')
@@ -38,32 +33,22 @@ router.post('/create-user', async (req, res) => {
     if (userError) throw userError
 
     if (role === 'elder') {
-      await supabase.from('elder_profiles').insert({
-        id,
-        age,
-        conditions,
-        preferred_language: language,
-      })
+      await supabase.from('elder_profiles')
+        .insert({ id, age, conditions, preferred_language: language })
     }
-
     if (role === 'worker') {
-      await supabase.from('workers').insert({
-        id,
-        experience_years: experience_years || 0,
-      })
+      await supabase.from('workers')
+        .insert({ id, experience_years: experience_years || 0 })
     }
-
     if (role === 'family' && elder_id) {
       await supabase.from('users').update({ elder_id }).eq('id', id)
     }
-
     return res.json({ success: true })
   } catch (e) {
     return res.status(500).json({ success: false, error: e.message })
   }
 })
 
-// Find an elder by phone number (for family linking)
 router.post('/find-elder', async (req, res) => {
   const { phone } = req.body
   try {
