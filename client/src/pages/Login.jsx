@@ -65,27 +65,23 @@ function HeroPanel() {
 export default function Login() {
   const navigate = useNavigate()
 
-  // If user is already signed in, route them to their dashboard
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!session?.user) return
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) return
       try {
         const userData = await checkUser(session.user.id)
         if (userData.exists) {
           if (userData.role === 'elder') navigate('/elder/home')
           else if (userData.role === 'family') navigate('/family/dashboard')
           else navigate('/worker/jobs')
-        } else {
-          navigate('/register')
         }
       } catch {}
     })
-    return () => subscription.unsubscribe()
   }, [navigate])
   async function handleGoogleLogin() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${import.meta.env.VITE_APP_URL}/register` },
+      options: { redirectTo: `${import.meta.env.VITE_APP_URL}/auth/callback` },
     })
   }
 

@@ -35,41 +35,21 @@ function ProgressBar({ step }) {
 
 /* ── Step 1: Google sign-in ────────────────────────────── */
 function Step1({ onSuccess }) {
-  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  // If we returned from OAuth and sahara_uid is set, skip to step 2
   useEffect(() => {
-    // Listen for auth state change — fires after Supabase processes the OAuth hash
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!session?.user) return
-      if (event !== 'SIGNED_IN' && event !== 'INITIAL_SESSION') return
-
-      const user = session.user
-      try {
-        const userData = await checkUser(user.id)
-        if (userData.exists) {
-          if (userData.role === 'elder') navigate('/elder/home')
-          else if (userData.role === 'family') navigate('/family/dashboard')
-          else navigate('/worker/jobs')
-        } else {
-          sessionStorage.setItem('sahara_uid', user.id)
-          onSuccess('', user.id)
-        }
-      } catch {
-        setError('Could not verify account. Please try again.')
-      }
-    })
-
-    return () => subscription.unsubscribe()
-  }, [navigate, onSuccess])
+    const uid = sessionStorage.getItem('sahara_uid')
+    if (uid) onSuccess('', uid)
+  }, [onSuccess])
 
   async function handleGoogle() {
     setLoading(true)
     setError('')
     const { error: oauthErr } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${import.meta.env.VITE_APP_URL}/register` },
+      options: { redirectTo: `${import.meta.env.VITE_APP_URL}/auth/callback` },
     })
     if (oauthErr) {
       setError('Could not sign in with Google. Please try again.')

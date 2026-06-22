@@ -3,6 +3,7 @@ import Login from './pages/Login'
 import Verify from './pages/Verify'
 import Register from './pages/Register'
 import Welcome from './pages/Welcome'
+import AuthCallback from './pages/AuthCallback'
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/verify" element={<Verify />} />
         <Route path="/register" element={<Register />} />
         <Route path="/welcome" element={<Welcome />} />
