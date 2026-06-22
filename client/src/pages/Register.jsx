@@ -5,6 +5,7 @@ import RoleCard from '../components/RoleCard'
 import SaharaButton from '../components/SaharaButton'
 import PhoneInput from '../components/PhoneInput'
 import { supabase } from '../lib/supabase'
+import { checkUser, createUser, findElder } from '../lib/api'
 
 const CONDITIONS = [
   'Diabetes', 'High BP', 'Heart Condition', 'Arthritis',
@@ -46,12 +47,7 @@ function Step1({ onSuccess }) {
 
       const user = session.user
       try {
-        const res = await fetch('/api/auth/check-user', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: user.id }),
-        })
-        const userData = await res.json()
+        const userData = await checkUser(user.id)
         if (userData.exists) {
           if (userData.role === 'elder') navigate('/elder/home')
           else if (userData.role === 'family') navigate('/family/dashboard')
@@ -183,8 +179,7 @@ function Step3({ role, phone, uid, onSuccess }) {
     if (role !== 'family' || parentPhone.length !== 10) { setParentStatus(null); return }
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch('/api/auth/find-elder', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: '+91' + parentPhone }) })
-        const data = await res.json()
+        const data = await findElder('+91' + parentPhone)
         setParentStatus(data.found ? { found: true, name: data.elder.name, id: data.elder.id } : { found: false })
       } catch { setParentStatus(null) }
     }, 600)
@@ -210,10 +205,7 @@ function Step3({ role, phone, uid, onSuccess }) {
     if (!validate()) return
     setGlobalError(''); setLoading(true)
     try {
-      const res = await fetch('/api/auth/create-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const data = await createUser({
           id: uid,
           phone: '+91' + phone,
           name: name.trim(),
@@ -223,9 +215,7 @@ function Step3({ role, phone, uid, onSuccess }) {
           conditions: role === 'elder' ? conditions : [],
           elder_id: role === 'family' && parentStatus?.found ? parentStatus.id : null,
           experience_years: role === 'worker' ? Number(experience) || 0 : 0,
-        }),
       })
-      const data = await res.json()
       if (!data.success) throw new Error(data.error || 'Failed')
       sessionStorage.removeItem('sahara_phone')
       sessionStorage.removeItem('sahara_uid')

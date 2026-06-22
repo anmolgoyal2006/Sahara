@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import SaharaButton from '../components/SaharaButton'
 import { supabase } from '../lib/supabase'
+import { checkUser } from '../lib/api'
 
 const FEATURES = [
   { iconBg: '#1D9E75', iconColor: 'white',   icon: 'ti-user-check', title: 'Verified Care Workers', sub: 'Background-checked helpers near you' },
@@ -68,12 +69,7 @@ export default function Login() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!session?.user) return
       try {
-        const res = await fetch('/api/auth/check-user', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: session.user.id }),
-        })
-        const userData = await res.json()
+        const userData = await checkUser(session.user.id)
         if (userData.exists) {
           if (userData.role === 'elder') navigate('/elder/home')
           else if (userData.role === 'family') navigate('/family/dashboard')
