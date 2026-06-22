@@ -62,7 +62,7 @@ export default function Login() {
   async function handleGoogleLogin() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/register` },
+      options: { redirectTo: `${import.meta.env.VITE_APP_URL}/register` },
     })
   }
 

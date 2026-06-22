@@ -67,7 +67,7 @@ function Step1({ onSuccess }) {
     setError('')
     const { error: oauthErr } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/register` },
+      options: { redirectTo: `${import.meta.env.VITE_APP_URL}/register` },
     })
     if (oauthErr) {
       setError('Could not sign in with Google. Please try again.')
