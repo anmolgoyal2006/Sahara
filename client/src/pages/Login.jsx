@@ -66,26 +66,13 @@ export default function Login() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Check existing session on mount
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session) return
-      try {
-        const userData = await checkUser(session.user.id)
-        if (userData.exists) {
-          if (userData.role === 'elder') navigate('/elder/home')
-          else if (userData.role === 'family') navigate('/family/dashboard')
-          else navigate('/worker/jobs')
-        }
-      } catch {}
-    })
-
     // Also listen for auth state changes
     // This catches the Google OAuth redirect even if callback fails
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth event:', event, session?.user?.email)
         
-        if (event === 'SIGNED_IN' && session) {
+        if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
           try {
             const userData = await checkUser(session.user.id)
             if (userData.exists) {
