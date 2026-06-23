@@ -66,6 +66,7 @@ export default function Login() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    // Check existing session on mount
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) return
       try {
@@ -77,12 +78,51 @@ export default function Login() {
         }
       } catch {}
     })
+
+    // Also listen for auth state changes
+    // This catches the Google OAuth redirect even if callback fails
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth event:', event, session?.user?.email)
+        
+        if (event === 'SIGNED_IN' && session) {
+          try {
+            const userData = await checkUser(session.user.id)
+            if (userData.exists) {
+              if (userData.role === 'elder') navigate('/elder/home')
+              else if (userData.role === 'family') navigate('/family/dashboard')
+              else navigate('/worker/jobs')
+            } else {
+              sessionStorage.setItem('sahara_uid', session.user.id)
+              sessionStorage.setItem('sahara_name',
+                session.user.user_metadata?.full_name || '')
+              navigate('/register')
+            }
+          } catch (err) {
+            console.error('Error:', err)
+          }
+        }
+      }
+    )
+
+    return () => subscription.unsubscribe()
   }, [navigate])
   async function handleGoogleLogin() {
-    await supabase.auth.signInWithOAuth({
+    const redirectUrl = `${window.location.origin}/auth/callback`
+    console.log('OAuth redirectTo:', redirectUrl)
+
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${import.meta.env.VITE_APP_URL}/auth/callback` },
+      options: {
+        redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent'
+        }
+      }
     })
+
+    if (error) console.error('OAuth error:', error)
   }
 
   return (

@@ -40,11 +40,22 @@ function Step1() {
   async function handleGoogle() {
     setLoading(true)
     setError('')
+    const redirectUrl = `${window.location.origin}/auth/callback`
+    console.log('OAuth redirectTo (Register):', redirectUrl)
+    
     const { error: oauthErr } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${import.meta.env.VITE_APP_URL}/auth/callback` },
+      options: {
+        redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent'
+        }
+      },
     })
+    
     if (oauthErr) {
+      console.error('OAuth error (Register):', oauthErr)
       setError('Could not sign in with Google. Please try again.')
       setLoading(false)
     }
