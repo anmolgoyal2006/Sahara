@@ -5,7 +5,6 @@ import SaharaButton from '../components/SaharaButton'
 import { supabase } from '../lib/supabase'
 import { checkUser } from '../lib/api'
 
-
 const FEATURES = [
   { iconBg: '#1D9E75', iconColor: 'white',   icon: 'ti-user-check', title: 'Verified Care Workers', sub: 'Background-checked helpers near you' },
   { iconBg: '#EBF4FF', iconColor: '#185FA5', icon: 'ti-brain',      title: 'AI Health Companion',  sub: 'Hindi, English & Punjabi support' },
@@ -67,8 +66,7 @@ export default function Login() {
 
   useEffect(() => {
     // Check existing session on mount
-    const checkInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) return
       try {
         const userData = await checkUser(session.user.id)
@@ -76,17 +74,9 @@ export default function Login() {
           if (userData.role === 'elder') navigate('/elder/home')
           else if (userData.role === 'family') navigate('/family/dashboard')
           else navigate('/worker/jobs')
-        } else {
-          sessionStorage.setItem('sahara_uid', session.user.id)
-          sessionStorage.setItem('sahara_name',
-            session.user.user_metadata?.full_name || '')
-          navigate('/register')
         }
-      } catch (err) {
-        console.error('Initial session check error:', err)
-      }
-    }
-    checkInitialSession()
+      } catch {}
+    })
 
     // Also listen for auth state changes
     // This catches the Google OAuth redirect even if callback fails
@@ -116,6 +106,7 @@ export default function Login() {
 
     return () => subscription.unsubscribe()
   }, [navigate])
+
   async function handleGoogleLogin() {
     const redirectUrl = `${window.location.origin}/auth/callback`
     console.log('OAuth redirectTo:', redirectUrl)
@@ -143,7 +134,6 @@ export default function Login() {
           <HeroPanel />
         </div>
 
-        {/* Right: form */}
         <div style={{ background: 'white', padding: '40px 40px 0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <h2 style={{ fontSize: 24, fontWeight: 900, color: '#0A2540', margin: '0 0 6px' }}>
             Welcome to Sahara
@@ -170,7 +160,6 @@ export default function Login() {
             ))}
           </div>
 
-          {/* Image + quote */}
           <div style={{ marginTop: 0, textAlign: 'center' }}>
             <img
               src="/Gemini_Generated_Image_12cykd12cykd12cy.png"
