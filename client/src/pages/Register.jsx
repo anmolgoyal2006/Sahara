@@ -1,11 +1,10 @@
-﻿import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import RoleCard from '../components/RoleCard'
 import SaharaButton from '../components/SaharaButton'
-import PhoneInput from '../components/PhoneInput'
 import { supabase } from '../lib/supabase'
-import { checkUser, createUser, findElder } from '../lib/api'
+import { checkUser, createUser } from '../lib/api'
 
 const CONDITIONS = [
   'Diabetes', 'High BP', 'Heart Condition', 'Arthritis',
@@ -34,7 +33,7 @@ function ProgressBar({ step }) {
 }
 
 /* ── Step 1: Google sign-in ────────────────────────────── */
-function Step1({ onSuccess }) {
+function Step1() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -136,29 +135,15 @@ function Step3HeroPanel({ role }) {
 }
 
 /* ── Step 3: Personal details ──────────────────────────── */
-function Step3({ role, phone, uid, onSuccess }) {
+function Step3({ role, uid, onSuccess }) {
   const [name, setName] = useState('')
   const [age, setAge] = useState('')
   const [conditions, setConditions] = useState([])
   const [language, setLanguage] = useState('hi')
-  const [parentPhone, setParentPhone] = useState('')
-  const [parentStatus, setParentStatus] = useState(null) // null | { found, name, id }
   const [experience, setExperience] = useState('')
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
   const [globalError, setGlobalError] = useState('')
-
-  // Live parent lookup
-  useEffect(() => {
-    if (role !== 'family' || parentPhone.length !== 10) { setParentStatus(null); return }
-    const timer = setTimeout(async () => {
-      try {
-        const data = await findElder('+91' + parentPhone)
-        setParentStatus(data.found ? { found: true, name: data.elder.name, id: data.elder.id } : { found: false })
-      } catch { setParentStatus(null) }
-    }, 600)
-    return () => clearTimeout(timer)
-  }, [parentPhone, role])
 
   function toggleCondition(c) {
     setConditions((p) => p.includes(c) ? p.filter((x) => x !== c) : [...p, c])
@@ -181,17 +166,14 @@ function Step3({ role, phone, uid, onSuccess }) {
     try {
       const data = await createUser({
           id: uid,
-          phone: '+91' + phone,
           name: name.trim(),
           role,
           language,
           age: role === 'elder' ? Number(age) : null,
           conditions: role === 'elder' ? conditions : [],
-          elder_id: role === 'family' && parentStatus?.found ? parentStatus.id : null,
           experience_years: role === 'worker' ? Number(experience) || 0 : 0,
       })
       if (!data.success) throw new Error(data.error || 'Failed')
-      sessionStorage.removeItem('sahara_phone')
       sessionStorage.removeItem('sahara_uid')
       onSuccess(name.trim(), role)
     } catch { setGlobalError('Could not create your account. Please try again.') }
@@ -222,20 +204,6 @@ function Step3({ role, phone, uid, onSuccess }) {
             </div>
             <LangSelect value={language} onChange={setLanguage} />
           </>
-        )}
-        {/* Family fields */}
-        {role === 'family' && (
-          <div>
-            <p style={{ fontSize: 14, fontWeight: 700, color: '#0A2540', marginBottom: 6 }}>Link to Your Parent</p>
-            <p style={{ fontSize: 12, color: '#5A7A9A', lineHeight: 1.5, marginBottom: 12 }}>Your parent must already be registered on Sahara</p>
-            <PhoneInput value={parentPhone} onChange={(v) => setParentPhone(v)} />
-            {parentStatus && (
-              <p style={{ fontSize: 11, marginTop: 6, color: parentStatus.found ? '#1D9E75' : '#A0B8D0', display: 'flex', alignItems: 'center', gap: 4 }}>
-                <i className={`ti ${parentStatus.found ? 'ti-circle-check' : 'ti-info-circle'}`} style={{ fontSize: 12 }} />
-                {parentStatus.found ? `Parent found: ${parentStatus.name}` : 'Parent not registered yet, you can link later'}
-              </p>
-            )}
-          </div>
         )}
         {/* Worker fields */}
         {role === 'worker' && (
@@ -301,11 +269,9 @@ function LangSelect({ value, onChange }) {
 export default function Register() {
   const uid = sessionStorage.getItem('sahara_uid') || ''
   const [step, setStep] = useState(uid ? 2 : 1)  // skip Step1 if uid already set
-  const [phone, setPhone] = useState('')
   const [role, setRole] = useState('elder')
   const navigate = useNavigate()
 
-  function handleStep1(p, u) { setPhone(p); setStep(2) }
   function handleStep2(r) { setRole(r); setStep(3) }
   function handleRegistered(name, r) {
     sessionStorage.setItem('sahara_welcome_name', name)
@@ -321,7 +287,7 @@ export default function Register() {
 
       {step === 1 && (
         <div style={{ maxWidth: 480, margin: '0 auto', padding: '40px 20px' }}>
-          <Step1 onSuccess={handleStep1} />
+          <Step1 />
         </div>
       )}
 
@@ -333,8 +299,8 @@ export default function Register() {
               <p style={{ fontSize: 13, color: '#5A7A9A', marginBottom: 24, lineHeight: 1.5 }}>Sahara is built for seniors, their families, and dedicated care workers. Pick what describes you best.</p>
               {[{ icon: 'ti-user', title: 'Senior / Elder', desc: 'Get care, AI companionship, health tracking' }, { icon: 'ti-users', title: 'Family Member', desc: 'Monitor and stay connected with your parent' }, { icon: 'ti-stethoscope', title: 'Care Worker', desc: 'Find jobs, build ratings, earn regularly' }].map((r, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 8, background: '#F0FBF7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <i className={`ti ${r.icon}`} style={{ fontSize: 15, color: '#1D9E75' }} />
+                  <div style={{ width: 36, height: 36, borderRadius: 9, background: '#F0FBF7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <i className={`ti ${r.icon}`} style={{ fontSize: 16, color: '#1D9E75' }} />
                   </div>
                   <div>
                     <p style={{ fontSize: 12, fontWeight: 700, color: '#0A2540', margin: 0 }}>{r.title}</p>
@@ -360,7 +326,8 @@ export default function Register() {
             <button type="button" onClick={() => setStep(2)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', color: '#1D9E75', fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: 0, marginBottom: 24, fontFamily: 'inherit' }}>
               <i className="ti ti-arrow-left" style={{ fontSize: 14 }} /> Back
             </button>
-            <Step3 role={role} phone={phone} uid={uid} onSuccess={handleRegistered} />          </div>
+            <Step3 role={role} uid={uid} onSuccess={handleRegistered} />
+          </div>
         </div>
       )}
 

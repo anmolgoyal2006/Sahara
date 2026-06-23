@@ -17,12 +17,3 @@ export async function createUser(payload) {
   })
   return res.json()
 }
-
-export async function findElder(phone) {
-  const res = await fetch(`${BASE}/api/auth/find-elder`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phone }),
-  })
-  return res.json()
-}

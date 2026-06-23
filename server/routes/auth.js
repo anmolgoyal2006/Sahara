@@ -1,10 +1,11 @@
 const express = require('express')
+// Restarted server
 const router = express.Router()
 const { createClient } = require('@supabase/supabase-js')
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
+  process.env.SUPABASE_SECRET_KEY
 )
 
 router.post('/check-user', async (req, res) => {
@@ -23,46 +24,40 @@ router.post('/check-user', async (req, res) => {
 })
 
 router.post('/create-user', async (req, res) => {
-  const { id, phone, name, role, language,
+  const { id, name, role, language,
           age, conditions, elder_id,
           experience_years } = req.body
   try {
+    if (!id) {
+      return res.status(400).json({ success: false, error: 'User ID is missing. Please sign in again.' })
+    }
+
     const { error: userError } = await supabase
       .from('users')
-      .insert({ id, phone: phone || null, name, role, language })
+      .insert({ id, name, role, language })
     if (userError) throw userError
 
     if (role === 'elder') {
-      await supabase.from('elder_profiles')
+      const { error: elderError } = await supabase.from('elder_profiles')
         .insert({ id, age, conditions, preferred_language: language })
+      if (elderError) throw elderError
     }
     if (role === 'worker') {
-      await supabase.from('workers')
+      const { error: workerError } = await supabase.from('workers')
         .insert({ id, experience_years: experience_years || 0 })
+      if (workerError) throw workerError
     }
     if (role === 'family' && elder_id) {
-      await supabase.from('users').update({ elder_id }).eq('id', id)
+      const { error: updateError } = await supabase.from('users').update({ elder_id }).eq('id', id)
+      if (updateError) throw updateError
     }
     return res.json({ success: true })
   } catch (e) {
+    console.error('create-user error:', e)
     return res.status(500).json({ success: false, error: e.message })
   }
 })
 
-router.post('/find-elder', async (req, res) => {
-  const { phone } = req.body
-  try {
-    const { data } = await supabase
-      .from('users')
-      .select('id, name')
-      .eq('phone', phone)
-      .eq('role', 'elder')
-      .single()
-    if (data) return res.json({ found: true, elder: data })
-    return res.json({ found: false })
-  } catch {
-    return res.json({ found: false })
-  }
-})
+
 
 module.exports = router

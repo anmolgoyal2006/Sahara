@@ -33,9 +33,6 @@ export default function Welcome() {
   const navigate = useNavigate()
   const [name, setName] = useState('')
   const [role, setRole] = useState('elder')
-  const [progress, setProgress] = useState(0)
-  const timerRef = useRef(null)
-  const progressRef = useRef(null)
 
   useEffect(() => {
     // Get from sessionStorage first, then Supabase session
@@ -48,27 +45,9 @@ export default function Welcome() {
         if (data?.user?.user_metadata?.name) setName(data.user.user_metadata.name)
       })
     }
-
-    // Auto-redirect after 5s
-    const start = Date.now()
-    progressRef.current = setInterval(() => {
-      const elapsed = Date.now() - start
-      setProgress(Math.min((elapsed / 5000) * 100, 100))
-    }, 50)
-
-    timerRef.current = setTimeout(() => {
-      goToDashboard()
-    }, 5000)
-
-    return () => {
-      clearTimeout(timerRef.current)
-      clearInterval(progressRef.current)
-    }
   }, [])
 
   function goToDashboard() {
-    clearTimeout(timerRef.current)
-    clearInterval(progressRef.current)
     const r = sessionStorage.getItem('sahara_welcome_role') || role
     navigate(ROLE_ROUTES[r] || '/elder/home')
   }
@@ -78,11 +57,6 @@ export default function Welcome() {
   return (
     <div style={{ minHeight: '100vh', background: '#EBF4FF' }}>
       <Navbar activePage="home" showAuthButtons={false} />
-
-      {/* Progress bar */}
-      <div style={{ height: 3, background: '#DDE8F5', position: 'sticky', top: 56, zIndex: 40 }}>
-        <div style={{ height: '100%', width: `${progress}%`, background: '#1D9E75', transition: 'width 0.05s linear' }} />
-      </div>
 
       {/* Two-column grid */}
       <div className="welcome-grid">
@@ -109,10 +83,6 @@ export default function Welcome() {
               </div>
             ))}
           </div>
-
-          <p style={{ fontSize: 11, color: '#A0B8D0', marginTop: 24 }}>
-            Redirecting to your dashboard in {Math.max(0, Math.ceil(5 - (progress / 20)))}s…
-          </p>
         </div>
 
         {/* Right: next steps */}
@@ -129,7 +99,7 @@ export default function Welcome() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
             {actions.map((a, i) => (
-              <ActionItem key={i} {...a} />
+              <ActionItem key={i} {...a} onClick={goToDashboard} />
             ))}
           </div>
 
@@ -156,12 +126,13 @@ export default function Welcome() {
   )
 }
 
-function ActionItem({ icon, iconBg, iconColor, title, sub }) {
+function ActionItem({ icon, iconBg, iconColor, title, sub, onClick }) {
   const [hovered, setHovered] = useState(false)
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={onClick}
       style={{
         display: 'flex',
         alignItems: 'center',

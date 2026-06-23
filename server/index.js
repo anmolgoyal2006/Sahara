@@ -10,6 +10,7 @@ const allowedOrigins = [
   'http://localhost:3000',
   'https://sahara-seven-virid.vercel.app',
 ]
+console.log('Allowed origins:', allowedOrigins)
 
 app.use(cors({
   origin: function (origin, callback) {
