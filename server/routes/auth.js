@@ -32,6 +32,16 @@ router.post('/create-user', async (req, res) => {
       return res.status(400).json({ success: false, error: 'User ID is missing. Please sign in again.' })
     }
 
+    // FIRST: Verify that this user exists in auth.users!
+    console.log('Checking if user exists in auth.users:', id)
+    const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(id)
+    if (authError || !authUser) {
+      console.error('User not found in auth.users:', authError)
+      return res.status(400).json({ success: false, error: 'User not found in auth. Please sign in again.' })
+    }
+    console.log('User found in auth.users!')
+
+    // Now insert into users table
     const { error: userError } = await supabase
       .from('users')
       .insert({ id, name, role, language })
