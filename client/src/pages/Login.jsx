@@ -65,6 +65,30 @@ export default function Login() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    // Check existing session on mount
+    const checkExistingSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      console.log('Existing session check:', session)
+      if (session) {
+        try {
+          const data = await checkUser(session.user.id)
+          if (data.exists) {
+            if (data.role === 'elder') navigate('/elder/home')
+            else if (data.role === 'family') navigate('/family/dashboard')
+            else navigate('/worker/jobs')
+          } else {
+            sessionStorage.setItem('sahara_uid', session.user.id)
+            sessionStorage.setItem('sahara_name',
+              session.user.user_metadata?.full_name || '')
+            navigate('/register')
+          }
+        } catch (err) {
+          console.error('Error checking user:', err)
+        }
+      }
+    }
+    checkExistingSession()
+
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
