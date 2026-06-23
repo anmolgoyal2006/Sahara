@@ -65,31 +65,18 @@ export default function Login() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Check existing session on mount
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session) return
-      try {
-        const userData = await checkUser(session.user.id)
-        if (userData.exists) {
-          if (userData.role === 'elder') navigate('/elder/home')
-          else if (userData.role === 'family') navigate('/family/dashboard')
-          else navigate('/worker/jobs')
-        }
-      } catch {}
-    })
-
-    // Also listen for auth state changes
-    // This catches the Google OAuth redirect even if callback fails
+    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth event:', event, session?.user?.email)
-        
+        console.log('Auth event:', event)
+        console.log('Auth session:', session)
+
         if (event === 'SIGNED_IN' && session) {
           try {
-            const userData = await checkUser(session.user.id)
-            if (userData.exists) {
-              if (userData.role === 'elder') navigate('/elder/home')
-              else if (userData.role === 'family') navigate('/family/dashboard')
+            const data = await checkUser(session.user.id)
+            if (data.exists) {
+              if (data.role === 'elder') navigate('/elder/home')
+              else if (data.role === 'family') navigate('/family/dashboard')
               else navigate('/worker/jobs')
             } else {
               sessionStorage.setItem('sahara_uid', session.user.id)
@@ -98,7 +85,7 @@ export default function Login() {
               navigate('/register')
             }
           } catch (err) {
-            console.error('Error:', err)
+            console.error('Error checking user:', err)
           }
         }
       }
