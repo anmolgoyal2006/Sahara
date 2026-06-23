@@ -13,3 +13,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 })
 
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
+export const isValidIndianPhone = (phone) => {
+  const clean = phone.replace(/\s|-/g, '')
+  return /^[6-9]\d{9}$/.test(clean)
+}
+
+export const formatPhone = (phone) => {
+  const clean = phone.replace(/\s|-/g, '')
+  return '+91' + clean
+}

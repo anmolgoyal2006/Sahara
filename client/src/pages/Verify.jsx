@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import OTPInput from '../components/OTPInput'
 import SaharaButton from '../components/SaharaButton'
 import { supabase, formatPhone } from '../lib/supabase'
+import { checkUser } from '../lib/api'
 
 /* ── Left panel (desktop) ────────────────────────────────── */
 function VerifyHero({ phone }) {
@@ -167,12 +168,7 @@ export default function Verify() {
       }
 
       // Check if user already registered
-      const res = await fetch('/api/auth/check-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: data.user.id }),
-      })
-      const userData = await res.json()
+      const userData = await checkUser(data.user.id)
 
       if (userData.exists) {
         sessionStorage.clear()

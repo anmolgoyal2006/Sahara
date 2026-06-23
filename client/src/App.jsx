@@ -4,6 +4,7 @@ import Verify from './pages/Verify'
 import Register from './pages/Register'
 import Welcome from './pages/Welcome'
 import AuthCallback from './pages/AuthCallback'
+import { supabase } from './lib/supabase'
 
 function App() {
   return (
@@ -25,7 +26,6 @@ function App() {
 
 function PlaceholderPage({ title, phase }) {
   const handleLogout = async () => {
-    const { supabase } = await import('./lib/supabase')
     await supabase.auth.signOut()
     sessionStorage.clear()
     window.location.href = '/login'
