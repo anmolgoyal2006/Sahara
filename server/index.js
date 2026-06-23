@@ -7,8 +7,10 @@ const app = express()
 const PORT = process.env.PORT || 5000
 
 const allowedOrigins = [
+  'http://localhost:3000',
   'http://localhost:5173',
   'https://sahara-seven-virid.vercel.app',
+  'https://sahara-q9st.onrender.com'
 ]
 console.log('Allowed origins:', allowedOrigins)
 
