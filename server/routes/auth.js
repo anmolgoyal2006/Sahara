@@ -26,33 +26,43 @@ router.post('/check-user', async (req, res) => {
 router.post('/create-user', async (req, res) => {
   const { id, name, role, language,
           age, conditions, elder_id,
-          experience_years } = req.body
+          experience_years, skills, languages } = req.body
   try {
     if (!id) {
       return res.status(400).json({ success: false, error: 'User ID is missing. Please sign in again.' })
     }
 
     console.log('Attempting to create user with id:', id)
-    // Now insert into users table
-    const { error: userError } = await supabase
-      .from('users')
-      .insert({ id, name, role, language })
+
+    const { error: userError } = await supabase.from('users').upsert({
+      id, name, role,
+      language: language || 'hi',
+      phone: null
+    })
     if (userError) throw userError
 
     if (role === 'elder') {
-      const { error: elderError } = await supabase.from('elder_profiles')
-        .insert({ id, age, conditions, preferred_language: language })
-      if (elderError) throw elderError
+      await supabase.from('elder_profiles').upsert({
+        id,
+        age: age || null,
+        conditions: conditions || [],
+        preferred_language: language || 'hi'
+      })
     }
     if (role === 'worker') {
-      const { error: workerError } = await supabase.from('workers')
-        .insert({ id, experience_years: experience_years || 0 })
-      if (workerError) throw workerError
+      await supabase.from('workers').upsert({
+        id,
+        experience_years: experience_years || 0,
+        skills: skills || [],
+        languages: languages || ['hi'],
+        verified: false,
+        available: true
+      })
     }
     if (role === 'family' && elder_id) {
-      const { error: updateError } = await supabase.from('users').update({ elder_id }).eq('id', id)
-      if (updateError) throw updateError
+      await supabase.from('users').update({ elder_id }).eq('id', id)
     }
+
     return res.json({ success: true })
   } catch (e) {
     console.error('create-user error:', e)
