@@ -5,6 +5,7 @@ import RoleCard from '../components/RoleCard'
 import SaharaButton from '../components/SaharaButton'
 import { supabase } from '../lib/supabase'
 import { checkUser, createUser } from '../lib/api'
+import SkillsSelector, { SKILLS, LANGUAGES } from '../components/worker/SkillsSelector'
 
 const CONDITIONS = [
   'Diabetes', 'High BP', 'Heart Condition', 'Arthritis',
@@ -147,43 +148,69 @@ function Step3HeroPanel({ role }) {
 
 /* ── Step 3: Personal details ──────────────────────────── */
 function Step3({ role, uid, onSuccess }) {
-  const [name, setName] = useState('')
-  const [age, setAge] = useState('')
-  const [conditions, setConditions] = useState([])
-  const [language, setLanguage] = useState('hi')
-  const [experience, setExperience] = useState('')
-  const [errors, setErrors] = useState({})
-  const [loading, setLoading] = useState(false)
+  const [name, setName]               = useState('')
+  const [age, setAge]                 = useState('')
+  const [conditions, setConditions]   = useState([])
+  const [language, setLanguage]       = useState('hi')
+  const [experience, setExperience]   = useState('')
+  const [skills, setSkills]           = useState([])
+  const [langs, setLangs]             = useState([])
+  const [aadhaar, setAadhaar]         = useState('')
+  const [area, setArea]               = useState('')
+  const [errors, setErrors]           = useState({})
+  const [loading, setLoading]         = useState(false)
   const [globalError, setGlobalError] = useState('')
 
   function toggleCondition(c) {
     setConditions((p) => p.includes(c) ? p.filter((x) => x !== c) : [...p, c])
   }
 
+  function handleAadhaar(val) {
+    // Strip non-digits, limit to 12
+    const digits = val.replace(/\D/g, '').slice(0, 12)
+    // Format as XXXX XXXX XXXX
+    const formatted = digits.replace(/(\d{4})(?=\d)/g, '$1 ')
+    setAadhaar(formatted)
+    if (errors.aadhaar) setErrors(e => ({ ...e, aadhaar: '' }))
+  }
+
   function validate() {
     const errs = {}
-    if (!name.trim()) errs.name = 'Please enter your full name'
-    else if (name.trim().length < 2) errs.name = 'Name must be at least 2 characters'
+    if (!name.trim() || name.trim().length < 2) errs.name = 'Please enter your full name (min 2 characters)'
     if (role === 'elder') {
       if (!age) errs.age = 'Please enter your age'
-      else if (Number(age) < 50 || Number(age) > 110) errs.age = 'Please enter an age between 50 and 110'
+      else if (Number(age) < 50 || Number(age) > 110) errs.age = 'Age must be between 50 and 110'
     }
-    setErrors(errs); return Object.keys(errs).length === 0
+    if (role === 'worker') {
+      const exp = Number(experience)
+      if (experience === '' || isNaN(exp) || exp < 0 || exp > 50) errs.experience = 'Enter years of experience (0–50)'
+      if (skills.length === 0) errs.skills = 'Please select at least 1 skill'
+      if (langs.length === 0) errs.langs = 'Please select at least 1 language'
+      const digits = aadhaar.replace(/\s/g, '')
+      if (digits.length !== 12) errs.aadhaar = 'Aadhaar must be exactly 12 digits'
+      if (!area.trim() || area.trim().length < 3) errs.area = 'Please enter your city / area (min 3 characters)'
+    }
+    setErrors(errs)
+    return Object.keys(errs).length === 0
   }
 
   async function handleCreate() {
     if (!validate()) return
     setGlobalError(''); setLoading(true)
     try {
-      const data = await createUser({
-          id: uid,
-          name: name.trim(),
-          role,
-          language,
-          age: role === 'elder' ? Number(age) : null,
-          conditions: role === 'elder' ? conditions : [],
-          experience_years: role === 'worker' ? Number(experience) || 0 : 0,
-      })
+      const payload = {
+        id: uid,
+        name: name.trim(),
+        role,
+        language: role === 'worker' ? (langs[0]?.toLowerCase().slice(0, 2) || 'hi') : language,
+        age: role === 'elder' ? Number(age) : null,
+        conditions: role === 'elder' ? conditions : [],
+        experience_years: role === 'worker' ? Number(experience) : 0,
+        skills: role === 'worker' ? skills : [],
+        languages: role === 'worker' ? langs : [],
+        aadhaar_number: role === 'worker' ? aadhaar.replace(/\s/g, '') : undefined,
+      }
+      const data = await createUser(payload)
       if (!data.success) throw new Error(data.error || 'Failed')
       sessionStorage.removeItem('sahara_uid')
       onSuccess(name.trim(), role)
@@ -196,12 +223,18 @@ function Step3({ role, uid, onSuccess }) {
       <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0A2540', margin: '0 0 8px' }}>Tell us about yourself</h2>
       <p style={{ fontSize: 12, color: '#7A96B0', marginBottom: 24 }}>Step 3 of 3 — Almost done!</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-        {/* Name */}
-        <FieldInput id="name" label="FULL NAME" placeholder="e.g. Ramesh Kumar" value={name} onChange={(v) => { setName(v); if (errors.name) setErrors((e) => ({ ...e, name: '' })) }} error={errors.name} />
+
+        {/* Name — all roles */}
+        <FieldInput id="name" label="FULL NAME" placeholder="e.g. Ramesh Kumar" value={name}
+          onChange={(v) => { setName(v); if (errors.name) setErrors(e => ({ ...e, name: '' })) }}
+          error={errors.name} />
+
         {/* Elder fields */}
         {role === 'elder' && (
           <>
-            <FieldInput id="age" label="YOUR AGE" placeholder="e.g. 68" value={age} onChange={(v) => { setAge(v.replace(/\D/g, '')); if (errors.age) setErrors((e) => ({ ...e, age: '' })) }} error={errors.age} halfWidth />
+            <FieldInput id="age" label="YOUR AGE" placeholder="e.g. 68" value={age}
+              onChange={(v) => { setAge(v.replace(/\D/g, '')); if (errors.age) setErrors(e => ({ ...e, age: '' })) }}
+              error={errors.age} halfWidth />
             <div>
               <p style={{ fontSize: 10, fontWeight: 700, color: '#5A7A9A', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>
                 Health Conditions <span style={{ color: '#A0B8D0', fontWeight: 400, textTransform: 'none' }}>(optional)</span>
@@ -216,11 +249,40 @@ function Step3({ role, uid, onSuccess }) {
             <LangSelect value={language} onChange={setLanguage} />
           </>
         )}
+
         {/* Worker fields */}
         {role === 'worker' && (
-          <FieldInput id="exp" label="YEARS OF EXPERIENCE" placeholder="e.g. 5" value={experience} onChange={(v) => setExperience(v.replace(/\D/g, ''))} halfWidth />
+          <>
+            <FieldInput id="exp" label="YEARS OF EXPERIENCE" placeholder="e.g. 5" value={experience}
+              onChange={(v) => { setExperience(v.replace(/\D/g, '')); if (errors.experience) setErrors(e => ({ ...e, experience: '' })) }}
+              error={errors.experience} halfWidth />
+
+            <SkillsSelector label="SKILLS" options={SKILLS} selected={skills}
+              onChange={(v) => { setSkills(v); if (errors.skills) setErrors(e => ({ ...e, skills: '' })) }}
+              error={errors.skills} />
+
+            <SkillsSelector label="LANGUAGES YOU SPEAK" options={LANGUAGES} selected={langs}
+              onChange={(v) => { setLangs(v); if (errors.langs) setErrors(e => ({ ...e, langs: '' })) }}
+              error={errors.langs} />
+
+            <div>
+              <label htmlFor="aadhaar" style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#5A7A9A', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>AADHAAR NUMBER</label>
+              <input
+                id="aadhaar" type="tel" value={aadhaar} placeholder="XXXX XXXX XXXX"
+                onChange={e => handleAadhaar(e.target.value)}
+                style={{ width: '100%', height: 48, border: `1.5px solid ${errors.aadhaar ? '#E24B4A' : '#DDE8F5'}`, borderRadius: 10, fontSize: 16, letterSpacing: 2, color: '#0A2540', padding: '0 14px', background: errors.aadhaar ? '#FFF0F0' : 'white', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+              />
+              <p style={{ fontSize: 10, color: '#A0B8D0', marginTop: 4 }}>Your identity will be kept secure</p>
+              {errors.aadhaar && <p role="alert" style={{ fontSize: 11, color: '#E24B4A', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}><i className="ti ti-alert-circle" style={{ fontSize: 12 }} />{errors.aadhaar}</p>}
+            </div>
+
+            <FieldInput id="area" label="YOUR CITY / AREA" placeholder="e.g. Chandigarh, Sector 22" value={area}
+              onChange={(v) => { setArea(v); if (errors.area) setErrors(e => ({ ...e, area: '' })) }}
+              error={errors.area} />
+          </>
         )}
       </div>
+
       {globalError && <p role="alert" style={{ fontSize: 12, color: '#E24B4A', marginTop: 16, display: 'flex', alignItems: 'center', gap: 4 }}><i className="ti ti-alert-circle" style={{ fontSize: 13 }} />{globalError}</p>}
       <div style={{ marginTop: 24 }}>
         <SaharaButton variant="primary" fullWidth loading={loading} loadingText="Creating your account..." onClick={handleCreate}>
