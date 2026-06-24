@@ -146,6 +146,13 @@ function Step3HeroPanel({ role }) {
   )
 }
 
+/* ── Language → DB code map ────────────────────────────── */
+const LANG_CODE = {
+  Hindi: 'hi', English: 'en', Punjabi: 'pa',
+  // All others fall back to 'hi' since DB only allows hi/en/pa
+  Bengali: 'hi', Tamil: 'hi', Telugu: 'hi', Marathi: 'hi', Gujarati: 'hi',
+}
+
 /* ── Step 3: Personal details ──────────────────────────── */
 function Step3({ role, uid, onSuccess }) {
   const [name, setName]               = useState('')
@@ -202,7 +209,7 @@ function Step3({ role, uid, onSuccess }) {
         id: uid,
         name: name.trim(),
         role,
-        language: role === 'worker' ? (langs[0]?.toLowerCase().slice(0, 2) || 'hi') : language,
+        language: role === 'worker' ? (LANG_CODE[langs[0]] || 'hi') : language,
         age: role === 'elder' ? Number(age) : null,
         conditions: role === 'elder' ? conditions : [],
         experience_years: role === 'worker' ? Number(experience) : 0,

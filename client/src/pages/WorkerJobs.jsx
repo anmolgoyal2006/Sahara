@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase, API_URL } from '../lib/supabase'
 import WorkerLayout from '../components/layout/WorkerLayout'
+import { useWorkerLocation } from '../hooks/useWorkerLocation'
 
 const SERVICE_META = {
   maid:            { icon: 'ti-home-2',      bg: '#F0FBF7', color: '#1D9E75', label: 'Maid' },
@@ -73,21 +74,14 @@ export default function WorkerJobs() {
       if (bookingsRes.status === 'fulfilled') setBookings(bookingsRes.value.bookings || [])
       if (availRes.status === 'fulfilled') setAvailable(availRes.value.bookings || [])
 
-      // Update location silently
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          fetch(`${API_URL}/api/worker/location/${uid}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-          }).catch(() => {})
-        })
-      }
-
+      // location is now handled by useWorkerLocation hook
       setLoading(false)
     }
     load()
   }, [navigate])
+
+  // Continuous location tracking
+  const { locationDenied } = useWorkerLocation(userId, isAvailable)
 
   function showToast(msg) {
     setToast(msg)
@@ -168,6 +162,14 @@ export default function WorkerJobs() {
             <p style={{ fontSize: 11, color: '#92400E' }}>We verify all workers within 24 hours. You will be notified when approved.</p>
           </div>
         )}
+
+        {/* Location status pill */}
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 12px', borderRadius: 20, background: isAvailable ? '#F0FBF7' : '#F3F4F6', border: `1px solid ${isAvailable ? '#9FE1CB' : '#E5E7EB'}`, marginBottom: 20 }}>
+          <div style={{ width: 7, height: 7, borderRadius: '50%', background: isAvailable ? '#1D9E75' : '#A0B8D0' }} />
+          <span style={{ fontSize: 11, fontWeight: 700, color: isAvailable ? '#1D9E75' : '#6B7280' }}>
+            {isAvailable ? 'Sharing location' : 'Location paused'}
+          </span>
+        </div>
 
         {/* Section 1 — My Bookings */}
         <div style={{ marginBottom: 32 }}>

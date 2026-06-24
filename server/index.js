@@ -26,7 +26,7 @@ app.use(cors({
 }))
 
 app.options('*', cors())
-app.use(express.json())
+app.use(express.json({ limit: '5mb' }))
 app.use('/api/auth', authRoutes)
 
 const elderRoutes = require('./routes/elder')

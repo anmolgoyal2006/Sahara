@@ -15,7 +15,7 @@ import WorkerProfile from './pages/WorkerProfile'
 import WorkerSchedule from './pages/WorkerSchedule'
 import WorkerLocation from './pages/WorkerLocation'
 import WorkerRatings from './pages/WorkerRatings'
-import { supabase } from './lib/supabase'
+import FamilyDashboard from './pages/FamilyDashboard'
 
 function App() {
   return (
@@ -33,7 +33,7 @@ function App() {
         <Route path="/elder/health" element={<ElderHealth />} />
         <Route path="/elder/medicines" element={<ElderMedicines />} />
         <Route path="/elder/sos" element={<ElderSOS />} />
-        <Route path="/family/dashboard" element={<PlaceholderPage title="Family Dashboard" phase="9" />} />
+        <Route path="/family/dashboard" element={<FamilyDashboard />} />
         <Route path="/worker/jobs" element={<WorkerJobs />} />
         <Route path="/worker/profile" element={<WorkerProfile />} />
         <Route path="/worker/schedule" element={<WorkerSchedule />} />
@@ -41,25 +41,6 @@ function App() {
         <Route path="/worker/ratings" element={<WorkerRatings />} />
       </Routes>
     </BrowserRouter>
-  )
-}
-
-function PlaceholderPage({ title, phase }) {
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    sessionStorage.clear()
-    window.location.href = '/login'
-  }
-
-  return (
-    <div style={{ minHeight: '100vh', background: '#EBF4FF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center' }}>
-      <div style={{ background: '#1D9E75', width: 48, height: 48, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-        <i className="ti ti-leaf" style={{ color: 'white', fontSize: 22 }} />
-      </div>
-      <h1 style={{ fontSize: 24, fontWeight: 900, color: '#0A2540', marginBottom: 8 }}>{title}</h1>
-      <p style={{ fontSize: 14, color: '#5A7A9A', marginBottom: 32 }}>Phase {phase} will build the full {title.toLowerCase()} screen</p>
-      <button onClick={handleLogout} style={{ background: 'white', border: '2px solid #E24B4A', color: '#E24B4A', borderRadius: 10, padding: '14px 32px', fontSize: 16, fontWeight: 700, cursor: 'pointer' }}>Log Out</button>
-    </div>
   )
 }
 
