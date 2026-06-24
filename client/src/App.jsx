@@ -11,6 +11,10 @@ import ElderHealth from './pages/elder/ElderHealth'
 import ElderMedicines from './pages/elder/ElderMedicines'
 import ElderSOS from './pages/elder/ElderSOS'
 import WorkerJobs from './pages/WorkerJobs'
+import WorkerProfile from './pages/WorkerProfile'
+import WorkerSchedule from './pages/WorkerSchedule'
+import WorkerLocation from './pages/WorkerLocation'
+import WorkerRatings from './pages/WorkerRatings'
 import { supabase } from './lib/supabase'
 
 function App() {
@@ -31,6 +35,10 @@ function App() {
         <Route path="/elder/sos" element={<ElderSOS />} />
         <Route path="/family/dashboard" element={<PlaceholderPage title="Family Dashboard" phase="9" />} />
         <Route path="/worker/jobs" element={<WorkerJobs />} />
+        <Route path="/worker/profile" element={<WorkerProfile />} />
+        <Route path="/worker/schedule" element={<WorkerSchedule />} />
+        <Route path="/worker/location" element={<WorkerLocation />} />
+        <Route path="/worker/ratings" element={<WorkerRatings />} />
       </Routes>
     </BrowserRouter>
   )
