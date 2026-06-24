@@ -22,8 +22,7 @@ router.put('/profile/:workerId', async (req, res) => {
   const { skills, languages, experience_years, aadhaar_number, photo_url, available } = req.body
   try {
     const { error } = await supabase.from('workers').update({
-      skills, languages, experience_years, aadhaar_number, photo_url, available,
-      updated_at: new Date().toISOString()
+      skills, languages, experience_years, aadhaar_number, photo_url, available
     }).eq('id', workerId)
     if (error) throw error
     return res.json({ success: true })
