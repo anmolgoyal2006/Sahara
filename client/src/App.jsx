@@ -10,6 +10,7 @@ import ElderCompanion from './pages/elder/ElderCompanion'
 import ElderHealth from './pages/elder/ElderHealth'
 import ElderMedicines from './pages/elder/ElderMedicines'
 import ElderSOS from './pages/elder/ElderSOS'
+import WorkerJobs from './pages/WorkerJobs'
 import { supabase } from './lib/supabase'
 
 function App() {
@@ -29,7 +30,7 @@ function App() {
         <Route path="/elder/medicines" element={<ElderMedicines />} />
         <Route path="/elder/sos" element={<ElderSOS />} />
         <Route path="/family/dashboard" element={<PlaceholderPage title="Family Dashboard" phase="9" />} />
-        <Route path="/worker/jobs" element={<PlaceholderPage title="Worker Jobs" phase="3" />} />
+        <Route path="/worker/jobs" element={<WorkerJobs />} />
       </Routes>
     </BrowserRouter>
   )
