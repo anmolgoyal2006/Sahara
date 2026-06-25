@@ -210,6 +210,25 @@ export default function ElderBook() {
   }
 
   async function handleParse() {
+    // If user just selected a service tile without typing/speaking, create default parsed object
+    if (!request.trim() && selectedService) {
+      const now = new Date()
+      const tomorrow = new Date(now)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      const dateStr = tomorrow.toISOString().split('T')[0]
+      const timeStr = '09:00'
+      setParsed({
+        service_type: selectedService,
+        date: dateStr,
+        time: timeStr,
+        duration_hours: 2,
+        urgency: 'normal',
+        confidence: 1,
+        scheduled_at: `${dateStr}T${timeStr}:00`,
+      })
+      return
+    }
+
     if (!request.trim()) return
     setLoading(true)
     setParseError(null)
