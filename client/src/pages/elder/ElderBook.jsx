@@ -1,9 +1,26 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import ElderLayout from '../../components/layout/ElderLayout'
 import VoiceInput from '../../components/booking/VoiceInput'
 import QuickRequestChips from '../../components/booking/QuickRequestChips'
 import { supabase, API_URL } from '../../lib/supabase'
+
+// ── Welcome messages per language ────────────────────────────────────────────
+const WELCOME = {
+  'hi-IN': 'नमस्ते! मैं साहारा हूँ। आपको किस सेवा की जरूरत है? आप बोल सकते हैं, टाइप कर सकते हैं, या नीचे से चुन सकते हैं।',
+  'en-IN': 'Hello! I am Sahara. What kind of help do you need today? You can speak, type, or choose from the options below.',
+  'pa-IN': 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਸਹਾਰਾ ਹਾਂ। ਤੁਹਾਨੂੰ ਕਿਸ ਸੇਵਾ ਦੀ ਲੋੜ ਹੈ? ਤੁਸੀਂ ਬੋਲ ਸਕਦੇ ਹੋ, ਟਾਈਪ ਕਰ ਸਕਦੇ ਹੋ, ਜਾਂ ਹੇਠਾਂ ਤੋਂ ਚੁਣ ਸਕਦੇ ਹੋ।',
+}
+
+function speak(text, lang) {
+  if (!window.speechSynthesis) return
+  window.speechSynthesis.cancel()
+  const u = new SpeechSynthesisUtterance(text)
+  u.lang = lang
+  u.rate = 0.88
+  u.pitch = 1.05
+  window.speechSynthesis.speak(u)
+}
 
 // ── Service definitions ──────────────────────────────────────────────────────
 const SERVICES = [
@@ -65,7 +82,7 @@ function ParsedCard({ parsed, onEdit }) {
     { icon: 'ti-tools', label: 'Service', value: parsed.service_type?.charAt(0).toUpperCase() + parsed.service_type?.slice(1) },
     { icon: 'ti-calendar', label: 'Date', value: formatDate(parsed.date) },
     { icon: 'ti-clock', label: 'Time', value: formatTime(parsed.time) },
-    { icon: 'ti-hourglass', label: 'Duration', value: `${parsed.duration_hours} hour${parsed.duration_hours !== 1 ? 's' : ''}` },
+    { icon: 'ti-hourglass', label: 'Duration', value: `${Number(parsed.duration_hours) || 2} hour${(Number(parsed.duration_hours) || 2) !== 1 ? 's' : ''}` },
   ]
 
   return (
@@ -179,6 +196,23 @@ export default function ElderBook() {
   const [parseError, setParseError] = useState(null)
   const [parsed, setParsed] = useState(null)
   const [editField, setEditField] = useState(null)
+  const hasSpokenWelcome = useRef(false)
+
+  // Speak welcome on first load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      speak(WELCOME[language] || WELCOME['hi-IN'], language)
+      hasSpokenWelcome.current = true
+    }, 600)
+    return () => clearTimeout(timer)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Re-speak welcome when language is switched
+  function handleLanguageChange(lang) {
+    setLanguage(lang)
+    speak(WELCOME[lang] || WELCOME['hi-IN'], lang)
+  }
 
   // Pre-fill request text from URL service param
   useEffect(() => {
@@ -189,8 +223,14 @@ export default function ElderBook() {
   }, [preselectedService])
 
   function handleServiceTile(svc) {
-    setSelectedService(svc.key)
-    setRequest(svc.defaultRequest)
+    if (selectedService === svc.key) {
+      // Tap again to deselect
+      setSelectedService(null)
+      setRequest('')
+    } else {
+      setSelectedService(svc.key)
+      setRequest(svc.defaultRequest)
+    }
     setParsed(null)
     setParseError(null)
   }
@@ -241,9 +281,13 @@ export default function ElderBook() {
       })
       const data = await res.json()
       if (!data.success) throw new Error(data.error)
+      // Normalize — Groq sometimes returns numbers as strings
+      const p = data.parsed
+      p.duration_hours = parseInt(p.duration_hours) || 2
+      p.confidence = parseFloat(p.confidence) || 1
       // If user had a service tile selected, override service_type
-      if (selectedService) data.parsed.service_type = selectedService
-      setParsed(data.parsed)
+      if (selectedService) p.service_type = selectedService
+      setParsed(p)
     } catch (e) {
       setParseError('Could not understand. Please try again or describe differently.')
     } finally {
@@ -268,10 +312,15 @@ export default function ElderBook() {
     })
   }
 
-  function handleContinue() {
+  async function handleContinue() {
     // Store parsed data in sessionStorage for next steps
     sessionStorage.setItem('booking_parsed', JSON.stringify(parsed))
     sessionStorage.setItem('booking_request', request)
+    // Cache elder_id now while session is fresh
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user) sessionStorage.setItem('booking_elder_id', session.user.id)
+    } catch (_) {}
     navigate('/elder/book/workers')
   }
 
@@ -320,7 +369,7 @@ export default function ElderBook() {
         <VoiceInput
           onTranscript={handleTranscript}
           language={language}
-          onLanguageChange={setLanguage}
+          onLanguageChange={handleLanguageChange}
           placeholder="Tap the mic and speak, or type your request here..."
         />
 
@@ -330,12 +379,12 @@ export default function ElderBook() {
         {/* Parse button */}
         <button
           onClick={handleParse}
-          disabled={!request.trim() || loading}
+          disabled={!request.trim() && !selectedService || loading}
           style={{
             width: '100%', height: 52, borderRadius: 12, border: 'none',
-            background: !request.trim() ? '#DDE8F5' : '#1D9E75',
-            color: !request.trim() ? '#A0B8D0' : 'white',
-            fontSize: 16, fontWeight: 700, cursor: !request.trim() ? 'not-allowed' : 'pointer',
+            background: (!request.trim() && !selectedService) ? '#DDE8F5' : '#1D9E75',
+            color: (!request.trim() && !selectedService) ? '#A0B8D0' : 'white',
+            fontSize: 16, fontWeight: 700, cursor: (!request.trim() && !selectedService) ? 'not-allowed' : 'pointer',
             marginTop: 20, fontFamily: 'Noto Sans, sans-serif',
             transition: 'background 0.2s',
           }}

@@ -22,12 +22,13 @@ export default function VoiceInput({
     if (transcript) setLocalText(transcript)
   }, [transcript])
 
-  // When listening stops and we have text, fire onTranscript
+  // When voice listening stops and we have text, fire onTranscript once
   useEffect(() => {
-    if (!isListening && localText.trim()) {
-      onTranscript?.(localText.trim())
+    if (!isListening && transcript.trim()) {
+      onTranscript?.(transcript.trim())
     }
-  }, [isListening, localText, onTranscript])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isListening])
 
   function handleMicClick() {
     if (isListening) {

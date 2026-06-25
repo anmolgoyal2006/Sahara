@@ -76,8 +76,20 @@ export default function BookingConfirm() {
     setLoading(true)
     setError(null)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.user) throw new Error('Not authenticated')
+      // Try getSession first, fall back to getUser if session expired
+      let userId = sessionStorage.getItem('booking_elder_id')
+      if (!userId) {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session?.user) {
+          userId = session.user.id
+        } else {
+          // Force refresh
+          const { data: { user } } = await supabase.auth.getUser()
+          if (!user) throw new Error('Session expired. Please log in again.')
+          userId = user.id
+        }
+        sessionStorage.setItem('booking_elder_id', userId)
+      }
 
       const originalRequest = sessionStorage.getItem('booking_request') || ''
 
@@ -85,7 +97,7 @@ export default function BookingConfirm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          elder_id: session.user.id,
+          elder_id: userId,
           worker_id: worker.id,
           service_type: parsed.service_type,
           scheduled_at: parsed.scheduled_at,
