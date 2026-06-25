@@ -63,6 +63,8 @@ create table public.bookings (
   notes              text null,
   ai_parsed_request  text null,
   total_cost         float null,
+  rating             int null,
+  review             text null,
   created_at         timestamptz default timezone('utc', now()) not null
 );
 
