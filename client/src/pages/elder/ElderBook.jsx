@@ -6,20 +6,38 @@ import QuickRequestChips from '../../components/booking/QuickRequestChips'
 import { supabase, API_URL } from '../../lib/supabase'
 
 // ── Welcome messages per language ────────────────────────────────────────────
+// Punjabi speech uses Hindi romanized text + hi-IN voice — pa-IN has no browser TTS voice
+// and reads Gurmukhi letter-by-letter which is unrecognizable. Hindi voice sounds natural
+// to Punjabi speakers since the languages are mutually intelligible.
 const WELCOME = {
-  'hi-IN': 'नमस्ते! मैं साहारा हूँ। आपको किस सेवा की जरूरत है? आप बोल सकते हैं, टाइप कर सकते हैं, या नीचे से चुन सकते हैं।',
-  'en-IN': 'Hello! I am Sahara. What kind of help do you need today? You can speak, type, or choose from the options below.',
-  'pa-IN': 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਸਹਾਰਾ ਹਾਂ। ਤੁਹਾਨੂੰ ਕਿਸ ਸੇਵਾ ਦੀ ਲੋੜ ਹੈ? ਤੁਸੀਂ ਬੋਲ ਸਕਦੇ ਹੋ, ਟਾਈਪ ਕਰ ਸਕਦੇ ਹੋ, ਜਾਂ ਹੇਠਾਂ ਤੋਂ ਚੁਣ ਸਕਦੇ ਹੋ।',
+  'hi-IN': {
+    text: 'नमस्ते! मैं साहारा हूँ। आपको किस सेवा की जरूरत है? आप बोल सकते हैं, टाइप कर सकते हैं, या नीचे से चुन सकते हैं।',
+    lang: 'hi-IN',
+  },
+  'en-IN': {
+    text: 'Hello! I am Sahara. What kind of help do you need today? You can speak, type, or choose from the options below.',
+    lang: 'en-IN',
+  },
+  'pa-IN': {
+    // Spoken in Hindi voice — mutually intelligible, clear to Punjabi speakers
+    text: 'Sat Sri Akal! Main Sahara haan. Tussi ki seva chahundi ho? Tusi bol sakte ho, type kar sakte ho, ya neeche to chun sakte ho.',
+    lang: 'hi-IN',
+  },
 }
 
-function speak(text, lang) {
+function speak(text, voiceLang) {
   if (!window.speechSynthesis) return
   window.speechSynthesis.cancel()
   const u = new SpeechSynthesisUtterance(text)
-  u.lang = lang
+  u.lang = voiceLang
   u.rate = 0.88
   u.pitch = 1.05
   window.speechSynthesis.speak(u)
+}
+
+function speakForLanguage(lang) {
+  const entry = WELCOME[lang] || WELCOME['hi-IN']
+  speak(entry.text, entry.lang)
 }
 
 // ── Service definitions ──────────────────────────────────────────────────────
@@ -201,7 +219,7 @@ export default function ElderBook() {
   // Speak welcome on first load
   useEffect(() => {
     const timer = setTimeout(() => {
-      speak(WELCOME[language] || WELCOME['hi-IN'], language)
+      speakForLanguage(language)
       hasSpokenWelcome.current = true
     }, 600)
     return () => clearTimeout(timer)
@@ -211,7 +229,7 @@ export default function ElderBook() {
   // Re-speak welcome when language is switched
   function handleLanguageChange(lang) {
     setLanguage(lang)
-    speak(WELCOME[lang] || WELCOME['hi-IN'], lang)
+    speakForLanguage(lang)
   }
 
   // Pre-fill request text from URL service param
