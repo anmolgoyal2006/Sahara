@@ -197,12 +197,14 @@ export default function ElderBook() {
 
   function handleTranscript(text) {
     setRequest(text)
+    setSelectedService(null) // Clear selected service when user types/speaks
     setParsed(null)
     setParseError(null)
   }
 
   function handleChipSelect(text) {
     setRequest(text)
+    setSelectedService(null) // Clear selected service when user picks a chip
     setParsed(null)
     setParseError(null)
   }
