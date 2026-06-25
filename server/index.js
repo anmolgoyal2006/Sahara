@@ -35,6 +35,9 @@ app.use('/api/elder', elderRoutes)
 const workerRoutes = require('./routes/worker')
 app.use('/api/worker', workerRoutes)
 
+const bookingRoutes = require('./routes/booking')
+app.use('/api/booking', bookingRoutes)
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Sahara server running', port: PORT })
 })
