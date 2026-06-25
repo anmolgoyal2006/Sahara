@@ -38,20 +38,16 @@ function formatDateTime(scheduledAt) {
 }
 
 // ── Star row (display only) ───────────────────────────────────────────────────
-function Stars({ rating, size = 16, interactive = false, onRate }) {
+function Stars({ rating, size = 16 }) {
   return (
-    <div style={{ display: 'flex', gap: 4 }}>
+    <div style={{ display: 'flex', gap: 3 }}>
       {[1, 2, 3, 4, 5].map(n => (
-        <i
-          key={n}
-          onClick={() => interactive && onRate?.(n)}
-          className={n <= rating ? 'ti ti-star-filled' : 'ti ti-star'}
-          style={{
-            fontSize: size,
-            color: n <= rating ? '#F59E0B' : '#DDE8F5',
-            cursor: interactive ? 'pointer' : 'default',
-          }}
-        />
+        <svg key={n} width={size} height={size} viewBox="0 0 24 24"
+          fill={n <= rating ? '#F59E0B' : 'none'}
+          stroke={n <= rating ? '#F59E0B' : '#DDE8F5'}
+          strokeWidth="1.5">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
       ))}
     </div>
   )
@@ -82,14 +78,19 @@ function RatingModal({ booking, onClose, onSubmit }) {
           How was {workerName}?
         </h3>
 
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginBottom: 20 }}>
           {[1, 2, 3, 4, 5].map(n => (
-            <i
+            <button
               key={n}
+              type="button"
               onClick={() => setRating(n)}
-              className={n <= rating ? 'ti ti-star-filled' : 'ti ti-star'}
-              style={{ fontSize: 40, color: n <= rating ? '#F59E0B' : '#DDE8F5', cursor: 'pointer' }}
-            />
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', lineHeight: 0 }}
+              aria-label={`Rate ${n} star${n !== 1 ? 's' : ''}`}
+            >
+              <svg width="40" height="40" viewBox="0 0 24 24" fill={n <= rating ? '#F59E0B' : 'none'} stroke={n <= rating ? '#F59E0B' : '#DDE8F5'} strokeWidth="1.5">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+            </button>
           ))}
         </div>
 
