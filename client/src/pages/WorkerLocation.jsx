@@ -1,30 +1,65 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
 import { supabase, API_URL } from '../lib/supabase'
 import WorkerLayout from '../components/layout/WorkerLayout'
 
-// Fix leaflet default marker icons
-delete L.Icon.Default.prototype._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-})
+// Vanilla Leaflet map — avoids react-leaflet React 18 context incompatibility
+function LeafletMap({ lat, lng, workerName }) {
+  const containerRef = useRef(null)
+  const mapRef       = useRef(null)
+  const markerRef    = useRef(null)
 
-const greenIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34],
-})
+  useEffect(() => {
+    if (!containerRef.current) return
 
-// Recenter map when position changes
-function MapRecenter({ lat, lng }) {
-  const map = useMap()
-  useEffect(() => { map.setView([lat, lng], 14) }, [lat, lng, map])
-  return null
+    // Dynamically load leaflet CSS once
+    if (!document.getElementById('leaflet-css')) {
+      const link = document.createElement('link')
+      link.id   = 'leaflet-css'
+      link.rel  = 'stylesheet'
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+      document.head.appendChild(link)
+    }
+
+    import('leaflet').then(({ default: L }) => {
+      if (mapRef.current) return // already initialised
+
+      const greenIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34],
+      })
+
+      const map = L.map(containerRef.current).setView([lat, lng], 14)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }).addTo(map)
+
+      const marker = L.marker([lat, lng], { icon: greenIcon })
+        .addTo(map)
+        .bindPopup(workerName || 'You are here')
+      
+      mapRef.current    = map
+      markerRef.current = marker
+    })
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove()
+        mapRef.current    = null
+        markerRef.current = null
+      }
+    }
+  }, []) // only init once
+
+  // Update marker + recenter when coords change
+  useEffect(() => {
+    if (!mapRef.current || !markerRef.current) return
+    markerRef.current.setLatLng([lat, lng])
+    mapRef.current.setView([lat, lng], 14)
+  }, [lat, lng])
+
+  return <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
 }
 
 export default function WorkerLocation() {
@@ -143,16 +178,7 @@ export default function WorkerLocation() {
         {/* Map */}
         {hasLocation ? (
           <div style={{ borderRadius: 14, overflow: 'hidden', border: '1.5px solid #DDE8F5', height: 360 }}>
-            <MapContainer center={[lat, lng]} zoom={14} style={{ height: '100%', width: '100%' }}>
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <MapRecenter lat={lat} lng={lng} />
-              <Marker position={[lat, lng]} icon={greenIcon}>
-                <Popup>{workerUser?.name || 'You are here'}</Popup>
-              </Marker>
-            </MapContainer>
+            <LeafletMap lat={lat} lng={lng} workerName={workerUser?.name} />
           </div>
         ) : (
           <div style={{ background: 'white', border: '1.5px solid #DDE8F5', borderRadius: 14, padding: '40px 20px', textAlign: 'center' }}>
