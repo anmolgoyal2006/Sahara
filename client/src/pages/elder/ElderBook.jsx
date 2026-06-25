@@ -299,6 +299,7 @@ export default function ElderBook() {
         <VoiceInput
           onTranscript={handleTranscript}
           language={language}
+          onLanguageChange={setLanguage}
           placeholder="Tap the mic and speak, or type your request here..."
         />
 

@@ -7,10 +7,14 @@ const LANG_OPTIONS = [
   { label: 'Punjabi', code: 'pa-IN' },
 ]
 
-export default function VoiceInput({ onTranscript, placeholder = 'Tap the mic and speak your request...' }) {
-  const [selectedLang, setSelectedLang] = useState('hi-IN')
+export default function VoiceInput({ 
+  onTranscript, 
+  placeholder = 'Tap the mic and speak your request...',
+  language = 'hi-IN',
+  onLanguageChange 
+}) {
   const { isListening, transcript, error, startListening, stopListening, resetTranscript } =
-    useVoiceInput(selectedLang)
+    useVoiceInput(language)
   const [localText, setLocalText] = useState('')
 
   // Sync voice transcript into local text
@@ -23,7 +27,7 @@ export default function VoiceInput({ onTranscript, placeholder = 'Tap the mic an
     if (!isListening && localText.trim()) {
       onTranscript?.(localText.trim())
     }
-  }, [isListening]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isListening, localText, onTranscript])
 
   function handleMicClick() {
     if (isListening) {
@@ -42,7 +46,9 @@ export default function VoiceInput({ onTranscript, placeholder = 'Tap the mic an
 
   function handleLangChange(code) {
     if (isListening) stopListening()
-    setSelectedLang(code)
+    if (onLanguageChange) {
+      onLanguageChange(code)
+    }
   }
 
   return (
@@ -128,13 +134,14 @@ export default function VoiceInput({ onTranscript, placeholder = 'Tap the mic an
           <button
             key={lang.code}
             onClick={() => handleLangChange(lang.code)}
+            type="button"
             style={{
               height: 36,
               padding: '0 16px',
               borderRadius: 30,
-              border: selectedLang === lang.code ? 'none' : '1.5px solid #DDE8F5',
-              background: selectedLang === lang.code ? '#1D9E75' : '#fff',
-              color: selectedLang === lang.code ? '#fff' : '#A0B8D0',
+              border: language === lang.code ? 'none' : '1.5px solid #DDE8F5',
+              background: language === lang.code ? '#1D9E75' : '#fff',
+              color: language === lang.code ? '#fff' : '#A0B8D0',
               fontSize: 12,
               fontWeight: 700,
               cursor: 'pointer',

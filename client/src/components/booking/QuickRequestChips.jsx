@@ -40,8 +40,16 @@ const CHIPS = [
 export default function QuickRequestChips({ onSelect, language = 'hi-IN' }) {
   const isHindi = language !== 'en-IN'
 
+  function handleClick(chip) {
+    const selectedText = isHindi ? chip.request_hi : chip.request_en
+    console.log('Quick chip clicked:', selectedText)
+    if (onSelect) {
+      onSelect(selectedText)
+    }
+  }
+
   return (
-    <div style={{ marginTop: 16 }}>
+    <div style={{ marginTop: 16, pointerEvents: 'auto' }}>
       <p style={{
         fontSize: 13,
         color: '#5A7A9A',
@@ -50,16 +58,17 @@ export default function QuickRequestChips({ onSelect, language = 'hi-IN' }) {
       }}>
         Or choose quickly:
       </p>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, pointerEvents: 'auto' }}>
         {CHIPS.map((chip, i) => (
           <button
             key={i}
-            onClick={() => onSelect(isHindi ? chip.request_hi : chip.request_en)}
+            onClick={() => handleClick(chip)}
+            type="button"
             style={{
-              background: '#fff',
+              background: '#ffffff',
               border: '1.5px solid #DDE8F5',
               borderRadius: 30,
-              padding: '0 14px',
+              padding: '10px 16px',
               minHeight: 40,
               fontSize: 12,
               fontWeight: 700,
@@ -68,12 +77,16 @@ export default function QuickRequestChips({ onSelect, language = 'hi-IN' }) {
               fontFamily: 'Noto Sans, sans-serif',
               transition: 'all 0.15s',
               whiteSpace: 'nowrap',
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+              touchAction: 'manipulation',
+              pointerEvents: 'auto',
             }}
-            onMouseEnter={e => {
+            onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = '#1D9E75'
               e.currentTarget.style.color = '#1D9E75'
             }}
-            onMouseLeave={e => {
+            onMouseLeave={(e) => {
               e.currentTarget.style.borderColor = '#DDE8F5'
               e.currentTarget.style.color = '#185FA5'
             }}
