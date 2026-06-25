@@ -28,7 +28,7 @@ export default function UpcomingBookings({ bookings }) {
     <div style={{ background: 'white', border: '1.5px solid #DDE8F5', borderRadius: 14, padding: 20, marginBottom: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <p style={{ fontSize: 16, fontWeight: 700, color: '#0A2540' }}>Upcoming Help</p>
-        <span onClick={() => navigate('/elder/book')} style={{ fontSize: 13, color: '#1D9E75', fontWeight: 600, cursor: 'pointer' }}>View All →</span>
+        <span onClick={() => navigate('/elder/bookings')} style={{ fontSize: 13, color: '#1D9E75', fontWeight: 600, cursor: 'pointer' }}>View All →</span>
       </div>
 
       {!next ? (
@@ -74,7 +74,7 @@ export default function UpcomingBookings({ bookings }) {
           )}
 
           {bookings.length > 1 && (
-            <div onClick={() => navigate('/elder/book')} style={{ textAlign: 'center', marginTop: 10, padding: '8px', borderRadius: 9, background: '#F7FBFF', cursor: 'pointer', fontSize: 12, color: '#185FA5', fontWeight: 700 }}>
+            <div onClick={() => navigate('/elder/bookings')} style={{ textAlign: 'center', marginTop: 10, padding: '8px', borderRadius: 9, background: '#F7FBFF', cursor: 'pointer', fontSize: 12, color: '#185FA5', fontWeight: 700 }}>
               + {bookings.length - 1} more booking{bookings.length > 2 ? 's' : ''}
             </div>
           )}

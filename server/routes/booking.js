@@ -5,7 +5,7 @@ const Groq = require('groq-sdk')
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
+  process.env.SUPABASE_SECRET_KEY
 )
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
