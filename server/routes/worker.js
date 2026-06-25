@@ -110,7 +110,17 @@ router.put('/complete-booking/:bookingId', async (req, res) => {
 // GET find workers near elder
 router.get('/nearby', async (req, res) => {
   const { lat, lng, skill, language, radius = 10000 } = req.query
+
+  console.log('[/nearby] params:', { lat, lng, skill, language, radius })
+
   try {
+    // First: fetch without skill filter to see raw data
+    const { data: allWorkers } = await supabase.from('workers')
+      .select(`id, skills, languages, rating, photo_url, lat, lng, available, verified, experience_years, users ( name, phone )`)
+    console.log('[/nearby] ALL workers in DB:', JSON.stringify(allWorkers?.map(w => ({
+      id: w.id, skills: w.skills, available: w.available, verified: w.verified, lat: w.lat, lng: w.lng
+    }))))
+
     let query = supabase.from('workers')
       .select(`id, skills, languages, rating, photo_url, lat, lng, available, verified, experience_years, users ( name, phone )`)
       .eq('verified', true)
@@ -118,10 +128,24 @@ router.get('/nearby', async (req, res) => {
       .not('lat', 'is', null)
       .not('lng', 'is', null)
 
-    if (skill) query = query.contains('skills', [skill])
+    // Map service_type keys → stored skill labels (Title Case from SkillsSelector)
+    const SKILL_MAP = {
+      driver:          'Driving',
+      maid:            'Cleaning',
+      cook:            'Cooking',
+      nurse:           'Nursing',
+      physiotherapist: 'Physiotherapy',
+      repair:          'Home Repair',
+    }
+    if (skill) {
+      const mappedSkill = SKILL_MAP[skill.toLowerCase()] || skill
+      console.log('[/nearby] skill filter:', skill, '→', mappedSkill)
+      query = query.contains('skills', [mappedSkill])
+    }
     if (language) query = query.contains('languages', [language])
 
     const { data: workers, error } = await query
+    console.log('[/nearby] after filters (verified+available+skill):', workers?.length, 'workers', error?.message)
     if (error) throw error
 
     const workerLat = parseFloat(lat)
@@ -135,10 +159,17 @@ router.get('/nearby', async (req, res) => {
         Math.sin(dLng/2) * Math.sin(dLng/2)
       const distance = 6371000 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
       return { ...w, distance_meters: Math.round(distance) }
-    }).filter(w => w.distance_meters <= parseInt(radius))
+    })
+
+    console.log('[/nearby] distances (radius filter:', radius, '):',
+      nearby.map(w => ({ id: w.id, distance_meters: w.distance_meters })))
+
+    const filtered = nearby
+      .filter(w => w.distance_meters <= parseInt(radius))
       .sort((a, b) => a.distance_meters - b.distance_meters)
 
-    return res.json({ success: true, workers: nearby })
+    console.log('[/nearby] final result:', filtered.length, 'workers within radius')
+    return res.json({ success: true, workers: filtered })
   } catch (e) {
     return res.status(500).json({ success: false, workers: [] })
   }
