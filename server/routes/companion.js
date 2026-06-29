@@ -66,7 +66,12 @@ ${medicineText}
 Time of day: ${timeOfDay}
 
 SPECIAL ACTIONS — append ONE of these tags at the very end if clearly requested:
-[ACTION:BOOK:maid] [ACTION:BOOK:nurse] [ACTION:BOOK:driver] [ACTION:BOOK:cook] [ACTION:BOOK:physiotherapist] [ACTION:BOOK:repair]
+[ACTION:BOOK:service:time:date:duration_hours]
+Examples:
+- [ACTION:BOOK:maid:10:00:2024-01-15:2] (book maid at 10 AM on Jan 15 for 2 hours)
+- [ACTION:BOOK:nurse:14:00:tomorrow:3] (book nurse at 2 PM tomorrow for 3 hours)
+- [ACTION:BOOK:driver:09:00:today:1] (book driver at 9 AM today for 1 hour)
+If time/date/duration are not specified, use defaults: time=09:00, date=tomorrow, duration=2
 [ACTION:CALL_FAMILY]
 [ACTION:SOS]
 [ACTION:HEALTH_LOG]
@@ -111,7 +116,29 @@ router.post('/chat', async (req, res) => {
     let actionData = null
     if (action) {
       if (action.startsWith('BOOK:')) {
-        actionData = { type: 'BOOK', service: action.split(':')[1] }
+        const parts = action.split(':')
+        // Format: BOOK:service:time:date:duration
+        const service = parts[1] || 'maid'
+        const time = parts[2] || '09:00'
+        let date = parts[3] || 'tomorrow'
+        const duration = parts[4] || '2'
+        
+        // Convert relative dates to actual dates
+        if (date === 'today') {
+          date = new Date().toISOString().split('T')[0]
+        } else if (date === 'tomorrow') {
+          const tomorrow = new Date()
+          tomorrow.setDate(tomorrow.getDate() + 1)
+          date = tomorrow.toISOString().split('T')[0]
+        }
+        
+        actionData = { 
+          type: 'BOOK', 
+          service, 
+          time, 
+          date, 
+          duration 
+        }
       } else {
         actionData = { type: action }
       }
