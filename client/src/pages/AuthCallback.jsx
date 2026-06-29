@@ -47,16 +47,7 @@ export default function AuthCallback() {
       justifyContent: 'center',
       gap: 16,
     }}>
-      <div style={{
-        width: 48, height: 48,
-        background: '#1D9E75',
-        borderRadius: 12,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <i className="ti ti-leaf" style={{ color: 'white', fontSize: 22 }} />
-      </div>
+      <img src="/logo.jpeg" alt="Sahara Logo" style={{ width: 120, height: 120, borderRadius: '50%', objectFit: 'cover' }} />
       <p style={{ fontSize: 18, fontWeight: 700, color: '#0A2540', margin: 0 }}>
         Signing you in...
       </p>

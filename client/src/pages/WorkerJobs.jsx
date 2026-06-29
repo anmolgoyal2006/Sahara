@@ -128,9 +128,7 @@ export default function WorkerJobs() {
   if (loading) {
     return (
       <div style={{ minHeight: '100vh', background: '#EBF4FF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-        <div style={{ width: 52, height: 52, background: '#1D9E75', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <i className="ti ti-leaf" style={{ color: 'white', fontSize: 24 }} />
-        </div>
+        <img src="/logo.jpeg" alt="Sahara Logo" style={{ width: 120, height: 120, borderRadius: '50%', objectFit: 'cover' }} />
         <p style={{ fontSize: 18, fontWeight: 700, color: '#0A2540' }}>Loading your jobs...</p>
         <div style={{ width: 36, height: 36, border: '3px solid #E1F5EE', borderTop: '3px solid #1D9E75', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>

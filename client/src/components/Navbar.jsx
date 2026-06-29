@@ -27,18 +27,7 @@ export default function Navbar({ activePage, showAuthButtons = true }) {
     }}>
       {/* ── Logo ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }} onClick={() => navigate('/login')}>
-        <div style={{
-          background: '#1D9E75',
-          width: 34,
-          height: 34,
-          borderRadius: 9,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-        }}>
-          <i className="ti ti-leaf" style={{ color: 'white', fontSize: 18 }} />
-        </div>
+        <img src="/logo.jpeg" alt="Sahara Logo" style={{ width: 34, height: 34, borderRadius: 9, objectFit: 'cover', flexShrink: 0 }} />
         <span style={{ fontSize: 18, fontWeight: 900, color: '#0A2540', letterSpacing: '-0.3px' }}>Sahara</span>
       </div>
 

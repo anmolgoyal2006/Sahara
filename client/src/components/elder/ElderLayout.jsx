@@ -33,9 +33,7 @@ export default function ElderLayout({ children }) {
       <aside className="elder-sidebar">
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '28px 24px 24px', borderBottom: '1px solid #E8F0FB' }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: '#1D9E75', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <i className="ti ti-leaf" style={{ color: 'white', fontSize: 18 }} />
-          </div>
+          <img src="/logo.jpeg" alt="Sahara Logo" style={{ width: 36, height: 36, borderRadius: 10, objectFit: 'cover' }} />
           <span style={{ fontSize: 18, fontWeight: 800, color: '#0A2540' }}>Sahara</span>
         </div>
 

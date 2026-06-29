@@ -173,6 +173,7 @@ export default function Login() {
 
           <div style={{ marginTop: 0, textAlign: 'center' }}>
             <img
+              className="login-hero-image"
               src="/Gemini_Generated_Image_12cykd12cykd12cy.png"
               alt="Happy elderly couple"
               style={{ width: '75%', borderRadius: 16, display: 'block', margin: '0 auto' }}
@@ -198,6 +199,7 @@ export default function Login() {
           .login-grid { grid-template-columns: 1fr; min-height: unset; }
           .login-hero-col { display: none; }
           .login-grid > div:last-child { padding: 24px 20px !important; }
+          .login-hero-image { width: 100% !important; max-width: 320px !important; }
         }
         @media (min-width: 768px) and (max-width: 1024px) {
           .login-grid { grid-template-columns: 45% 55%; }

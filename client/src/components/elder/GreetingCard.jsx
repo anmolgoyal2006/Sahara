@@ -97,12 +97,12 @@ export default function GreetingCard({ user, profile }) {
 
       {/* RIGHT — decorative, desktop only */}
       <div className="greeting-deco" style={{
-        width: 110, height: 110, borderRadius: '50%',
-        background: 'rgba(255,255,255,0.1)',
+        width: 180, height: 180, borderRadius: '50%',
+        background: 'rgba(255,255,255,0.15)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0, marginLeft: 24,
       }}>
-        <i className="ti ti-leaf" style={{ fontSize: 48, color: 'rgba(255,255,255,0.6)' }} />
+        <img src="/logo.jpeg" alt="Sahara Logo" style={{ width: 160, height: 160, borderRadius: '50%', objectFit: 'cover' }} />
       </div>
 
       <style>{`@media (max-width: 767px) { .greeting-deco { display: none !important; } }`}</style>
