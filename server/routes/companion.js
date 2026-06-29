@@ -71,6 +71,9 @@ Examples:
 - [ACTION:BOOK:maid:10:00:2024-01-15:2] (book maid at 10 AM on Jan 15 for 2 hours)
 - [ACTION:BOOK:nurse:14:00:tomorrow:3] (book nurse at 2 PM tomorrow for 3 hours)
 - [ACTION:BOOK:driver:09:00:today:1] (book driver at 9 AM today for 1 hour)
+- [ACTION:BOOK:cook:11:00:tomorrow:1] when user says "1 ghante ke liye" or "ek ghanta"
+Service type mapping: khaana/cook/chef/kook → cook, nurse/nursing → nurse, driver/car → driver, maid/safaai → maid, physiotherapy → physiotherapist, repair → repair
+Duration mapping: 1/ek/एक → 1, 2/do/दो → 2, 3/teen/तीन → 3, 4/char/चार → 4, adha/adha ghanta → 1 (round up)
 If time/date/duration are not specified, use defaults: time=09:00, date=tomorrow, duration=2
 [ACTION:CALL_FAMILY]
 [ACTION:SOS]
@@ -118,15 +121,42 @@ router.post('/chat', async (req, res) => {
       if (action.startsWith('BOOK:')) {
         const parts = action.split(':')
         // Format: BOOK:service:time:date:duration
-        const service = parts[1] || 'maid'
-        const time = parts[2] || '09:00'
+        let service = parts[1] || 'maid'
+        
+        // Map service type variations to standard values
+        const serviceMap = {
+          'kook': 'cook',
+          'cook': 'cook',
+          'maid': 'maid',
+          'nurse': 'nurse',
+          'driver': 'driver',
+          'physiotherapist': 'physiotherapist',
+          'repair': 'repair'
+        }
+        service = serviceMap[service.toLowerCase()] || service
+        
+        let time = parts[2] || '09:00'
         let date = parts[3] || 'tomorrow'
         const duration = parts[4] || '2'
+        
+        // Normalize time format - convert single numbers to HH:MM
+        if (/^\d$/.test(time)) {
+          time = `0${time}:00`
+        } else if (/^\d{2}$/.test(time)) {
+          time = `${time}:00`
+        }
         
         // Convert relative dates to actual dates
         if (date === 'today') {
           date = new Date().toISOString().split('T')[0]
         } else if (date === 'tomorrow') {
+          const tomorrow = new Date()
+          tomorrow.setDate(tomorrow.getDate() + 1)
+          date = tomorrow.toISOString().split('T')[0]
+        }
+        
+        // Ensure date is in YYYY-MM-DD format, if not, default to tomorrow
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
           const tomorrow = new Date()
           tomorrow.setDate(tomorrow.getDate() + 1)
           date = tomorrow.toISOString().split('T')[0]

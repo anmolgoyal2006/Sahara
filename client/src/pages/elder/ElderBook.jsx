@@ -50,6 +50,32 @@ const SERVICES = [
   { key: 'repair',           icon: 'ti-tool',          label: 'Repair',          defaultRequest: 'I need a home repair person' },
 ]
 
+function resolveDate(dateStr) {
+  if (!dateStr) return null
+  const s = dateStr.toLowerCase().trim()
+
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = String(now.getMonth() + 1).padStart(2, '0')
+  const d = String(now.getDate()).padStart(2, '0')
+
+  if (s === 'today') return `${y}-${m}-${d}`
+
+  if (s === 'tomorrow') {
+    const tomorrow = new Date(now)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    return `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`
+  }
+
+  if (s === 'परसों' || s === 'parso') {
+    const dayAfter = new Date(now)
+    dayAfter.setDate(dayAfter.getDate() + 2)
+    return `${dayAfter.getFullYear()}-${String(dayAfter.getMonth() + 1).padStart(2, '0')}-${String(dayAfter.getDate()).padStart(2, '0')}`
+  }
+
+  return dateStr
+}
+
 // ── Step indicator ────────────────────────────────────────────────────────────
 function StepDots({ step }) {
   return (
@@ -248,6 +274,24 @@ export default function ElderBook() {
     }
   }, [preselectedService])
 
+  // Auto-parse when all params come from companion chat
+  useEffect(() => {
+    if (preselectedService && preselectedTime && preselectedDate && preselectedDuration) {
+      const svc = SERVICES.find(s => s.key === preselectedService)
+      if (!svc) return
+      const resolvedDate = resolveDate(preselectedDate)
+      setParsed({
+        service_type: preselectedService,
+        date: resolvedDate,
+        time: preselectedTime,
+        duration_hours: parseInt(preselectedDuration),
+        urgency: 'normal',
+        scheduled_at: `${resolvedDate}T${preselectedTime}:00`,
+      })
+      setSelectedService(preselectedService)
+    }
+  }, [])
+
   function handleServiceTile(svc) {
     if (selectedService === svc.key) {
       // Tap again to deselect
@@ -316,7 +360,7 @@ export default function ElderBook() {
       if (selectedService) p.service_type = selectedService
       // Override with URL params if they exist (from AI chat)
       if (preselectedTime) p.time = preselectedTime
-      if (preselectedDate) p.date = preselectedDate
+      if (preselectedDate) p.date = resolveDate(preselectedDate)
       if (preselectedDuration) p.duration_hours = parseInt(preselectedDuration)
       setParsed(p)
     } catch (e) {

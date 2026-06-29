@@ -45,7 +45,7 @@ Return ONLY a valid JSON object with exactly these fields:
 
 Rules:
 - service_type is required. Map these Hindi words:
-  khaana/cook/chef → cook
+  khaana/cook/chef/kook → cook
   nurse/nursing → nurse
   driver/car/hospital → driver
   maid/safaai/cleaning → maid
