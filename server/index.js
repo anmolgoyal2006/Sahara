@@ -38,6 +38,9 @@ app.use('/api/worker', workerRoutes)
 const bookingRoutes = require('./routes/booking')
 app.use('/api/booking', bookingRoutes)
 
+const companionRoutes = require('./routes/companion')
+app.use('/api/companion', companionRoutes)
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Sahara server running', port: PORT })
 })

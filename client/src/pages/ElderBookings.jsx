@@ -40,14 +40,13 @@ function formatDateTime(scheduledAt) {
 // ── Star row (display only) ───────────────────────────────────────────────────
 function Stars({ rating, size = 16 }) {
   return (
-    <div style={{ display: 'flex', gap: 3 }}>
+    <div style={{ display: 'flex', gap: 2 }}>
       {[1, 2, 3, 4, 5].map(n => (
-        <svg key={n} width={size} height={size} viewBox="0 0 24 24"
-          fill={n <= rating ? '#F59E0B' : 'none'}
-          stroke={n <= rating ? '#F59E0B' : '#DDE8F5'}
-          strokeWidth="1.5">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
+        <span key={n} style={{
+          fontSize: size,
+          lineHeight: 1,
+          filter: n <= rating ? 'none' : 'grayscale(1) opacity(0.3)',
+        }}>⭐</span>
       ))}
     </div>
   )
@@ -78,18 +77,22 @@ function RatingModal({ booking, onClose, onSubmit }) {
           How was {workerName}?
         </h3>
 
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginBottom: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 20 }}>
           {[1, 2, 3, 4, 5].map(n => (
             <button
               key={n}
               type="button"
               onClick={() => setRating(n)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', lineHeight: 0 }}
+              style={{
+                background: 'none', border: 'none', padding: '4px 2px',
+                cursor: 'pointer', fontSize: 38, lineHeight: 1,
+                filter: n <= rating ? 'none' : 'grayscale(1) opacity(0.35)',
+                transition: 'filter 0.15s, transform 0.1s',
+                transform: n <= rating ? 'scale(1.1)' : 'scale(1)',
+              }}
               aria-label={`Rate ${n} star${n !== 1 ? 's' : ''}`}
             >
-              <svg width="40" height="40" viewBox="0 0 24 24" fill={n <= rating ? '#F59E0B' : 'none'} stroke={n <= rating ? '#F59E0B' : '#DDE8F5'} strokeWidth="1.5">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-              </svg>
+              ⭐
             </button>
           ))}
         </div>
