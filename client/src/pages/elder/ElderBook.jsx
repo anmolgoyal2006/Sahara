@@ -206,6 +206,9 @@ export default function ElderBook() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const preselectedService = searchParams.get('service')
+  const preselectedTime = searchParams.get('time')
+  const preselectedDate = searchParams.get('date')
+  const preselectedDuration = searchParams.get('duration')
 
   const [request, setRequest] = useState('')
   const [selectedService, setSelectedService] = useState(preselectedService || null)
@@ -218,13 +221,18 @@ export default function ElderBook() {
 
   // Speak welcome on first load
   useEffect(() => {
+    // If any preselected booking parameters are present, skip the welcome message
+    if (preselectedService || preselectedTime || preselectedDate || preselectedDuration) {
+      hasSpokenWelcome.current = true
+      return
+    }
     const timer = setTimeout(() => {
       speakForLanguage(language)
       hasSpokenWelcome.current = true
     }, 600)
     return () => clearTimeout(timer)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [preselectedService, preselectedTime, preselectedDate, preselectedDuration])
 
   // Re-speak welcome when language is switched
   function handleLanguageChange(lang) {
@@ -273,13 +281,14 @@ export default function ElderBook() {
       const now = new Date()
       const tomorrow = new Date(now)
       tomorrow.setDate(tomorrow.getDate() + 1)
-      const dateStr = tomorrow.toISOString().split('T')[0]
-      const timeStr = '09:00'
+      const dateStr = preselectedDate || tomorrow.toISOString().split('T')[0]
+      const timeStr = preselectedTime || '09:00'
+      const duration = preselectedDuration ? parseInt(preselectedDuration) : 2
       setParsed({
         service_type: selectedService,
         date: dateStr,
         time: timeStr,
-        duration_hours: 2,
+        duration_hours: duration,
         urgency: 'normal',
         confidence: 1,
         scheduled_at: `${dateStr}T${timeStr}:00`,
@@ -305,6 +314,10 @@ export default function ElderBook() {
       p.confidence = parseFloat(p.confidence) || 1
       // If user had a service tile selected, override service_type
       if (selectedService) p.service_type = selectedService
+      // Override with URL params if they exist (from AI chat)
+      if (preselectedTime) p.time = preselectedTime
+      if (preselectedDate) p.date = preselectedDate
+      if (preselectedDuration) p.duration_hours = parseInt(preselectedDuration)
       setParsed(p)
     } catch (e) {
       setParseError('Could not understand. Please try again or describe differently.')

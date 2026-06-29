@@ -137,7 +137,7 @@ export default function Login() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#EBF4FF' }}>
+    <div className="login-container" style={{ minHeight: '100vh', background: '#EBF4FF' }}>
       <Navbar activePage="home" showAuthButtons={false} />
 
       <div className="login-grid">
@@ -145,7 +145,7 @@ export default function Login() {
           <HeroPanel />
         </div>
 
-        <div style={{ background: 'white', padding: '40px 40px 0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div style={{ background: 'white', padding: '40px 40px 0', display: 'flex', flexDirection: 'column' }}>
           <h2 style={{ fontSize: 24, fontWeight: 900, color: '#0A2540', margin: '0 0 6px' }}>
             Welcome to Sahara
           </h2>
@@ -171,7 +171,7 @@ export default function Login() {
             ))}
           </div>
 
-          <div style={{ marginTop: 0, textAlign: 'center' }}>
+          <div style={{ marginTop: 32, textAlign: 'center' }}>
             <img
               className="login-hero-image"
               src="/Gemini_Generated_Image_12cykd12cykd12cy.png"
@@ -188,6 +188,7 @@ export default function Login() {
       </div>
 
       <style>{`
+        .login-container { min-height: 100vh; }
         .login-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -196,9 +197,10 @@ export default function Login() {
         .login-hero-col { display: block; }
 
         @media (max-width: 767px) {
-          .login-grid { grid-template-columns: 1fr; min-height: unset; }
+          .login-container { min-height: auto !important; }
+          .login-grid { grid-template-columns: 1fr; min-height: auto !important; }
           .login-hero-col { display: none; }
-          .login-grid > div:last-child { padding: 24px 20px !important; }
+          .login-grid > div:last-child { padding: 24px 20px 24px !important; }
           .login-hero-image { width: 100% !important; max-width: 320px !important; }
         }
         @media (min-width: 768px) and (max-width: 1024px) {

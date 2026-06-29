@@ -12,7 +12,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 const LANG_OPTIONS = [{ key: 'hi', label: 'हि' }, { key: 'en', label: 'En' }, { key: 'pa', label: 'ਪੰ' }]
 const FONT_SIZES = [14, 16, 18]
-const SPEECH_RATES = [{ label: '🐢', value: 0.7 }, { label: 'N', value: 0.85 }, { label: '🐇', value: 1.1 }]
+const SPEECH_RATES = [{ label: '🐢', value: 0.7 }, { label: 'N', value: 0.9 }, { label: '🐇', value: 1.1 }]
 
 function getLangCode(lang) { return { hi: 'hi-IN', en: 'en-IN', pa: 'hi-IN' }[lang] || 'hi-IN' }
 
@@ -22,7 +22,7 @@ function getDefaultGreeting(name, lang) {
   return `Namaste ${name} ji! Aap aaj kaisa mehsoos kar rahe hain?`
 }
 
-function speakText(text, lang, rate = 0.85) {
+function speakText(text, lang, rate = 1.0) {
   if (!window.speechSynthesis) return
   window.speechSynthesis.cancel()
   const u = new SpeechSynthesisUtterance(text)
@@ -227,7 +227,14 @@ export default function ElderCompanion() {
 
   function handleActionConfirm(action) {
     setPendingAction(null)
-    if (action.type === 'BOOK') navigate(`/elder/book?service=${action.service}`)
+    if (action.type === 'BOOK') {
+      const params = new URLSearchParams()
+      if (action.service) params.set('service', action.service)
+      if (action.time) params.set('time', action.time)
+      if (action.date) params.set('date', action.date)
+      if (action.duration) params.set('duration', action.duration)
+      navigate(`/elder/book?${params.toString()}`)
+    }
     else if (action.type === 'CALL_FAMILY') navigate('/family/dashboard')
     else if (action.type === 'SOS') navigate('/elder/sos')
     else if (action.type === 'HEALTH_LOG') navigate('/elder/health')
