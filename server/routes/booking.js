@@ -54,6 +54,14 @@ Rules:
 - If date not mentioned, assume tomorrow
 - If time not mentioned, assume morning
 - If duration not mentioned, assume 2 hours
+- TIME AM/PM RULE: Indian elderly users speak hour-only times like "4 baje" or "4:00 बजे" without specifying AM/PM. Apply this rule strictly:
+  - Hour 1 to 6 (e.g. "4 baje", "5 baje") with NO subah/morning/raat/night word → assume PM (afternoon), e.g. "4:00 बजे" → "16:00"
+  - Hour 1 to 6 WITH subah/morning word → assume AM, e.g. "subah 4 baje" → "04:00"
+  - Hour 7 to 11 with no qualifier → assume AM (morning), e.g. "9 baje" → "09:00"
+  - Hour 12 → "12:00" (noon) unless raat/night is mentioned, then "00:00"
+  - If "shaam"/evening mentioned → PM regardless of hour
+  - If "raat"/night mentioned → treat as PM/late evening
+  - This rule only applies when the user gives a bare hour. If they give 24-hour format or explicit AM/PM, use that directly.
 - confidence: how certain you are about service_type
 - Never add explanation, only return the JSON object`
         },
@@ -69,14 +77,21 @@ Rules:
     const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim()
     const parsed = JSON.parse(cleaned)
 
-    // Convert relative dates to actual dates
-    const now = new Date()
-    if (parsed.date === 'today') {
-      parsed.date = now.toISOString().split('T')[0]
-    } else if (parsed.date === 'tomorrow') {
-      const tomorrow = new Date(now)
-      tomorrow.setDate(tomorrow.getDate() + 1)
-      parsed.date = tomorrow.toISOString().split('T')[0]
+    // Convert relative dates to actual dates (IST-safe, no toISOString/UTC)
+    function resolveDateIST(rel) {
+      const istOffset = 5.5 * 60 * 60 * 1000
+      const now = new Date(Date.now() + istOffset)
+      const y = now.getUTCFullYear()
+      const m = String(now.getUTCMonth() + 1).padStart(2, '0')
+      const d = String(now.getUTCDate()).padStart(2, '0')
+      if (rel === 'today') return `${y}-${m}-${d}`
+      const t = new Date(now)
+      t.setUTCDate(t.getUTCDate() + 1)
+      return `${t.getUTCFullYear()}-${String(t.getUTCMonth()+1).padStart(2,'0')}-${String(t.getUTCDate()).padStart(2,'0')}`
+    }
+
+    if (parsed.date === 'today' || parsed.date === 'tomorrow') {
+      parsed.date = resolveDateIST(parsed.date)
     }
 
     // Convert time descriptions to actual times

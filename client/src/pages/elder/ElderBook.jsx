@@ -19,10 +19,24 @@ const WELCOME = {
     lang: 'en-IN',
   },
   'pa-IN': {
-    // Spoken in Hindi voice — mutually intelligible, clear to Punjabi speakers
-    text: 'Sat Sri Akal! Main Sahara haan. Tussi ki seva chahundi ho? Tusi bol sakte ho, type kar sakte ho, ya neeche to chun sakte ho.',
+    // Use Hindi voice - pa-IN doesn't exist in browsers and reads letter-by-letter
+    // Hindi voice is mutually intelligible to Punjabi speakers
+    text: 'Sat Sri Akal! Main Sahara haan. Tuhade ki seva chahidi hai? Tuhade bol sakde ho, type kar sakde ho, ya neeche to chun sakde ho.',
     lang: 'hi-IN',
   },
+}
+
+// Load voices on mount
+let voicesLoaded = false
+function loadVoices() {
+  if (window.speechSynthesis) {
+    window.speechSynthesis.getVoices()
+    voicesLoaded = true
+  }
+}
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = loadVoices
+  loadVoices()
 }
 
 function speak(text, voiceLang) {
@@ -32,6 +46,17 @@ function speak(text, voiceLang) {
   u.lang = voiceLang
   u.rate = 0.88
   u.pitch = 1.05
+  
+  // Try to find a more natural-sounding Indian voice
+  const voices = window.speechSynthesis.getVoices()
+  const indianVoice = voices.find(v =>
+    (v.lang.includes('hi') || v.lang.includes('IN') || v.name.includes('India')) &&
+    (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Enhanced'))
+  ) || voices.find(v =>
+    v.lang.includes('hi') || v.lang.includes('IN') || v.name.includes('India')
+  )
+  
+  if (indianVoice) u.voice = indianVoice
   window.speechSynthesis.speak(u)
 }
 
@@ -247,11 +272,13 @@ export default function ElderBook() {
 
   // Speak welcome on first load
   useEffect(() => {
-    // If any preselected booking parameters are present, skip the welcome message
-    if (preselectedService || preselectedTime || preselectedDate || preselectedDuration) {
+    // Skip welcome only when all params are present (coming from AI chat)
+    // But play welcome when only service is present (coming from sidebar)
+    if (preselectedService && preselectedTime && preselectedDate && preselectedDuration) {
       hasSpokenWelcome.current = true
       return
     }
+    if (hasSpokenWelcome.current) return
     const timer = setTimeout(() => {
       speakForLanguage(language)
       hasSpokenWelcome.current = true
