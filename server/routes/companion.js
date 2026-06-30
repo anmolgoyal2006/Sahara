@@ -20,10 +20,14 @@ function buildSystemPrompt(elderContext) {
     medicines, timeOfDay
   } = elderContext
 
-  const langInstruction = {
+ const langInstruction = {
     hi: 'Respond ONLY in simple Hindi (Devanagari script). Use simple words an elderly person understands.',
     en: 'Respond ONLY in simple English. Use short sentences.',
-    pa: 'Respond ONLY in simple Punjabi using easy words. Mix Hindi words if needed so it sounds natural.',
+    // IMPORTANT: Romanized (Roman/Latin script), NOT Gurmukhi script. This text is read
+    // aloud by a Hindi text-to-speech voice (no Punjabi voice is available), and Hindi
+    // voices cannot pronounce Gurmukhi characters at all. Romanized Punjabi (e.g. "Tussi
+    // kivaen ho?" instead of "ਤੁਸੀਂ ਕਿਵੇਂ ਹੋ?") is the only form that speaks correctly.
+    pa: 'Respond ONLY in simple Punjabi, but written in ROMANIZED form using English/Latin letters (NOT Gurmukhi script). For example write "Tussi kiven ho" instead of "ਤੁਸੀਂ ਕਿਵੇਂ ਹੋ". Use easy, commonly understood Punjabi words. Mix Hindi words if needed so it sounds natural to an elderly Punjabi speaker.',
   }[language] || 'Respond in simple Hindi.'
 
   const conditionsText = conditions?.length

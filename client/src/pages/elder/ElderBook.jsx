@@ -26,39 +26,7 @@ const WELCOME = {
   },
 }
 
-// Load voices on mount
-let voicesLoaded = false
-function loadVoices() {
-  if (window.speechSynthesis) {
-    window.speechSynthesis.getVoices()
-    voicesLoaded = true
-  }
-}
-if (window.speechSynthesis) {
-  window.speechSynthesis.onvoiceschanged = loadVoices
-  loadVoices()
-}
-
-function speak(text, voiceLang) {
-  if (!window.speechSynthesis) return
-  window.speechSynthesis.cancel()
-  const u = new SpeechSynthesisUtterance(text)
-  u.lang = voiceLang
-  u.rate = 0.88
-  u.pitch = 1.05
-  
-  // Try to find a more natural-sounding Indian voice
-  const voices = window.speechSynthesis.getVoices()
-  const indianVoice = voices.find(v =>
-    (v.lang.includes('hi') || v.lang.includes('IN') || v.name.includes('India')) &&
-    (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Enhanced'))
-  ) || voices.find(v =>
-    v.lang.includes('hi') || v.lang.includes('IN') || v.name.includes('India')
-  )
-  
-  if (indianVoice) u.voice = indianVoice
-  window.speechSynthesis.speak(u)
-}
+import { speak } from '../../lib/speech'
 
 function speakForLanguage(lang) {
   const entry = WELCOME[lang] || WELCOME['hi-IN']

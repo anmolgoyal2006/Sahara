@@ -7,6 +7,7 @@ import QuickChips from '../../components/companion/QuickChips'
 import ChatInput from '../../components/companion/ChatInput'
 import { useElderContext } from '../../hooks/useElderContext'
 import { useVoiceInput } from '../../hooks/useVoiceInput'
+import { speak as speakShared } from '../../lib/speech'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -14,7 +15,10 @@ const LANG_OPTIONS = [{ key: 'hi', label: 'हि' }, { key: 'en', label: 'En' }
 const FONT_SIZES = [14, 16, 18]
 const SPEECH_RATES = [{ label: '🐢', value: 0.7 }, { label: 'N', value: 0.9 }, { label: '🐇', value: 1.1 }]
 
-function getLangCode(lang) { return { hi: 'hi-IN', en: 'en-IN', pa: 'hi-IN' }[lang] || 'hi-IN' }
+// For TTS (speaking), Punjabi has no usable browser voice — fall back to Hindi.
+// For recognition (listening), Punjabi IS reasonably supported — use it directly.
+function getSpeechLangCode(lang) { return { hi: 'hi-IN', en: 'en-IN', pa: 'hi-IN' }[lang] || 'hi-IN' }
+function getRecognitionLangCode(lang) { return { hi: 'hi-IN', en: 'en-IN', pa: 'pa-IN' }[lang] || 'hi-IN' }
 
 function getDefaultGreeting(name, lang) {
   if (lang === 'pa') return `Sat Sri Akal ${name} ji! Tussi kivaen ho aaj?`
@@ -22,12 +26,8 @@ function getDefaultGreeting(name, lang) {
   return `Namaste ${name} ji! Aap aaj kaisa mehsoos kar rahe hain?`
 }
 
-function speakText(text, lang, rate = 1.0) {
-  if (!window.speechSynthesis) return
-  window.speechSynthesis.cancel()
-  const u = new SpeechSynthesisUtterance(text)
-  u.lang = lang; u.rate = rate; u.pitch = 1.0
-  window.speechSynthesis.speak(u)
+function speakText(text, lang, rate) {
+  speakShared(text, lang, rate ? { rate } : {})
 }
 
 // ── Action card ───────────────────────────────────────────────────────────────
@@ -84,9 +84,8 @@ export default function ElderCompanion() {
   const autoSendTimer = useRef(null)
   const retryTimer = useRef(null)
 
-  const { isListening, transcript, error: voiceError, startListening, stopListening, resetTranscript } =
-    useVoiceInput(getLangCode(language))
-
+ const { isListening, transcript, error: voiceError, startListening, stopListening, resetTranscript } =
+    useVoiceInput(getRecognitionLangCode(language))
   function changeFontSize(sz) { setFontSize(sz); localStorage.setItem('sahara_companion_font_size', String(sz)) }
   function changeSpeechRate(r) { setSpeechRate(r); localStorage.setItem('sahara_speech_rate', String(r)) }
   function speakMsg(text, lang) { speakText(text, lang, speechRate) }
@@ -155,7 +154,7 @@ export default function ElderCompanion() {
         const text = data.success ? data.greeting : getDefaultGreeting(context.name, context.language)
         addMsg('assistant', text)
         await saveMsg('assistant', text, null)
-        setTimeout(() => speakMsg(text, getLangCode(context.language || 'hi')), 600)
+       setTimeout(() => speakMsg(text, getSpeechLangCode(context.language || 'hi')), 600)
       } catch {
         addMsg('assistant', getDefaultGreeting(context.name, context.language || 'hi'))
       }
@@ -198,7 +197,7 @@ export default function ElderCompanion() {
       if (data.success) {
         addMsg('assistant', data.response, data.action)
         saveMsg('assistant', data.response, data.action)
-        speakMsg(data.response, getLangCode(language))
+       speakMsg(data.response, getSpeechLangCode(language))
         if (data.action) setTimeout(() => setPendingAction(data.action), 1000)
       } else {
         addMsg('assistant', 'Sahara is not available right now. Trying again...', null, true)
@@ -219,7 +218,7 @@ export default function ElderCompanion() {
       const data = await res.json()
       const text = data.success ? data.greeting : getDefaultGreeting(context.name, language)
       setMessages([{ id: Date.now(), role: 'assistant', content: text, action: null, timestamp: new Date() }])
-      speakMsg(text, getLangCode(language))
+     speakMsg(text, getSpeechLangCode(language))
     } catch {
       setMessages([{ id: Date.now(), role: 'assistant', content: getDefaultGreeting(context?.name || 'Friend', language), action: null, timestamp: new Date() }])
     }
@@ -324,7 +323,7 @@ export default function ElderCompanion() {
               message={msg}
               fontSize={fontSize}
               onActionClick={(a) => setPendingAction(a)}
-              onReplay={(content) => speakMsg(content, getLangCode(language))}
+             onReplay={(content) => speakMsg(content, getSpeechLangCode(language))}
             />
           ))}
 

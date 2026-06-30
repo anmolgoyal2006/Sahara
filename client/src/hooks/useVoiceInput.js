@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 
 export function useVoiceInput(language = 'hi-IN') {
   const [isListening, setIsListening] = useState(false)
@@ -40,12 +40,16 @@ export function useVoiceInput(language = 'hi-IN') {
       setTranscript(finalTranscript || interimTranscript)
     }
 
-    recognition.onerror = (event) => {
+recognition.onerror = (event) => {
       setIsListening(false)
       if (event.error === 'no-speech') {
         setError('No speech detected. Please try again.')
       } else if (event.error === 'not-allowed') {
         setError('Microphone access denied. Please allow microphone.')
+      } else if (event.error === 'audio-capture') {
+        setError('No microphone found. Please check your device.')
+      } else if (event.error === 'network') {
+        setError('Network issue. Please check your internet connection.')
       } else {
         setError('Could not hear you. Please try again.')
       }
@@ -59,7 +63,7 @@ export function useVoiceInput(language = 'hi-IN') {
     recognition.start()
   }, [language])
 
-  const stopListening = useCallback(() => {
+ const stopListening = useCallback(() => {
     if (recognitionRef.current) {
       recognitionRef.current.stop()
     }
@@ -69,6 +73,16 @@ export function useVoiceInput(language = 'hi-IN') {
   const resetTranscript = useCallback(() => {
     setTranscript('')
     setError(null)
+  }, [])
+
+  // Stop recognition if the component using this hook unmounts mid-listen,
+  // so the mic doesn't keep running in the background.
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+      }
+    }
   }, [])
 
   return { isListening, transcript, error, startListening, stopListening, resetTranscript }
