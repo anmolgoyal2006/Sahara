@@ -8,6 +8,8 @@ import HealthSummaryCard from '../../components/elder/HealthSummaryCard'
 import UpcomingBookings from '../../components/elder/UpcomingBookings'
 import QuickActions from '../../components/elder/QuickActions'
 import HealthAlertBanner from '../../components/elder/HealthAlertBanner'
+import NotificationPermissionBanner from '../../components/elder/NotificationPermissionBanner'
+import { useMedicineNotifications } from '../../hooks/useMedicineNotifications'
 import { supabase } from '../../lib/supabase'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
@@ -16,14 +18,27 @@ export default function ElderHome() {
   const { user, profile, healthLog, bookings, nextMedicine, loading } = useElderData()
   const [healthAlerts, setHealthAlerts] = useState([])
   const [showAlertBanner, setShowAlertBanner] = useState(true)
+  const [todaySchedule, setTodaySchedule] = useState([])
+  const [userId, setUserId] = useState(null)
+  const [showNotifBanner, setShowNotifBanner] = useState(
+    'Notification' in window && Notification.permission === 'default'
+  )
+
+  // Background medicine notifications
+  useMedicineNotifications(userId, todaySchedule)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) return
       const uid = session.user.id
+      setUserId(uid)
       fetch(`${API_URL}/api/health/alerts/${uid}`)
         .then(r => r.json())
         .then(data => { if (data.success) setHealthAlerts(data.alerts) })
+        .catch(() => {})
+      fetch(`${API_URL}/api/medicine/today/${uid}`)
+        .then(r => r.json())
+        .then(data => { if (data.success) setTodaySchedule(data.schedule) })
         .catch(() => {})
     })
   }, [])
@@ -42,6 +57,9 @@ export default function ElderHome() {
   return (
     <ElderLayout userName={user?.name}>
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        {showNotifBanner && (
+          <NotificationPermissionBanner onDismiss={() => setShowNotifBanner(false)} />
+        )}
         {healthAlerts.length > 0 && showAlertBanner && (
           <HealthAlertBanner alerts={healthAlerts} onDismiss={() => setShowAlertBanner(false)} />
         )}

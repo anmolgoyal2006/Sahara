@@ -86,6 +86,15 @@ If time/date/duration are not specified, use defaults: time=09:00, date=tomorrow
 [ACTION:SOS]
 [ACTION:HEALTH_LOG]
 [ACTION:MEDICINES]
+[ACTION:MARK_TAKEN:medicine_name]
+  Use this when the user says they have taken a medicine (e.g. "maine dawai le li", "I took my medicine", "maine subah wali dawai kha li").
+  Replace medicine_name with the closest matching name from their current medicines list above.
+  If they only have one active medicine, use that name automatically.
+  If it is unclear which medicine or they have multiple medicines and don't specify, use the generic [ACTION:MEDICINES] tag instead.
+  Examples:
+  - User: "maine metformin le li" → [ACTION:MARK_TAKEN:Metformin]
+  - User: "dawai kha li" (only one medicine in list) → [ACTION:MARK_TAKEN:that_medicine_name]
+  - User: "dawai kha li" (multiple medicines, unclear which) → [ACTION:MEDICINES]
 
 Only add an action tag when the user clearly requests it. Never add speculatively.
 
@@ -170,7 +179,10 @@ router.post('/chat', async (req, res) => {
 
     let actionData = null
     if (action) {
-     if (action.startsWith('BOOK:')) {
+      if (action.startsWith('MARK_TAKEN:')) {
+        const medName = action.split(':')[1]
+        actionData = { type: 'MARK_TAKEN', medicineName: medName }
+      } else if (action.startsWith('BOOK:')) {
         const parts = action.split(':')
         // Format: BOOK:service:HH:MM:date:duration
         // NOTE: time itself contains a colon (HH:MM), so a naive split(':') shifts

@@ -31,7 +31,10 @@ function speakText(text, lang, rate) {
 }
 
 // ── Action card ───────────────────────────────────────────────────────────────
-function ActionCard({ action, onConfirm, onDismiss }) {
+function ActionCard({ action, onConfirm, onDismiss, onMarkTakenConfirm }) {
+  const [markTakenLoading, setMarkTakenLoading] = useState(false)
+  const [markTakenDone, setMarkTakenDone] = useState(false)
+
   const configs = {
     BOOK:        { icon: 'ti-calendar-plus',      color: '#1D9E75', bg: '#F0FBF7', title: `Book a ${action.service}?`,    desc: `Sahara understood you need a ${action.service}.`, confirmLabel: 'Yes, Book Now',    confirmColor: '#1D9E75' },
     CALL_FAMILY: { icon: 'ti-phone',              color: '#185FA5', bg: '#EBF4FF', title: 'Call your family?',            desc: 'Open a video call with your family.',            confirmLabel: 'Yes, Call',        confirmColor: '#185FA5' },
@@ -39,6 +42,46 @@ function ActionCard({ action, onConfirm, onDismiss }) {
     HEALTH_LOG:  { icon: 'ti-heart-rate-monitor', color: '#1D9E75', bg: '#F0FBF7', title: 'Log your health?',             desc: 'Record your health readings now.',               confirmLabel: 'Log Now',          confirmColor: '#1D9E75' },
     MEDICINES:   { icon: 'ti-pill',               color: '#BA7517', bg: '#FAEEDA', title: 'View your medicines?',         desc: 'See your medicine schedule.',                    confirmLabel: 'Yes, View',        confirmColor: '#BA7517' },
   }
+
+  // MARK_TAKEN is handled separately
+  if (action.type === 'MARK_TAKEN') {
+    return (
+      <div style={{ margin: '0 16px 12px', background: 'white', border: '2px solid #1D9E75', borderRadius: 14, padding: '16px 20px', boxShadow: '0 4px 16px rgba(29,158,117,0.15)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: '#F0FBF7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <i className="ti ti-circle-check" style={{ fontSize: 24, color: '#1D9E75' }} />
+          </div>
+          <div>
+            <p style={{ fontSize: 16, fontWeight: 700, color: '#0A2540', margin: 0, fontFamily: 'Noto Sans, sans-serif' }}>
+              Mark {action.medicineName} as taken?
+            </p>
+            <p style={{ fontSize: 13, color: '#5A7A9A', margin: 0, fontFamily: 'Noto Sans, sans-serif' }}>
+              {markTakenDone ? 'Great, marked as taken!' : "Confirm you've taken this dose"}
+            </p>
+          </div>
+        </div>
+        {!markTakenDone && (
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button
+              onClick={async () => {
+                setMarkTakenLoading(true)
+                await onMarkTakenConfirm(action.medicineName)
+                setMarkTakenLoading(false)
+                setMarkTakenDone(true)
+                setTimeout(onDismiss, 1500)
+              }}
+              disabled={markTakenLoading}
+              style={{ flex: 2, height: 42, borderRadius: 10, border: 'none', background: '#1D9E75', color: 'white', fontSize: 14, fontWeight: 700, cursor: markTakenLoading ? 'wait' : 'pointer', fontFamily: 'Noto Sans, sans-serif', opacity: markTakenLoading ? 0.7 : 1 }}
+            >
+              {markTakenLoading ? 'Marking…' : 'Yes, Mark Taken'}
+            </button>
+            <button onClick={onDismiss} style={{ flex: 1, height: 42, borderRadius: 10, border: '1.5px solid #DDE8F5', background: 'white', color: '#5A7A9A', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'Noto Sans, sans-serif' }}>Not now</button>
+          </div>
+        )}
+      </div>
+    )
+  }
+
   const cfg = configs[action.type]
   if (!cfg) return null
   return (
@@ -226,6 +269,31 @@ export default function ElderCompanion() {
     }
   }
 
+  async function handleMarkTakenFromCompanion(medicineName) {
+    if (!userId) return
+    try {
+      // Fetch today's schedule and find the pending log matching this medicine name
+      const res = await fetch(`${API_URL}/api/medicine/today/${userId}`)
+      const data = await res.json()
+      if (!data.success) return
+      const match = data.schedule.find(
+        d => d.status === 'pending' && d.name?.toLowerCase() === medicineName?.toLowerCase()
+      )
+      if (match?.log_id) {
+        await fetch(`${API_URL}/api/medicine/mark/${match.log_id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'taken' }),
+        })
+        addMsg('assistant', `Great, marked ${medicineName} as taken!`)
+      } else {
+        addMsg('assistant', `I couldn't find a pending dose for ${medicineName} today.`)
+      }
+    } catch {
+      addMsg('assistant', 'Something went wrong. Please mark it from the medicines page.')
+    }
+  }
+
   function handleActionConfirm(action) {
     setPendingAction(null)
     if (action.type === 'BOOK') {
@@ -344,7 +412,12 @@ export default function ElderCompanion() {
 
         {/* Pending action */}
         {pendingAction && (
-          <ActionCard action={pendingAction} onConfirm={() => handleActionConfirm(pendingAction)} onDismiss={() => setPendingAction(null)} />
+          <ActionCard
+            action={pendingAction}
+            onConfirm={() => handleActionConfirm(pendingAction)}
+            onDismiss={() => setPendingAction(null)}
+            onMarkTakenConfirm={handleMarkTakenFromCompanion}
+          />
         )}
 
         {/* Retry bar */}
