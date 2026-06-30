@@ -1,18 +1,16 @@
 const express = require('express')
 const router = express.Router()
 const { createClient } = require('@supabase/supabase-js')
-const Groq = require('groq-sdk')
+const { model } = require('../lib/gemini')
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
 )
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
-
 /* ─────────────────────────────────────
    POST /api/booking/parse
-   Parse natural language booking request using Groq AI
+   Parse natural language booking request using Gemini AI
 ───────────────────────────────────── */
 router.post('/parse', async (req, res) => {
   const { request, language = 'hi' } = req.body
@@ -22,16 +20,13 @@ router.post('/parse', async (req, res) => {
   }
 
   try {
-    const completion = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
-      max_tokens: 500,
-      temperature: 0.1,
-      messages: [
-        {
-          role: 'system',
-          content: `You are a booking assistant for an elderly care platform in India called Sahara. Extract structured booking information from natural language requests in Hindi or English.
+    const systemPrompt = `You are a booking assistant for an elderly 
+care platform in India called Sahara. 
+Extract structured booking information from natural language 
+requests in Hindi or English.
 
-Return ONLY a valid JSON object with exactly these fields:
+Return ONLY a valid JSON object with exactly these fields, 
+no markdown, no explanation, just raw JSON:
 {
   "service_type": "maid" | "nurse" | "driver" | "cook" | "physiotherapist" | "repair",
   "date": "today" | "tomorrow" | "YYYY-MM-DD",
@@ -45,7 +40,7 @@ Return ONLY a valid JSON object with exactly these fields:
 
 Rules:
 - service_type is required. Map these Hindi words:
-  khaana/cook/chef/kook → cook
+  khaana/cook/chef → cook
   nurse/nursing → nurse
   driver/car/hospital → driver
   maid/safaai/cleaning → maid
@@ -54,25 +49,25 @@ Rules:
 - If date not mentioned, assume tomorrow
 - If time not mentioned, assume morning
 - If duration not mentioned, assume 2 hours
-- TIME AM/PM RULE: Indian elderly users speak hour-only times like "4 baje" or "4:00 बजे" without specifying AM/PM. Apply this rule strictly:
-  - Hour 1 to 6 (e.g. "4 baje", "5 baje") with NO subah/morning/raat/night word → assume PM (afternoon), e.g. "4:00 बजे" → "16:00"
-  - Hour 1 to 6 WITH subah/morning word → assume AM, e.g. "subah 4 baje" → "04:00"
-  - Hour 7 to 11 with no qualifier → assume AM (morning), e.g. "9 baje" → "09:00"
-  - Hour 12 → "12:00" (noon) unless raat/night is mentioned, then "00:00"
-  - If "shaam"/evening mentioned → PM regardless of hour
-  - If "raat"/night mentioned → treat as PM/late evening
-  - This rule only applies when the user gives a bare hour. If they give 24-hour format or explicit AM/PM, use that directly.
 - confidence: how certain you are about service_type
-- Never add explanation, only return the JSON object`
-        },
-        {
-          role: 'user',
-          content: request
-        }
-      ]
-    })
+- Never add explanation, only return the JSON object
 
-    const raw = completion.choices[0]?.message?.content?.trim()
+User request: "${request}"`
+
+    let raw
+    try {
+      const result = await model.generateContent(systemPrompt)
+      raw = result.response.text().trim()
+    } catch (geminiErr) {
+      console.error('Gemini parse error:', geminiErr)
+      if (geminiErr.status === 429) {
+        return res.status(429).json({
+          success: false,
+          error: 'Sahara is busy right now. Please wait a moment and try again.'
+        })
+      }
+      throw geminiErr
+    }
     // Strip markdown fences if present
     const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim()
     const parsed = JSON.parse(cleaned)
@@ -105,7 +100,7 @@ Rules:
 
     return res.json({ success: true, parsed })
   } catch (e) {
-    console.error('Groq parse error:', e)
+    console.error('Gemini parse error:', e)
     return res.status(500).json({
       success: false,
       error: 'Could not understand your request. Please try again.'

@@ -1,14 +1,12 @@
 const express = require('express')
 const router = express.Router()
 const { createClient } = require('@supabase/supabase-js')
-const Groq = require('groq-sdk')
+const { chatModel, fastModel } = require('../lib/gemini')
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
 )
-
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
 /* ─────────────────────────────────────
    Build system prompt with elder context
@@ -100,21 +98,43 @@ router.post('/chat', async (req, res) => {
   try {
     const systemPrompt = buildSystemPrompt(elder_context)
 
-    const messages = [
-      { role: 'system', content: systemPrompt },
-      ...conversation_history.slice(-10),
-      { role: 'user', content: message },
-    ]
+    const history = conversation_history.slice(-10).map(m => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }]
+    }))
 
-    const completion = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
-      max_tokens: 200,
-      temperature: 0.7,
-      messages,
-    })
+    let rawResponse
+    try {
+      const chat = chatModel.startChat({
+        history: [
+          {
+            role: 'user',
+            parts: [{ text: systemPrompt }]
+          },
+          {
+            role: 'model',
+            parts: [{ text: 'Samajh gaya, main Sahara hoon aur is tarah jawaab dunga.' }]
+          },
+          ...history
+        ]
+      })
 
-    const rawResponse = completion.choices[0]?.message?.content || ''
-    console.log('RAW GROQ RESPONSE:', rawResponse)
+      const result = await chat.sendMessage(message)
+      rawResponse = result.response.text() || ''
+    } catch (geminiErr) {
+      console.error('Gemini chat error:', geminiErr)
+      if (geminiErr.status === 429) {
+        return res.status(429).json({
+          success: false,
+          error: 'Sahara is busy right now. Please wait a moment and try again.'
+        })
+      }
+      return res.status(500).json({
+        success: false,
+        error: 'Could not get response. Please try again.'
+      })
+    }
+    console.log('RAW GEMINI RESPONSE:', rawResponse)
 
     // Extract action tag
     const actionMatch = rawResponse.match(/\[ACTION:([^\]]+)\]/)
@@ -193,11 +213,10 @@ router.post('/chat', async (req, res) => {
       success: true,
       response: cleanResponse,
       action: actionData,
-      usage: completion.usage,
     })
   } catch (e) {
     console.error('Companion chat error:', e)
-    return res.status(500).json({ success: false, error: 'Could not get response. Please try again.' })
+    throw e
   }
 })
 
@@ -215,14 +234,15 @@ router.post('/greeting', async (req, res) => {
       pa: `Generate a warm, short greeting for ${name} ji in simple easy Punjabi words (2 sentences max). It is ${timeOfDay}. Mix Hindi if needed to sound natural. No formatting.`,
     }
 
-    const completion = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
-      max_tokens: 100,
-      temperature: 0.8,
-      messages: [{ role: 'user', content: greetingPrompts[language] || greetingPrompts.hi }],
-    })
-
-    const greeting = completion.choices[0]?.message?.content?.trim()
+    let greeting
+    try {
+      const promptText = greetingPrompts[language] || greetingPrompts.hi
+      const result = await fastModel.generateContent(promptText)
+      greeting = result.response.text().trim()
+    } catch (geminiErr) {
+      console.error('Gemini greeting error:', geminiErr)
+      greeting = `Namaste ${elder_context?.name} ji! Aap kaise hain aaj?`
+    }
     return res.json({ success: true, greeting })
   } catch (e) {
     return res.status(500).json({
