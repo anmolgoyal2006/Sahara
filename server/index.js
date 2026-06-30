@@ -41,9 +41,15 @@ app.use('/api/booking', bookingRoutes)
 const companionRoutes = require('./routes/companion')
 app.use('/api/companion', companionRoutes)
 
-app.get('/api/health', (req, res) => {
+app.get('/api/ping', (req, res) => {
   res.json({ status: 'Sahara server running', port: PORT })
 })
+
+const healthRoutes = require('./routes/health')
+app.use('/api/health', healthRoutes)
+
+const medicineRoutes = require('./routes/medicine')
+app.use('/api/medicine', medicineRoutes)
 
 app.listen(PORT, () => {
   console.log(`Sahara server running on http://localhost:${PORT}`)

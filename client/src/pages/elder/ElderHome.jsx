@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useElderData } from '../../hooks/useElderData'
 import ElderLayout from '../../components/layout/ElderLayout'
 import GreetingCard from '../../components/elder/GreetingCard'
@@ -6,9 +7,26 @@ import CompanionBanner from '../../components/elder/CompanionBanner'
 import HealthSummaryCard from '../../components/elder/HealthSummaryCard'
 import UpcomingBookings from '../../components/elder/UpcomingBookings'
 import QuickActions from '../../components/elder/QuickActions'
+import HealthAlertBanner from '../../components/elder/HealthAlertBanner'
+import { supabase } from '../../lib/supabase'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 export default function ElderHome() {
   const { user, profile, healthLog, bookings, nextMedicine, loading } = useElderData()
+  const [healthAlerts, setHealthAlerts] = useState([])
+  const [showAlertBanner, setShowAlertBanner] = useState(true)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) return
+      const uid = session.user.id
+      fetch(`${API_URL}/api/health/alerts/${uid}`)
+        .then(r => r.json())
+        .then(data => { if (data.success) setHealthAlerts(data.alerts) })
+        .catch(() => {})
+    })
+  }, [])
 
   if (loading) {
     return (
@@ -24,6 +42,9 @@ export default function ElderHome() {
   return (
     <ElderLayout userName={user?.name}>
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        {healthAlerts.length > 0 && showAlertBanner && (
+          <HealthAlertBanner alerts={healthAlerts} onDismiss={() => setShowAlertBanner(false)} />
+        )}
         <GreetingCard user={user} profile={profile} />
         <ServiceTiles />
         <CompanionBanner userName={user?.name} language={user?.language} />

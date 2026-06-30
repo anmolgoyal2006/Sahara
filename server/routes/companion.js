@@ -15,7 +15,7 @@ function buildSystemPrompt(elderContext) {
   const {
     name, age, language, conditions,
     lastHealthLog, upcomingBookings,
-    medicines, timeOfDay
+    medicines, timeOfDay, healthAlerts
   } = elderContext
 
  const langInstruction = {
@@ -44,6 +44,10 @@ function buildSystemPrompt(elderContext) {
     ? `Current medicines: ${medicines.map(m => m.name).join(', ')}`
     : 'No medicines recorded'
 
+  const alertText = healthAlerts?.length
+    ? `IMPORTANT: Recent concerning reading detected — ${healthAlerts[0].type === 'bp' ? 'blood pressure' : 'blood sugar'} was high recently. Gently check on them if relevant to the conversation, but do not be alarming.`
+    : ''
+
   return `You are Sahara, a warm and caring AI companion for elderly people in India.
 You are talking to ${name} ji, who is ${age || 'elderly'} years old.
 ${langInstruction}
@@ -65,6 +69,7 @@ ${conditionsText}
 ${healthText}
 ${bookingText}
 ${medicineText}
+${alertText}
 Time of day: ${timeOfDay}
 
 SPECIAL ACTIONS — append ONE of these tags at the very end if clearly requested:
@@ -82,7 +87,13 @@ If time/date/duration are not specified, use defaults: time=09:00, date=tomorrow
 [ACTION:HEALTH_LOG]
 [ACTION:MEDICINES]
 
-Only add an action tag when the user clearly requests it. Never add speculatively.`
+Only add an action tag when the user clearly requests it. Never add speculatively.
+
+If the user mentions specific health numbers like blood pressure or sugar level in their message, append this additional tag (in addition to any ACTION tag) at the very end of your response:
+[VITALS:systolic,diastolic,sugar,weight]
+Use the word null for any value not mentioned.
+Example: user says "meri BP 130 by 85 hai" → append [VITALS:130,85,null,null]
+Only add this tag if numbers are clearly stated, never guess or assume values.`
 }
 
 /* ─────────────────────────────────────
@@ -139,7 +150,23 @@ router.post('/chat', async (req, res) => {
     // Extract action tag
     const actionMatch = rawResponse.match(/\[ACTION:([^\]]+)\]/)
     const action = actionMatch ? actionMatch[1] : null
-    const cleanResponse = rawResponse.replace(/\[ACTION:[^\]]+\]/g, '').trim()
+    const cleanResponse = rawResponse
+      .replace(/\[ACTION:[^\]]+\]/g, '')
+      .replace(/\[VITALS:[^\]]+\]/g, '')
+      .trim()
+
+    // Extract vitals tag
+    const vitalsMatch = rawResponse.match(/\[VITALS:([^\]]+)\]/)
+    let vitals = null
+    if (vitalsMatch) {
+      const [s, d, sugar, weight] = vitalsMatch[1].split(',').map(v => v.trim())
+      vitals = {
+        systolic:  s      !== 'null' ? parseInt(s)        : null,
+        diastolic: d      !== 'null' ? parseInt(d)        : null,
+        sugar:     sugar  !== 'null' ? parseInt(sugar)    : null,
+        weight:    weight !== 'null' ? parseFloat(weight) : null,
+      }
+    }
 
     let actionData = null
     if (action) {
@@ -213,6 +240,7 @@ router.post('/chat', async (req, res) => {
       success: true,
       response: cleanResponse,
       action: actionData,
+      vitals,
     })
   } catch (e) {
     console.error('Companion chat error:', e)

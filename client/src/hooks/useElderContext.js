@@ -23,17 +23,19 @@ export function useElderContext() {
           : hour >= 17 && hour < 21 ? 'evening'
           : 'night'
 
-        const [profileRes, healthRes, bookingsRes, medsRes] = await Promise.allSettled([
+        const [profileRes, healthRes, bookingsRes, medsRes, alertsRes] = await Promise.allSettled([
           fetch(`${API_URL}/api/elder/profile/${uid}`).then(r => r.json()),
           fetch(`${API_URL}/api/elder/health/today/${uid}`).then(r => r.json()),
           fetch(`${API_URL}/api/booking/history/${uid}?limit=3`).then(r => r.json()),
-          fetch(`${API_URL}/api/elder/medicines/${uid}`).then(r => r.json()),
+          fetch(`${API_URL}/api/elder/medicines/today/${uid}`).then(r => r.json()),
+          fetch(`${API_URL}/api/health/alerts/${uid}`).then(r => r.json()),
         ])
 
         const profile  = profileRes.status  === 'fulfilled' ? profileRes.value  : {}
         const health   = healthRes.status   === 'fulfilled' ? healthRes.value   : {}
         const bookings = bookingsRes.status === 'fulfilled' ? bookingsRes.value : {}
         const meds     = medsRes.status     === 'fulfilled' ? medsRes.value     : {}
+        const alerts   = alertsRes.status   === 'fulfilled' ? alertsRes.value   : {}
 
         setContext({
           name:             profile.user?.name || 'Friend',
@@ -45,6 +47,7 @@ export function useElderContext() {
             b.status === 'pending' || b.status === 'confirmed'
           ),
           medicines:        meds.medicines || [],
+          healthAlerts:     alerts.alerts || [],
           timeOfDay,
         })
       } catch (e) {

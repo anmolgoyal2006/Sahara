@@ -70,6 +70,7 @@ export default function ElderCompanion() {
   const [isLoading, setIsLoading] = useState(false)
   const [language, setLanguage] = useState('hi')
   const [pendingAction, setPendingAction] = useState(null)
+  const [lastResponseVitals, setLastResponseVitals] = useState(null)
   const [voiceToast, setVoiceToast] = useState(null)
   const [showClearConfirm, setShowClearConfirm] = useState(false)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
@@ -197,7 +198,8 @@ export default function ElderCompanion() {
       if (data.success) {
         addMsg('assistant', data.response, data.action)
         saveMsg('assistant', data.response, data.action)
-       speakMsg(data.response, getSpeechLangCode(language))
+        speakMsg(data.response, getSpeechLangCode(language))
+        if (data.vitals) setLastResponseVitals(data.vitals)
         if (data.action) setTimeout(() => setPendingAction(data.action), 1000)
       } else {
         addMsg('assistant', 'Sahara is not available right now. Trying again...', null, true)
@@ -236,7 +238,10 @@ export default function ElderCompanion() {
     }
     else if (action.type === 'CALL_FAMILY') navigate('/family/dashboard')
     else if (action.type === 'SOS') navigate('/elder/sos')
-    else if (action.type === 'HEALTH_LOG') navigate('/elder/health')
+    else if (action.type === 'HEALTH_LOG') {
+      const hasVitals = lastResponseVitals && Object.values(lastResponseVitals).some(v => v !== null)
+      navigate('/elder/health', hasVitals ? { state: { prefillVitals: lastResponseVitals } } : undefined)
+    }
     else if (action.type === 'MEDICINES') navigate('/elder/medicines')
   }
 
@@ -376,7 +381,11 @@ export default function ElderCompanion() {
 
         {/* Clear confirm */}
         {showClearConfirm && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 400, padding: 24 }}>
+          <div style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 400, padding: 24,
+          }}>
             <div style={{ background: 'white', borderRadius: 16, padding: 28, width: '100%', maxWidth: 320, textAlign: 'center', fontFamily: 'Noto Sans, sans-serif' }}>
               <i className="ti ti-trash" style={{ fontSize: 32, color: '#E24B4A', display: 'block', marginBottom: 12 }} />
               <p style={{ fontSize: 17, fontWeight: 700, color: '#0A2540', margin: '0 0 8px' }}>Clear this conversation?</p>
