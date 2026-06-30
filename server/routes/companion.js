@@ -110,6 +110,7 @@ router.post('/chat', async (req, res) => {
     })
 
     const rawResponse = completion.choices[0]?.message?.content || ''
+    console.log('RAW GROQ RESPONSE:', rawResponse)
 
     // Extract action tag
     const actionMatch = rawResponse.match(/\[ACTION:([^\]]+)\]/)
@@ -118,9 +119,12 @@ router.post('/chat', async (req, res) => {
 
     let actionData = null
     if (action) {
-      if (action.startsWith('BOOK:')) {
+     if (action.startsWith('BOOK:')) {
         const parts = action.split(':')
-        // Format: BOOK:service:time:date:duration
+        // Format: BOOK:service:HH:MM:date:duration
+        // NOTE: time itself contains a colon (HH:MM), so a naive split(':') shifts
+        // every field after time by one position. We rejoin parts[2] and parts[3]
+        // back into the time value before reading date/duration.
         let service = parts[1] || 'maid'
         
         // Map service type variations to standard values
@@ -135,9 +139,9 @@ router.post('/chat', async (req, res) => {
         }
         service = serviceMap[service.toLowerCase()] || service
         
-        let time = parts[2] || '09:00'
-        let date = parts[3] || 'tomorrow'
-        const duration = parts[4] || '2'
+        let time = (parts[2] && parts[3]) ? `${parts[2]}:${parts[3]}` : (parts[2] || '09:00')
+        let date = parts[4] || 'tomorrow'
+        const duration = parts[5] || '2'
         
         // Normalize time format - convert single numbers to HH:MM
         if (/^\d$/.test(time)) {
@@ -147,19 +151,26 @@ router.post('/chat', async (req, res) => {
         }
         
         // Convert relative dates to actual dates
-        if (date === 'today') {
-          date = new Date().toISOString().split('T')[0]
-        } else if (date === 'tomorrow') {
-          const tomorrow = new Date()
-          tomorrow.setDate(tomorrow.getDate() + 1)
-          date = tomorrow.toISOString().split('T')[0]
+       // Convert relative dates to actual dates (IST-safe, no toISOString/UTC)
+        function resolveDateIST(rel) {
+          const istOffset = 5.5 * 60 * 60 * 1000
+          const now = new Date(Date.now() + istOffset)
+          const y = now.getUTCFullYear()
+          const m = String(now.getUTCMonth() + 1).padStart(2, '0')
+          const d = String(now.getUTCDate()).padStart(2, '0')
+          if (rel === 'today') return `${y}-${m}-${d}`
+          const t = new Date(now)
+          t.setUTCDate(t.getUTCDate() + 1)
+          return `${t.getUTCFullYear()}-${String(t.getUTCMonth()+1).padStart(2,'0')}-${String(t.getUTCDate()).padStart(2,'0')}`
         }
-        
+
+        if (date === 'today' || date === 'tomorrow') {
+          date = resolveDateIST(date)
+        }
+
         // Ensure date is in YYYY-MM-DD format, if not, default to tomorrow
         if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-          const tomorrow = new Date()
-          tomorrow.setDate(tomorrow.getDate() + 1)
-          date = tomorrow.toISOString().split('T')[0]
+          date = resolveDateIST('tomorrow')
         }
         
         actionData = { 

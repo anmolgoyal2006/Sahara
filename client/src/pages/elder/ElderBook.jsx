@@ -274,12 +274,14 @@ export default function ElderBook() {
     }
   }, [preselectedService])
 
-  // Auto-parse when all params come from companion chat
+ // Auto-parse when all params come from companion chat
   useEffect(() => {
+    console.log('Auto-parse params:', { preselectedService, preselectedTime, preselectedDate, preselectedDuration })
     if (preselectedService && preselectedTime && preselectedDate && preselectedDuration) {
       const svc = SERVICES.find(s => s.key === preselectedService)
       if (!svc) return
       const resolvedDate = resolveDate(preselectedDate)
+      console.log('Setting parsed duration_hours to:', parseInt(preselectedDuration))
       setParsed({
         service_type: preselectedService,
         date: resolvedDate,

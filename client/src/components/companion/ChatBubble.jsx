@@ -153,7 +153,7 @@ export default function ChatBubble({ message, onActionClick, onReplay, fontSize 
 
       {/* Action card */}
       {action && meta && (
-        <div onClick={() => onActionClick?.(action)} style={{
+       <div onClick={() => { console.log('ChatBubble action clicked:', action); onActionClick?.(action) }} style={{
           marginTop: 6, maxWidth: '80%',
           background: meta.bg, border: `1px solid ${meta.border}`,
           borderRadius: 10, padding: '10px 14px',
