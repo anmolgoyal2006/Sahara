@@ -6,6 +6,7 @@ import DoseCard from '../../components/medicine/DoseCard'
 import AdherenceCard from '../../components/medicine/AdherenceCard'
 import { useMedicineNotifications } from '../../hooks/useMedicineNotifications'
 import { supabase } from '../../lib/supabase'
+import { MEDICINE_CATEGORIES, getCategory } from '../../lib/medicineCategories'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -14,6 +15,20 @@ function formatTime(t) {
   const suffix = h >= 12 ? 'PM' : 'AM'
   const h12 = h % 12 || 12
   return `${h12}:${String(m).padStart(2, '0')} ${suffix}`
+}
+
+// Group medicines by category, preserving the defined category order.
+// Anything without a recognized category falls into "Other".
+function groupByCategory(medicines) {
+  const groups = {}
+  for (const med of medicines) {
+    const cat = getCategory(med.category)
+    if (!groups[cat.id]) groups[cat.id] = { ...cat, medicines: [] }
+    groups[cat.id].medicines.push(med)
+  }
+  return MEDICINE_CATEGORIES
+    .map(c => groups[c.id])
+    .filter(Boolean)
 }
 
 export default function ElderMedicines() {
@@ -108,6 +123,8 @@ export default function ElderMedicines() {
     </ElderLayout>
   )
 
+  const categoryGroups = groupByCategory(medicines)
+
   return (
     <ElderLayout>
       {/* Header */}
@@ -178,51 +195,78 @@ export default function ElderMedicines() {
         </div>
       )}
 
-      {/* All Medicines list */}
+      {/* All Medicines — grouped by health problem */}
       {medicines.length > 0 && (
         <>
           <p style={{ fontSize: 16, fontWeight: 700, color: '#0A2540', marginBottom: 12 }}>
             All Medicines
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
-            {medicines.map(med => (
-              <div
-                key={med.id}
-                onClick={() => setInfoMed(med)}
-                style={{
-                  background: 'white', border: '1.5px solid #DDE8F5',
-                  borderLeft: `4px solid ${med.color || '#1D9E75'}`,
-                  borderRadius: 12, padding: '12px 14px',
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  cursor: 'pointer',
-                }}
-              >
+
+          {categoryGroups.map(group => (
+            <div key={group.id} style={{ marginBottom: 20 }}>
+              {/* Category header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                 <div style={{
-                  width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                  background: '#EBF4FF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: 26, height: 26, borderRadius: 8, flexShrink: 0,
+                  background: `${group.color}18`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <i className={`ti ${med.icon || 'ti-pill'}`} style={{ fontSize: 18, color: med.color || '#1D9E75' }} />
+                  <i className={`ti ${group.icon}`} style={{ fontSize: 14, color: group.color }} />
                 </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 15, fontWeight: 700, color: '#0A2540', margin: 0 }}>{med.name}</p>
-                  <p style={{ fontSize: 12, color: '#A0B8D0', margin: '2px 0 0' }}>
-                    {(med.times || []).map(t => formatTime(t)).join(', ')}
-                    {med.dosage ? ` · ${med.dosage}` : ''}
-                  </p>
-                </div>
-                <button
-                  onClick={e => { e.stopPropagation(); openEdit(med) }}
-                  style={{
-                    width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-                    border: '1.5px solid #DDE8F5', background: 'white',
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}
-                >
-                  <i className="ti ti-edit" style={{ fontSize: 15, color: '#5A7A9A' }} />
-                </button>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#0A2540', margin: 0 }}>
+                  {group.label}
+                </p>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, color: '#7B93AC',
+                  background: '#EEF4FB', borderRadius: 10, padding: '1px 8px',
+                }}>
+                  {group.medicines.length}
+                </span>
               </div>
-            ))}
-          </div>
+
+              {/* Medicines in this category */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {group.medicines.map(med => (
+                  <div
+                    key={med.id}
+                    onClick={() => setInfoMed(med)}
+                    style={{
+                      background: 'white', border: '1.5px solid #DDE8F5',
+                      borderLeft: `4px solid ${group.color}`,
+                      borderRadius: 12, padding: '12px 14px',
+                      display: 'flex', alignItems: 'center', gap: 12,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <div style={{
+                      width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                      background: `${group.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <i className={`ti ${med.icon || group.icon}`} style={{ fontSize: 18, color: group.color }} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 15, fontWeight: 700, color: '#0A2540', margin: 0 }}>{med.name}</p>
+                      <p style={{ fontSize: 12, color: '#A0B8D0', margin: '2px 0 0' }}>
+                        {(med.times || []).map(t => formatTime(t)).join(', ')}
+                        {med.dosage ? ` · ${med.dosage}` : ''}
+                      </p>
+                    </div>
+                    <button
+                      onClick={e => { e.stopPropagation(); openEdit(med) }}
+                      style={{
+                        width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+                        border: '1.5px solid #DDE8F5', background: 'white',
+                        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}
+                    >
+                      <i className="ti ti-edit" style={{ fontSize: 15, color: '#5A7A9A' }} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+
           <p style={{ fontSize: 11, color: '#A0B8D0', textAlign: 'center', lineHeight: 1.6, paddingBottom: 16 }}>
             Medicine info is informational only. Always follow your doctor's or pharmacist's instructions.
           </p>

@@ -24,7 +24,7 @@ function todayIST() {
    POST /api/medicine/add
 ───────────────────────────────────── */
 router.post('/add', async (req, res) => {
-  const { elder_id, name, dosage, times, days, remind_family } = req.body
+  const { elder_id, name, dosage, times, days, remind_family, category } = req.body
 
   if (!elder_id || !name || !times || times.length === 0) {
     return res.status(400).json({
@@ -54,6 +54,7 @@ router.post('/add', async (req, res) => {
         remind_family: remind_family !== false,
         is_active: true,
         info_note: infoNote,
+        category: category || 'other',
       })
       .select()
       .single()
@@ -91,11 +92,11 @@ router.get('/list/:elderId', async (req, res) => {
 ───────────────────────────────────── */
 router.put('/update/:medicineId', async (req, res) => {
   const { medicineId } = req.params
-  const { name, dosage, times, days, remind_family } = req.body
+  const { name, dosage, times, days, remind_family, category } = req.body
   try {
     const { data, error } = await supabase
       .from('medicines')
-      .update({ name, dosage, times, days, remind_family: remind_family !== false })
+      .update({ name, dosage, times, days, remind_family: remind_family !== false, category })
       .eq('id', medicineId)
       .select()
       .single()

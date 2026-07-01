@@ -41,20 +41,56 @@ router.get('/medicines/today/:userId', async (req, res) => {
   const { userId } = req.params
   try {
     const { data: medicines } = await supabase.from('medicines').select('*').eq('elder_id', userId).eq('is_active', true)
+
+    const today = new Date()
+    const y = today.getFullYear()
+    const m = String(today.getMonth() + 1).padStart(2, '0')
+    const d = String(today.getDate()).padStart(2, '0')
+    const dateStr = `${y}-${m}-${d}`
+
+    const { data: logs } = await supabase
+      .from('medicine_logs')
+      .select('*')
+      .eq('elder_id', userId)
+      .eq('scheduled_date', dateStr)
+
+    const takenMap = {}
+    ;(logs || []).forEach(log => {
+      if (log.status === 'taken' || log.status === 'skipped') {
+        takenMap[`${log.medicine_id}_${log.scheduled_time}`] = true
+      }
+    })
+
     const now = new Date()
     const cur = now.getHours() * 60 + now.getMinutes()
     let nextMedicine = null
     let minDiff = Infinity
+    let hasMissed = false
+
     medicines?.forEach(med => {
       med.times?.forEach(time => {
+        const key = `${med.id}_${time}`
+        if (takenMap[key]) return
+
         const [h, m] = time.split(':').map(Number)
         const diff = (h * 60 + m) - cur
+
+        if (diff < 0) {
+          hasMissed = true
+          return
+        }
+
         if (diff > 0 && diff < minDiff) {
           minDiff = diff
           nextMedicine = { ...med, nextTime: time, minutesUntil: diff }
         }
       })
     })
+
+    if (!nextMedicine && hasMissed) {
+      nextMedicine = { name: 'Check missed doses', dosage: '', nextTime: '--:--', minutesUntil: 0, missed: true }
+    }
+
     return res.json({ success: true, medicines: medicines || [], nextMedicine })
   } catch (e) {
     return res.status(500).json({ success: false, medicines: [], nextMedicine: null })

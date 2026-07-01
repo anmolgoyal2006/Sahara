@@ -70,7 +70,7 @@ export default function ElderHome() {
           <HealthSummaryCard healthLog={healthLog} />
           <UpcomingBookings bookings={bookings} />
         </div>
-        <QuickActions nextMedicine={nextMedicine} />
+        <QuickActions todaySchedule={todaySchedule} />
       </div>
       <style>{`
         @media (min-width: 1024px) {

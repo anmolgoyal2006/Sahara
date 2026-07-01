@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import TimePicker from './TimePicker'
 import DaySelector from './DaySelector'
+import CategoryPicker from './CategoryPicker'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 export default function MedicineFormModal({ isOpen, onClose, onSaved, editingMedicine, userId }) {
   const [name,           setName]           = useState('')
   const [dosage,         setDosage]         = useState('')
+  const [category,       setCategory]       = useState('other')
   const [times,          setTimes]          = useState(['08:00'])
   const [days,           setDays]           = useState(['daily'])
   const [remindFamily,   setRemindFamily]   = useState(true)
@@ -19,11 +21,13 @@ export default function MedicineFormModal({ isOpen, onClose, onSaved, editingMed
     if (editingMedicine) {
       setName(editingMedicine.name || '')
       setDosage(editingMedicine.dosage || '')
+      setCategory(editingMedicine.category || 'other')
       setTimes(editingMedicine.times?.length ? editingMedicine.times : ['08:00'])
       setDays(editingMedicine.days?.length ? editingMedicine.days : ['daily'])
       setRemindFamily(editingMedicine.remind_family !== false)
     } else {
-      setName(''); setDosage(''); setTimes(['08:00']); setDays(['daily']); setRemindFamily(true)
+      setName(''); setDosage(''); setCategory('other')
+      setTimes(['08:00']); setDays(['daily']); setRemindFamily(true)
     }
     setError(null)
     setShowDeleteConfirm(false)
@@ -39,6 +43,7 @@ export default function MedicineFormModal({ isOpen, onClose, onSaved, editingMed
         elder_id:      userId,
         name:          name.trim(),
         dosage:        dosage.trim(),
+        category,
         times,
         days,
         remind_family: remindFamily,
@@ -163,6 +168,9 @@ export default function MedicineFormModal({ isOpen, onClose, onSaved, editingMed
               }}
             />
           </div>
+
+          {/* Category — which health problem this medicine treats */}
+          <CategoryPicker selected={category} onChange={setCategory} />
 
           <TimePicker times={times} onChange={setTimes} />
           <DaySelector selected={days} onChange={setDays} />
