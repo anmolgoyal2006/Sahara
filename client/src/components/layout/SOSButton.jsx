@@ -1,9 +1,37 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
 export default function SOSButton() {
   const [showModal, setShowModal] = useState(false)
+  const [checking, setChecking]  = useState(false)
   const navigate = useNavigate()
+
+  async function handleConfirm() {
+    setChecking(true)
+    try {
+      // Get session to identify the elder
+      const { createClient } = await import('@supabase/supabase-js')
+      // Use the already-initialised supabase client from lib
+      const { supabase } = await import('../../lib/supabase')
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user?.id) {
+        const res = await fetch(`${API_URL}/api/sos/active/${session.user.id}`)
+        const data = await res.json()
+        setShowModal(false)
+        if (data.active) {
+          navigate('/elder/sos?existing=true')
+        } else {
+          navigate('/elder/sos')
+        }
+        return
+      }
+    } catch { /* fallthrough */ }
+    setChecking(false)
+    setShowModal(false)
+    navigate('/elder/sos')
+  }
 
   return (
     <>
@@ -37,7 +65,9 @@ export default function SOSButton() {
             <p style={{ fontSize: 14, color: '#5A7A9A', marginBottom: 24 }}>This will immediately alert your family members and notify nearby care workers.</p>
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setShowModal(false)} style={{ flex: 1, height: 48, borderRadius: 10, border: '1.5px solid #DDE8F5', background: 'white', color: '#5A7A9A', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
-              <button onClick={() => { setShowModal(false); navigate('/elder/sos') }} style={{ flex: 1, height: 48, borderRadius: 10, border: 'none', background: '#E24B4A', color: 'white', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Yes, Send Alert</button>
+              <button onClick={handleConfirm} disabled={checking} style={{ flex: 1, height: 48, borderRadius: 10, border: 'none', background: '#E24B4A', color: 'white', fontSize: 14, fontWeight: 700, cursor: checking ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: checking ? 0.7 : 1 }}>
+                {checking ? 'Checking…' : 'Yes, Send Alert'}
+              </button>
             </div>
           </div>
         </div>

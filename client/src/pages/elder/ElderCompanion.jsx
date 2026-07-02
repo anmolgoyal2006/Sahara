@@ -305,7 +305,19 @@ export default function ElderCompanion() {
       navigate(`/elder/book?${params.toString()}`)
     }
     else if (action.type === 'CALL_FAMILY') navigate('/family/dashboard')
-    else if (action.type === 'SOS') navigate('/elder/sos')
+    else if (action.type === 'SOS') {
+      // Check for existing active SOS before navigating
+      const checkAndNavigateSOS = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/sos/active/${userId}`)
+          const data = await res.json()
+          navigate(data.active ? '/elder/sos?existing=true' : '/elder/sos')
+        } catch {
+          navigate('/elder/sos')
+        }
+      }
+      checkAndNavigateSOS()
+    }
     else if (action.type === 'HEALTH_LOG') {
       const hasVitals = lastResponseVitals && Object.values(lastResponseVitals).some(v => v !== null)
       navigate('/elder/health', hasVitals ? { state: { prefillVitals: lastResponseVitals } } : undefined)

@@ -14,6 +14,7 @@ import ElderCompanion from './pages/elder/ElderCompanion'
 import ElderHealth from './pages/elder/ElderHealth'
 import ElderMedicines from './pages/elder/ElderMedicines'
 import ElderSOS from './pages/elder/ElderSOS'
+import ElderSOSHistory from './pages/elder/ElderSOSHistory'
 import WorkerJobs from './pages/WorkerJobs'
 import WorkerProfile from './pages/WorkerProfile'
 import WorkerSchedule from './pages/WorkerSchedule'
@@ -41,6 +42,7 @@ function App() {
         <Route path="/elder/health" element={<ElderHealth />} />
         <Route path="/elder/medicines" element={<ElderMedicines />} />
         <Route path="/elder/sos" element={<ElderSOS />} />
+        <Route path="/elder/sos/history" element={<ElderSOSHistory />} />
         <Route path="/family/dashboard" element={<FamilyDashboard />} />
         <Route path="/worker/jobs" element={<WorkerJobs />} />
         <Route path="/worker/profile" element={<WorkerProfile />} />

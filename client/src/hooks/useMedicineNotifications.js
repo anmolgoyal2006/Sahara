@@ -6,10 +6,9 @@ export function useMedicineNotifications(elderId, schedule) {
   useEffect(() => {
     if (!elderId || !('Notification' in window)) return
 
-    // Request permission once
-    if (Notification.permission === 'default') {
-      Notification.requestPermission()
-    }
+    // Note: permission must be requested from a user gesture (button click).
+    // The NotificationPermissionBanner in ElderHome handles that.
+    // Here we only proceed if permission is already granted.
 
     const checkInterval = setInterval(() => {
       if (Notification.permission !== 'granted') return

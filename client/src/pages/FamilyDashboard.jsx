@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase, API_URL } from '../lib/supabase'
+import { useSOSNotifications } from '../hooks/useSOSNotifications'
+import SOSAlertCard from '../components/sos/SOSAlertCard'
+import SOSHistoryList from '../components/sos/SOSHistoryList'
 
 function relativeTime(iso) {
   if (!iso) return null
@@ -36,22 +39,38 @@ export default function FamilyDashboard() {
   const navigate = useNavigate()
   const [elderName, setElderName]     = useState(null)
   const [elderId, setElderId]         = useState(null)
+  const [userId, setUserId]           = useState(null)
   const [healthLog, setHealthLog]     = useState(null)
   const [nextBooking, setNextBooking] = useState(null)
   const [lastActive, setLastActive]   = useState(null)
   const [loading, setLoading]         = useState(true)
   const [toast, setToast]             = useState('')
+  const [sosAlerts, setSosAlerts]     = useState([])
+  const [showNotifBanner, setShowNotifBanner] = useState(
+    'Notification' in window && Notification.permission === 'default'
+  )
+
+  // Poll for SOS alerts from the linked elder
+  useSOSNotifications(userId)
 
   useEffect(() => {
     async function load() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) { navigate('/login'); return }
 
+      const uid = session.user.id
+      setUserId(uid)
+
+      // Note: Notification.requestPermission() must be called from a user gesture.
+      // FamilyDashboard doesn't currently have a permission banner, so we skip
+      // the automatic request here — permission will be granted when the elder
+      // triggers it via the NotificationPermissionBanner on ElderHome.
+
       // Get family user's elder_id
       const { data: familyUser } = await supabase
         .from('users')
         .select('elder_id')
-        .eq('id', session.user.id)
+        .eq('id', uid)
         .single()
 
       if (!familyUser?.elder_id) { setLoading(false); return }
@@ -75,6 +94,12 @@ export default function FamilyDashboard() {
       if (bookingsRes.status === 'fulfilled' && bookingsRes.value.success) {
         setNextBooking(bookingsRes.value.bookings?.[0] || null)
       }
+
+      // Fetch SOS alert history for this elder
+      fetch(`${API_URL}/api/sos/family-alerts/${uid}`)
+        .then(r => r.json())
+        .then(data => { if (data.success) setSosAlerts(data.alerts) })
+        .catch(() => {})
 
       setLoading(false)
     }
@@ -116,6 +141,50 @@ export default function FamilyDashboard() {
       </div>
 
       <div style={{ padding: '24px 20px', maxWidth: 720, margin: '0 auto' }}>
+
+        {/* Notification permission banner for SOS alerts */}
+        {showNotifBanner && (
+          <div style={{ background: '#EBF4FF', border: '1.5px solid #DDE8F5', borderRadius: 14, padding: '12px 16px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: '#DDE8F5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <i className="ti ti-bell" style={{ fontSize: 18, color: '#185FA5' }} />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#0A2540', margin: 0 }}>Enable SOS alert notifications?</p>
+              <p style={{ fontSize: 11, color: '#5A7A9A', margin: '2px 0 0' }}>Get notified instantly if your family member needs help</p>
+            </div>
+            <button
+              onClick={async () => { await Notification.requestPermission(); setShowNotifBanner(false) }}
+              style={{ height: 32, padding: '0 14px', borderRadius: 8, border: 'none', background: '#1D9E75', color: 'white', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}
+            >Enable</button>
+            <button
+              onClick={() => setShowNotifBanner(false)}
+              style={{ height: 32, padding: '0 10px', borderRadius: 8, border: 'none', background: 'transparent', color: '#5A7A9A', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}
+            >Not now</button>
+          </div>
+        )}
+
+        {/* Active Emergency — shown above everything when there's an unresolved alert */}
+        {sosAlerts.filter(a => !a.resolved).length > 0 && (
+          <div style={{ marginBottom: 20 }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: '#E24B4A', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Active Emergency</p>
+            {sosAlerts.filter(a => !a.resolved).map(alert => (
+              <SOSAlertCard
+                key={alert.id}
+                alert={alert}
+                onResolve={async (sosId) => {
+                  await fetch(`${API_URL}/api/sos/resolve/${sosId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resolved_by: 'family', notes: 'Marked safe by family member' }),
+                  })
+                  setSosAlerts(prev => prev.map(a =>
+                    a.id === sosId ? { ...a, resolved: true, resolved_at: new Date().toISOString() } : a
+                  ))
+                }}
+              />
+            ))}
+          </div>
+        )}
 
         {/* No elder linked state */}
         {!elderId && (
@@ -176,6 +245,12 @@ export default function FamilyDashboard() {
         >
           <i className="ti ti-video" style={{ fontSize: 18 }} />Video Call Parent
         </button>
+
+        {/* SOS History */}
+        <div style={{ marginTop: 8, marginBottom: 24 }}>
+          <p style={{ fontSize: 16, fontWeight: 700, color: '#0A2540', marginBottom: 12 }}>Emergency History</p>
+          <SOSHistoryList alerts={sosAlerts} />
+        </div>
 
         {/* Logout */}
         <div style={{ textAlign: 'center' }}>
