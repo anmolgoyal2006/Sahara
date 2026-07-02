@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSpeech } from '../../hooks/useSpeech'
 
 function getTimeGreeting() {
@@ -17,7 +17,7 @@ function getFormattedDate(language) {
   return now.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
-export default function GreetingCard({ user, profile }) {
+export default function GreetingCard({ user, profile, userId }) {
   const { speak } = useSpeech()
   const hasSpoken = useRef(false)
 
@@ -25,6 +25,22 @@ export default function GreetingCard({ user, profile }) {
   const conditions = profile?.conditions || []
   const language   = user?.language || 'hi'
   const name       = user?.name || ''
+
+  const [copied, setCopied] = useState(false)
+
+  function handleCopyCode() {
+    if (!userId) return
+    navigator.clipboard.writeText(userId).catch(() => {
+      const ta = document.createElement('textarea')
+      ta.value = userId
+      document.body.appendChild(ta)
+      ta.select()
+      document.execCommand('copy')
+      document.body.removeChild(ta)
+    })
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   useEffect(() => {
     if (!name || hasSpoken.current) return
@@ -93,6 +109,45 @@ export default function GreetingCard({ user, profile }) {
           <i className="ti ti-volume" style={{ fontSize: 13 }} />
           Speak greeting
         </button>
+
+        {/* Sahara Code — for linking family members */}
+        {userId && (
+          <div style={{
+            marginTop: 16, paddingTop: 14,
+            borderTop: '1px solid rgba(255,255,255,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+          }}>
+            <div style={{ minWidth: 0 }}>
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', margin: '0 0 2px', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                Your Sahara Code
+              </p>
+              <p style={{
+                fontSize: 11, fontFamily: 'monospace', color: 'rgba(255,255,255,0.85)',
+                fontWeight: 700, margin: 0,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                maxWidth: 200,
+              }}>
+                {userId}
+              </p>
+            </div>
+            <button
+              onClick={handleCopyCode}
+              title="Copy Sahara Code to share with family"
+              style={{
+                height: 28, padding: '0 10px', borderRadius: 8, flexShrink: 0,
+                border: '1px solid rgba(255,255,255,0.4)',
+                background: copied ? 'rgba(29,158,117,0.5)' : 'rgba(255,255,255,0.15)',
+                color: 'white', fontSize: 11, fontWeight: 700,
+                cursor: 'pointer', fontFamily: 'inherit',
+                display: 'flex', alignItems: 'center', gap: 4,
+                transition: 'background 0.2s',
+              }}
+            >
+              <i className={`ti ${copied ? 'ti-check' : 'ti-copy'}`} style={{ fontSize: 12 }} />
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* RIGHT — decorative, desktop only */}

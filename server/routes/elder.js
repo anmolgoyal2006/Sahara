@@ -97,4 +97,18 @@ router.get('/medicines/today/:userId', async (req, res) => {
   }
 })
 
+router.put('/update-location', async (req, res) => {
+  const { elder_id, lat, lng } = req.body
+  try {
+    const { error } = await supabase
+      .from('elder_profiles')
+      .update({ lat, lng })
+      .eq('id', elder_id)
+    if (error) throw error
+    return res.json({ success: true })
+  } catch (e) {
+    return res.json({ success: false })
+  }
+})
+
 module.exports = router

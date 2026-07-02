@@ -40,6 +40,22 @@ export default function ElderHome() {
         .then(r => r.json())
         .then(data => { if (data.success) setTodaySchedule(data.schedule) })
         .catch(() => {})
+      // Update elder location silently for family dashboard visibility
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            try {
+              await fetch(`${API_URL}/api/elder/update-location`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ elder_id: uid, lat: pos.coords.latitude, lng: pos.coords.longitude }),
+              })
+            } catch { /* non-critical — silent fail */ }
+          },
+          () => {}, // silent fail on denial
+          { enableHighAccuracy: false, timeout: 5000 }
+        )
+      }
     })
   }, [])
 
@@ -63,7 +79,7 @@ export default function ElderHome() {
         {healthAlerts.length > 0 && showAlertBanner && (
           <HealthAlertBanner alerts={healthAlerts} onDismiss={() => setShowAlertBanner(false)} />
         )}
-        <GreetingCard user={user} profile={profile} />
+        <GreetingCard user={user} profile={profile} userId={userId} />
         <ServiceTiles />
         <CompanionBanner userName={user?.name} language={user?.language} />
         <div className="health-bookings-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 0 }}>
