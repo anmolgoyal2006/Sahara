@@ -48,11 +48,27 @@ router.put('/location/:workerId', async (req, res) => {
 router.get('/bookings/:workerId', async (req, res) => {
   const { workerId } = req.params
   try {
-    const { data } = await supabase.from('bookings')
+    const { data, error } = await supabase
+      .from('bookings')
       .select(`*, users!bookings_elder_id_fkey (name, phone)`)
       .eq('worker_id', workerId)
       .order('scheduled_at', { ascending: true })
-    return res.json({ success: true, bookings: data || [] })
+
+    if (error) throw error
+
+    const bookings = data || []
+
+    // Enrich confirmed/active bookings with elder profile location
+    for (const booking of bookings.filter(b => ['confirmed', 'active'].includes(b.status))) {
+      const { data: profile } = await supabase
+        .from('elder_profiles')
+        .select('lat, lng, address')
+        .eq('id', booking.elder_id)
+        .single()
+      booking.elder_profile = profile || null
+    }
+
+    return res.json({ success: true, bookings })
   } catch (e) {
     return res.status(500).json({ success: false, bookings: [] })
   }
@@ -172,6 +188,50 @@ router.get('/nearby', async (req, res) => {
     return res.json({ success: true, workers: filtered })
   } catch (e) {
     return res.status(500).json({ success: false, workers: [] })
+  }
+})
+
+router.get('/ratings/:workerId', async (req, res) => {
+  const { workerId } = req.params
+  try {
+    const { data: worker } = await supabase
+      .from('workers')
+      .select('rating, total_ratings')
+      .eq('id', workerId)
+      .single()
+
+    const { data: reviews } = await supabase
+      .from('bookings')
+      .select(`
+        id, rating, review, service_type, scheduled_at,
+        users!bookings_elder_id_fkey ( name )
+      `)
+      .eq('worker_id', workerId)
+      .not('rating', 'is', null)
+      .order('scheduled_at', { ascending: false })
+      .limit(20)
+
+    // Rating breakdown (1–5 star counts)
+    const breakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    (reviews || []).forEach(r => {
+      if (r.rating >= 1 && r.rating <= 5) breakdown[r.rating]++
+    })
+
+    return res.json({
+      success: true,
+      averageRating: worker?.rating       || 0,
+      totalRatings:  worker?.total_ratings || 0,
+      breakdown,
+      reviews: reviews || [],
+    })
+  } catch (e) {
+    return res.status(500).json({
+      success: false,
+      averageRating: 0,
+      totalRatings: 0,
+      breakdown: {},
+      reviews: [],
+    })
   }
 })
 

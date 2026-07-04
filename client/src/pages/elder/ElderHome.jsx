@@ -9,7 +9,9 @@ import UpcomingBookings from '../../components/elder/UpcomingBookings'
 import QuickActions from '../../components/elder/QuickActions'
 import HealthAlertBanner from '../../components/elder/HealthAlertBanner'
 import NotificationPermissionBanner from '../../components/elder/NotificationPermissionBanner'
+import ActiveBookingMap from '../../components/elder/ActiveBookingMap'
 import { useMedicineNotifications } from '../../hooks/useMedicineNotifications'
+import { useActiveBookingLocation } from '../../hooks/useActiveBookingLocation'
 import { supabase } from '../../lib/supabase'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
@@ -23,6 +25,13 @@ export default function ElderHome() {
   const [showNotifBanner, setShowNotifBanner] = useState(
     'Notification' in window && Notification.permission === 'default'
   )
+
+  // Active booking live location (polls every 30s)
+  const {
+    booking: activeBooking,
+    locationData: activeLocationData,
+    refresh: refreshActiveBooking,
+  } = useActiveBookingLocation(userId, 'elder')
 
   // Background medicine notifications
   useMedicineNotifications(userId, todaySchedule)
@@ -80,6 +89,24 @@ export default function ElderHome() {
           <HealthAlertBanner alerts={healthAlerts} onDismiss={() => setShowAlertBanner(false)} />
         )}
         <GreetingCard user={user} profile={profile} userId={userId} />
+        {activeBooking && activeLocationData && (
+          <ActiveBookingMap
+            booking={activeBooking}
+            workerLocation={{
+              lat: activeLocationData.worker?.lat,
+              lng: activeLocationData.worker?.lng,
+            }}
+            elderLocation={{
+              lat: activeLocationData.elder?.lat,
+              lng: activeLocationData.elder?.lng,
+            }}
+            workerName={activeLocationData.worker?.name}
+            workerPhone={activeLocationData.worker?.phone}
+            workerPhoto={activeBooking.workers?.photo_url}
+            workerRating={activeBooking.workers?.rating}
+            onRefresh={refreshActiveBooking}
+          />
+        )}
         <ServiceTiles />
         <CompanionBanner userName={user?.name} language={user?.language} />
         <div className="health-bookings-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 0 }}>

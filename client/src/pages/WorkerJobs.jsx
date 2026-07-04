@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase, API_URL } from '../lib/supabase'
 import WorkerLayout from '../components/layout/WorkerLayout'
@@ -37,6 +37,63 @@ function ServiceIcon({ type }) {
       <i className={`ti ${m.icon}`} style={{ fontSize: 20, color: m.color }} />
     </div>
   )
+}
+
+// ── Inline mini Leaflet map for elder location inside booking card ─────────────
+function ElderMiniMap({ lat, lng, elderName }) {
+  const containerRef = useRef(null)
+  const mapRef       = useRef(null)
+
+  useEffect(() => {
+    if (!containerRef.current || !lat || !lng) return
+
+    if (!document.getElementById('leaflet-css')) {
+      const link = document.createElement('link')
+      link.id   = 'leaflet-css'
+      link.rel  = 'stylesheet'
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+      document.head.appendChild(link)
+    }
+
+    import('leaflet').then(({ default: L }) => {
+      if (mapRef.current) return
+
+      const map = L.map(containerRef.current, {
+        zoomControl: false,
+        scrollWheelZoom: false,
+        dragging: false,
+        doubleClickZoom: false,
+        touchZoom: false,
+      }).setView([lat, lng], 15)
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }).addTo(map)
+
+      const homeIcon = L.divIcon({
+        className: '',
+        html: `<div style="
+          width:32px;height:32px;border-radius:50%;
+          background:#185FA5;border:3px solid white;
+          box-shadow:0 2px 10px rgba(0,0,0,0.3);
+          display:flex;align-items:center;justify-content:center;
+        "><i class="ti ti-home" style="color:white;font-size:14px;"></i></div>`,
+        iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -18],
+      })
+
+      L.marker([lat, lng], { icon: homeIcon })
+        .addTo(map)
+        .bindPopup(`<b style="font-size:13px;font-family:Noto Sans,sans-serif">${elderName || 'Elder'}'s location</b>`)
+
+      mapRef.current = map
+    })
+
+    return () => {
+      if (mapRef.current) { mapRef.current.remove(); mapRef.current = null }
+    }
+  }, [lat, lng])
+
+  return <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
 }
 
 export default function WorkerJobs() {
@@ -81,7 +138,7 @@ export default function WorkerJobs() {
   }, [navigate])
 
   // Continuous location tracking
-  const { locationDenied } = useWorkerLocation(userId, isAvailable)
+  useWorkerLocation(userId, isAvailable)
 
   function showToast(msg) {
     setToast(msg)
@@ -201,19 +258,67 @@ export default function WorkerJobs() {
                   </div>
 
                   {b.status === 'confirmed' && (
-                    <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-                      {b.users?.phone && (
-                        <a href={`tel:${b.users.phone}`} style={{ flex: 1, height: 40, borderRadius: 9, border: '1.5px solid #1D9E75', background: 'white', color: '#1D9E75', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, textDecoration: 'none' }}>
-                          <i className="ti ti-phone" style={{ fontSize: 14 }} />Call Elder
-                        </a>
-                      )}
-                      <button
-                        onClick={() => handleComplete(b.id)}
-                        disabled={completing === b.id}
-                        style={{ flex: 1, height: 40, borderRadius: 9, border: 'none', background: '#1D9E75', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
-                      >
-                        {completing === b.id ? 'Saving...' : 'Mark Done'}
-                      </button>
+                    <div style={{ marginTop: 12 }}>
+                      {/* Action buttons */}
+                      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                        {b.users?.phone && (
+                          <a href={`tel:${b.users.phone}`} style={{ flex: 1, height: 40, borderRadius: 9, border: '1.5px solid #1D9E75', background: 'white', color: '#1D9E75', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, textDecoration: 'none' }}>
+                            <i className="ti ti-phone" style={{ fontSize: 14 }} />Call Elder
+                          </a>
+                        )}
+                        <button
+                          onClick={() => handleComplete(b.id)}
+                          disabled={completing === b.id}
+                          style={{ flex: 1, height: 40, borderRadius: 9, border: 'none', background: '#1D9E75', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+                        >
+                          {completing === b.id ? 'Saving...' : 'Mark Done'}
+                        </button>
+                      </div>
+
+                      {/* Elder's location section */}
+                      <div style={{ borderTop: '1px solid #EEF4FB', paddingTop: 12 }}>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: '#A0B8D0', textTransform: 'uppercase', letterSpacing: 0.5, margin: '0 0 8px' }}>
+                          Elder's Location
+                        </p>
+
+                        {b.elder_profile?.lat && b.elder_profile?.lng ? (
+                          <>
+                            {/* Mini map */}
+                            <div style={{ height: 160, borderRadius: 10, overflow: 'hidden', border: '1.5px solid #DDE8F5', marginBottom: 8 }}>
+                              <ElderMiniMap
+                                lat={b.elder_profile.lat}
+                                lng={b.elder_profile.lng}
+                                elderName={b.users?.name}
+                              />
+                            </div>
+
+                            {/* Address */}
+                            {b.elder_profile.address && (
+                              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginBottom: 8, padding: '8px 10px', background: '#F7FBFF', borderRadius: 8, border: '1px solid #EEF4FB' }}>
+                                <i className="ti ti-map-pin" style={{ fontSize: 13, color: '#185FA5', flexShrink: 0, marginTop: 1 }} />
+                                <p style={{ fontSize: 12, color: '#0A2540', margin: 0, lineHeight: 1.5 }}>{b.elder_profile.address}</p>
+                              </div>
+                            )}
+
+                            {/* Get Directions button */}
+                            <a
+                              href={`https://www.google.com/maps/dir/?api=1&destination=${b.elder_profile.lat},${b.elder_profile.lng}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, height: 36, borderRadius: 8, background: '#185FA5', color: 'white', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}
+                            >
+                              <i className="ti ti-navigation" style={{ fontSize: 13 }} />
+                              Get Directions →
+                            </a>
+                          </>
+                        ) : (
+                          /* No location available */
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', background: '#FFF8EC', borderRadius: 8, border: '1px solid #FDE68A' }}>
+                            <i className="ti ti-map-pin-off" style={{ fontSize: 14, color: '#F59E0B', flexShrink: 0 }} />
+                            <p style={{ fontSize: 12, color: '#5A7A9A', margin: 0 }}>Elder location not available</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

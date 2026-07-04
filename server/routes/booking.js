@@ -244,4 +244,125 @@ router.post('/rate', async (req, res) => {
   }
 })
 
+/* ─────────────────────────────────────
+   GET /api/booking/active-location/:bookingId
+   Returns both elder and worker locations
+   for an active booking
+───────────────────────────────────── */
+router.get('/active-location/:bookingId', async (req, res) => {
+  const { bookingId } = req.params
+  try {
+    const { data: booking } = await supabase
+      .from('bookings')
+      .select(`id, status, elder_id, worker_id, scheduled_at, service_type`)
+      .eq('id', bookingId)
+      .single()
+
+    if (!booking) {
+      return res.status(404).json({ success: false, error: 'Booking not found' })
+    }
+
+    // Only share locations for active/confirmed bookings
+    if (!['confirmed', 'active'].includes(booking.status)) {
+      return res.json({
+        success: true,
+        locationSharingActive: false,
+        message: 'Location sharing only active for confirmed bookings'
+      })
+    }
+
+    // Get elder location
+    const { data: elderProfile } = await supabase
+      .from('elder_profiles')
+      .select('lat, lng, address')
+      .eq('id', booking.elder_id)
+      .single()
+
+    // Get worker location
+    const { data: workerData } = await supabase
+      .from('workers')
+      .select('lat, lng')
+      .eq('id', booking.worker_id)
+      .single()
+
+    // Get names
+    const { data: elderUser } = await supabase
+      .from('users')
+      .select('name, phone')
+      .eq('id', booking.elder_id)
+      .single()
+
+    const { data: workerUser } = await supabase
+      .from('users')
+      .select('name, phone')
+      .eq('id', booking.worker_id)
+      .single()
+
+    return res.json({
+      success: true,
+      locationSharingActive: true,
+      booking: {
+        id: booking.id,
+        status: booking.status,
+        service_type: booking.service_type,
+        scheduled_at: booking.scheduled_at
+      },
+      elder: {
+        id: booking.elder_id,
+        name: elderUser?.name,
+        phone: elderUser?.phone,
+        lat: elderProfile?.lat,
+        lng: elderProfile?.lng,
+        address: elderProfile?.address
+      },
+      worker: {
+        id: booking.worker_id,
+        name: workerUser?.name,
+        phone: workerUser?.phone,
+        lat: workerData?.lat,
+        lng: workerData?.lng
+      }
+    })
+  } catch (e) {
+    return res.status(500).json({ success: false, error: e.message })
+  }
+})
+
+/* ─────────────────────────────────────
+   GET /api/booking/my-active/:userId
+   Get user's current active/confirmed booking
+───────────────────────────────────── */
+router.get('/my-active/:userId', async (req, res) => {
+  const { userId } = req.params
+  const { role } = req.query // 'elder' or 'worker'
+  try {
+    let query = supabase
+      .from('bookings')
+      .select(`
+        *,
+        workers (
+          id, lat, lng, rating, photo_url,
+          users ( name, phone )
+        )
+      `)
+      .in('status', ['confirmed', 'active'])
+      .order('scheduled_at', { ascending: true })
+      .limit(1)
+
+    if (role === 'worker') {
+      query = query.eq('worker_id', userId)
+    } else {
+      query = query.eq('elder_id', userId)
+    }
+
+    const { data, error } = await query
+    if (error) throw error
+
+    const booking = data?.[0] || null
+    return res.json({ success: true, booking })
+  } catch (e) {
+    return res.status(500).json({ success: false, booking: null })
+  }
+})
+
 module.exports = router

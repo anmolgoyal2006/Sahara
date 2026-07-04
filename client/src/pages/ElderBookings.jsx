@@ -215,23 +215,36 @@ function BookingCard({ booking, onCancel, onRate }) {
       )}
 
       {booking.status === 'confirmed' && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {workerPhone && (
-            <span style={{ fontSize: 13, color: '#5A7A9A', flex: 1 }}>{workerPhone}</span>
-          )}
-          <a
-            href={workerPhone ? `tel:${workerPhone}` : undefined}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          {/* Track worker live location */}
+          <button
+            onClick={() => navigate(`/elder/track-worker?bookingId=${booking.id}`)}
             style={{
-              height: 34, padding: '0 16px', borderRadius: 8,
-              border: '1.5px solid #1D9E75', background: 'white',
-              color: '#1D9E75', fontSize: 13, fontWeight: 700,
+              height: 34, padding: '0 14px', borderRadius: 8,
+              border: '1.5px solid #185FA5', background: '#EBF4FF',
+              color: '#185FA5', fontSize: 13, fontWeight: 700,
               cursor: 'pointer', fontFamily: 'Noto Sans, sans-serif',
-              textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 5,
+              display: 'flex', alignItems: 'center', gap: 5,
             }}
           >
-            <i className="ti ti-phone" style={{ fontSize: 13 }} />
-            Call Worker
-          </a>
+            <i className="ti ti-map-pin" style={{ fontSize: 13 }} />
+            Track Worker
+          </button>
+          {workerPhone && (
+            <a
+              href={`tel:${workerPhone}`}
+              style={{
+                height: 34, padding: '0 14px', borderRadius: 8,
+                border: '1.5px solid #1D9E75', background: 'white',
+                color: '#1D9E75', fontSize: 13, fontWeight: 700,
+                cursor: 'pointer', fontFamily: 'Noto Sans, sans-serif',
+                textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 5,
+              }}
+            >
+              <i className="ti ti-phone" style={{ fontSize: 13 }} />
+              Call Worker
+            </a>
+          )}
         </div>
       )}
 
