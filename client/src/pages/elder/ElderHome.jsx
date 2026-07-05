@@ -122,7 +122,7 @@ export default function ElderHome() {
           <div className="my-health-grid">
             <div className="my-health-tile" onClick={() => navigate('/elder/health')}>
               <div className="my-health-tile__icon-box" style={{ backgroundColor: '#FFF0F0' }}>
-                <span className="my-health-tile__icon ti ti-pulse" style={{ color: '#E24B4A' }}></span>
+                <span className="my-health-tile__icon ti ti-heart-rate-monitor" style={{ color: '#E24B4A' }}></span>
               </div>
               <h4 className="my-health-tile__label">Health Log</h4>
               <p className="my-health-tile__subtext">Daily vitals</p>
