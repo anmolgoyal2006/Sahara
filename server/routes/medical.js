@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { createClient } = require('@supabase/supabase-js');
-const { genAI } = require('../lib/gemini');
+const { genAI, fastModel } = require('../lib/gemini');
 
 const router = Router();
 
@@ -14,16 +14,11 @@ const supabase = createClient(supabaseUrl, supabaseSecret);
 
 // Vision model for analysing report images/PDFs
 const visionModel = genAI.getGenerativeModel({
-  model: 'gemini-2.0-flash',
+  model: 'gemini-1.5-flash',
   generationConfig: {
     temperature: 0.2,
     maxOutputTokens: 800
   }
-});
-
-// Text model for recommendations
-const fastModel = genAI.getGenerativeModel({
-  model: 'gemini-3.1-flash-lite'
 });
 
 /* ─────────────────────────────────────
