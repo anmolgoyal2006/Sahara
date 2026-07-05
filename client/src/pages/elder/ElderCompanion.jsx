@@ -41,7 +41,7 @@ function ActionCard({ action, onConfirm, onDismiss, onMarkTakenConfirm }) {
     SOS:         { icon: 'ti-urgent',             color: '#E24B4A', bg: '#FFF0F0', title: 'Send Emergency Alert?',        desc: 'This will alert your family immediately.',       confirmLabel: 'Yes, Send Alert',  confirmColor: '#E24B4A' },
     HEALTH_LOG:  { icon: 'ti-heart-rate-monitor', color: '#1D9E75', bg: '#F0FBF7', title: 'Log your health?',             desc: 'Record your health readings now.',               confirmLabel: 'Log Now',          confirmColor: '#1D9E75' },
     MEDICINES:           { icon: 'ti-pill',               color: '#BA7517', bg: '#FAEEDA', title: 'View your medicines?',         desc: 'See your medicine schedule.',                    confirmLabel: 'Yes, View',        confirmColor: '#BA7517' },
-    MEDICAL_RECORDS:     { icon: 'ti-folder-medical',     color: '#185FA5', bg: '#EBF4FF', title: 'View Medical Reports',         desc: 'See your saved test results.',                    confirmLabel: 'Open Records',     confirmColor: '#185FA5' },
+    MEDICAL_RECORDS:     { icon: 'ti-folder',             color: '#185FA5', bg: '#EBF4FF', title: 'View Medical Reports',         desc: 'See your saved test results.',                    confirmLabel: 'Open Records',     confirmColor: '#185FA5' },
     ADD_MEDICAL_RECORD:  { icon: 'ti-upload',             color: '#1D9E75', bg: '#F0FBF7', title: 'Add a New Medical Report',     desc: 'Upload a test result or doctor prescription.',    confirmLabel: 'Add Report',       confirmColor: '#1D9E75' },
   }
 
@@ -51,7 +51,7 @@ function ActionCard({ action, onConfirm, onDismiss, onMarkTakenConfirm }) {
       <div style={{ margin: '0 16px 12px', background: 'white', border: '2px solid #1D9E75', borderRadius: 14, padding: '16px 20px', boxShadow: '0 4px 16px rgba(29,158,117,0.15)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
           <div style={{ width: 40, height: 40, borderRadius: 10, background: '#F0FBF7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <i className="ti ti-circle-check" style={{ fontSize: 24, color: '#1D9E75' }} />
+            <i className="ti ti-check" style={{ fontSize: 24, color: '#1D9E75', fontWeight: 'bold' }} />
           </div>
           <div>
             <p style={{ fontSize: 16, fontWeight: 700, color: '#0A2540', margin: 0, fontFamily: 'Noto Sans, sans-serif' }}>
