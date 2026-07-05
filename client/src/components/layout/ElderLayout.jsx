@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { icon: 'ti-message-chatbot',    label: 'Chat',      route: '/elder/companion' },
   { icon: 'ti-heart-rate-monitor', label: 'Health',    route: '/elder/health' },
   { icon: 'ti-pill',               label: 'Medicines', route: '/elder/medicines' },
+  { icon: 'ti-folder-medical',     label: 'Reports',   route: '/elder/medical-records' },
 ]
 
 export default function ElderLayout({ children, userName }) {

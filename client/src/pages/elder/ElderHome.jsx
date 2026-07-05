@@ -129,8 +129,8 @@ export default function ElderHome() {
             </div>
             
             <div className="my-health-tile" onClick={() => navigate('/elder/medicines')}>
-              <div className="my-health-tile__icon-box" style={{ backgroundColor: '#ECFDF5' }}>
-                <span className="my-health-tile__icon ti-notepad" style={{ color: '#059669' }}></span>
+              <div className="my-health-tile__icon-box" style={{ backgroundColor: '#FAEEDA' }}>
+                <span className="my-health-tile__icon ti-pill" style={{ color: '#BA7517' }}></span>
               </div>
               <h4 className="my-health-tile__label">Medicines</h4>
               <p className="my-health-tile__subtext">Pill reminders</p>
