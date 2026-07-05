@@ -122,7 +122,7 @@ export default function ElderHome() {
           <div className="my-health-grid">
             <div className="my-health-tile" onClick={() => navigate('/elder/health')}>
               <div className="my-health-tile__icon-box" style={{ backgroundColor: '#FFF0F0' }}>
-                <span className="my-health-tile__icon ti-pulse" style={{ color: '#E24B4A' }}></span>
+                <span className="my-health-tile__icon ti ti-pulse" style={{ color: '#E24B4A' }}></span>
               </div>
               <h4 className="my-health-tile__label">Health Log</h4>
               <p className="my-health-tile__subtext">Daily vitals</p>
@@ -130,7 +130,7 @@ export default function ElderHome() {
             
             <div className="my-health-tile" onClick={() => navigate('/elder/medicines')}>
               <div className="my-health-tile__icon-box" style={{ backgroundColor: '#FAEEDA' }}>
-                <span className="my-health-tile__icon ti-pill" style={{ color: '#BA7517' }}></span>
+                <span className="my-health-tile__icon ti ti-pill" style={{ color: '#BA7517' }}></span>
               </div>
               <h4 className="my-health-tile__label">Medicines</h4>
               <p className="my-health-tile__subtext">Pill reminders</p>
@@ -138,7 +138,7 @@ export default function ElderHome() {
             
             <div className="my-health-tile" onClick={() => navigate('/elder/medical-records')}>
               <div className="my-health-tile__icon-box" style={{ backgroundColor: '#EBF4FF' }}>
-                <span className="my-health-tile__icon ti-folder-medical" style={{ color: '#185FA5', fontSize: '24px' }}></span>
+                <span className="my-health-tile__icon ti ti-folder" style={{ color: '#185FA5' }}></span>
               </div>
               <h4 className="my-health-tile__label">My Reports</h4>
               <p className="my-health-tile__subtext">
