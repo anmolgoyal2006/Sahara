@@ -102,7 +102,7 @@ export default function CategorySelector({ selected, onChange }) {
             onClick={() => onChange(key)}
           >
             <span
-              className={`category-tile__icon ${cat.icon}`}
+              className={`category-tile__icon ti ${cat.icon}`}
               style={{ color: cat.color }}
             ></span>
             <span

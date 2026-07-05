@@ -73,7 +73,7 @@ export default function RecordCard({
           style={{ backgroundColor: categoryInfo?.bg || '#F0FBF7' }}
         >
           <span
-            className={`record-card__icon ${categoryInfo?.icon || 'ti-file-text'}`}
+            className={`record-card__icon ti ${categoryInfo?.icon || 'ti-file-text'}`}
             style={{ color: categoryInfo?.color || '#1D9E75' }}
           ></span>
         </div>
@@ -84,14 +84,14 @@ export default function RecordCard({
         <h4 className="record-card__title">{record.name}</h4>
         <span className="record-card__category">{categoryInfo?.label || 'General'}</span>
         <div className="record-card__date-row">
-          <span className="ti-calendar"></span>
+          <span className="ti ti-calendar"></span>
           <span>{formatDate(record.report_date)}</span>
         </div>
         {record.notes && <p className="record-card__notes">"{record.notes}"</p>}
         {record.ai_analysis && (
           <div className="record-card__ai-badge">
             <span>AI Analysed</span>
-            <span className="ti-check"></span>
+            <span className="ti ti-check"></span>
           </div>
         )}
       </div>
@@ -106,7 +106,7 @@ export default function RecordCard({
           onClick={() => onFavourite(record)}
           title={record.is_favourite ? 'Remove from Favourites' : 'Add to Favourites'}
         >
-          <span className={record.is_favourite ? 'ti-star-filled' : 'ti-star'}></span>
+          <span className={record.is_favourite ? 'ti ti-star-filled' : 'ti ti-star'}></span>
         </button>
 
         {/* View Document */}
@@ -115,7 +115,7 @@ export default function RecordCard({
           onClick={() => onView(record)}
           title="View Document"
         >
-          <span className="ti-eye"></span>
+          <span className="ti ti-eye"></span>
         </button>
 
         {/* More Actions Dropdown */}
@@ -124,7 +124,7 @@ export default function RecordCard({
           onClick={() => setShowDropdown(!showDropdown)}
           title="More options"
         >
-          <span className="ti-dots-vertical"></span>
+          <span className="ti ti-dots-vertical"></span>
         </button>
 
         {showDropdown && (
@@ -136,7 +136,7 @@ export default function RecordCard({
                 onEdit(record);
               }}
             >
-              <span className="ti-pencil"></span>
+              <span className="ti ti-pencil"></span>
               <span>Edit</span>
             </button>
             <button
@@ -146,18 +146,18 @@ export default function RecordCard({
                 onAnalyse(record);
               }}
             >
-              <span className="ti-wand"></span>
+              <span className="ti ti-wand"></span>
               <span>Analyse with AI</span>
             </button>
             <button className="record-card__dropdown-item" onClick={handleShare}>
-              <span className="ti-share"></span>
+              <span className="ti ti-share"></span>
               <span>Share</span>
             </button>
             <button
               className="record-card__dropdown-item record-card__dropdown-item--delete"
               onClick={handleDeleteClick}
             >
-              <span className="ti-trash"></span>
+              <span className="ti ti-trash"></span>
               <span>Delete</span>
             </button>
           </div>

@@ -23,7 +23,7 @@ export default function CategoryBadge({ category, count, active, onClick }) {
       onClick={onClick}
     >
       {catInfo?.icon && (
-        <span className={`category-badge__icon ${catInfo.icon}`}></span>
+        <span className={`category-badge__icon ti ${catInfo.icon}`}></span>
       )}
       <span className="category-badge__label">{catInfo?.label || category}</span>
       <span className="category-badge__count">({count})</span>

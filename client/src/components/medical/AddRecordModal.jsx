@@ -161,7 +161,7 @@ export default function AddRecordModal({ isOpen, onClose, onSaved, editingRecord
             {editingRecord ? 'Edit Report' : 'Add Medical Report'}
           </h2>
           <button className="modal-close-btn" onClick={onClose}>
-            <span className="ti-close"></span>
+            <span className="ti ti-close"></span>
           </button>
         </div>
 
@@ -169,7 +169,7 @@ export default function AddRecordModal({ isOpen, onClose, onSaved, editingRecord
         <div className="modal-body">
           {error && (
             <div className="error-banner">
-              <span className="ti-alert"></span>
+              <span className="ti ti-alert"></span>
               <span>{error}</span>
             </div>
           )}
@@ -205,7 +205,7 @@ export default function AddRecordModal({ isOpen, onClose, onSaved, editingRecord
                     />
                   ) : (
                     <div className="preview-pdf-card">
-                      <span className="preview-pdf-icon ti-file-text"></span>
+                      <span className="preview-pdf-icon ti ti-file-text"></span>
                       <div className="preview-pdf-details">
                         <span className="preview-pdf-name">{uploadedFile.fileName}</span>
                         <span className="preview-pdf-size">{uploadedFile.fileSizeKb} KB</span>

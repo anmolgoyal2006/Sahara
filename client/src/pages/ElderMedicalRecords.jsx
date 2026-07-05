@@ -158,7 +158,7 @@ export default function ElderMedicalRecords() {
     if (loading) {
       return (
         <div style={{ textAlign: 'center', padding: '40px', color: '#5A7A9A' }}>
-          <span className="ti-reload" style={{ fontSize: '24px', display: 'inline-block', animation: 'spin 1.5s linear infinite' }}></span>
+          <span className="ti ti-reload" style={{ fontSize: '24px', display: 'inline-block', animation: 'spin 1.5s linear infinite' }}></span>
           <p style={{ marginTop: '8px', fontSize: '14px' }}>Loading records...</p>
         </div>
       );
@@ -167,7 +167,7 @@ export default function ElderMedicalRecords() {
     if (records.length === 0) {
       return (
         <div className="vault-empty">
-          <span className="vault-empty__icon ti-folder-open"></span>
+          <span className="vault-empty__icon ti ti-folder-open"></span>
           <h3 className="vault-empty__title">No reports saved yet</h3>
           <p className="vault-empty__subtitle">
             Keep your medical reports in one safe place. Tap Add Report to add your first report.
@@ -215,7 +215,7 @@ export default function ElderMedicalRecords() {
             <div className="category-section__header">
               <span className="category-section__title">
                 <span
-                  className={`category-section__icon ${catInfo?.icon}`}
+                  className={`category-section__icon ti ${catInfo?.icon}`}
                   style={{ color: catInfo?.color }}
                 ></span>
                 <span>{catInfo?.label || catKey}</span>
@@ -260,7 +260,7 @@ export default function ElderMedicalRecords() {
         return (
           <div className="vault-empty-category">
             <span
-              className="vault-empty-category__icon ti-folder"
+              className="vault-empty-category__icon ti ti-folder"
               style={{ color: catInfo?.color || '#1D9E75' }}
             ></span>
             <h4 className="vault-empty-category__title">
@@ -316,14 +316,14 @@ export default function ElderMedicalRecords() {
               setIsAddModalOpen(true);
             }}
           >
-            <span className="ti-plus"></span>
+            <span className="ti ti-plus"></span>
             <span>Add Report</span>
           </button>
         </header>
 
         {/* Search Bar */}
         <div className="vault-search">
-          <span className="vault-search__icon ti-search"></span>
+          <span className="vault-search__icon ti ti-search"></span>
           <input
             type="text"
             className="vault-search__input"
@@ -372,7 +372,7 @@ export default function ElderMedicalRecords() {
                       style={{ backgroundColor: catInfo?.bg || '#F0FBF7' }}
                     >
                       <span
-                        className={`fav-card__icon ${catInfo?.icon || 'ti-file-text'}`}
+                        className={`fav-card__icon ti ${catInfo?.icon || 'ti-file-text'}`}
                         style={{ color: catInfo?.color || '#1D9E75' }}
                       ></span>
                     </div>

@@ -69,7 +69,7 @@ export default function FileUploadZone({ onFileSelected, uploading, progress, er
           </div>
         ) : (
           <div className="file-upload-zone__content">
-            <span className="file-upload-zone__icon ti-cloud-upload"></span>
+            <span className="file-upload-zone__icon ti ti-cloud-upload"></span>
             <div className="file-upload-zone__title">Upload Report or Test</div>
             <div className="file-upload-zone__subtitle">Tap to choose a file</div>
             <div className="file-upload-zone__pills">
@@ -84,7 +84,7 @@ export default function FileUploadZone({ onFileSelected, uploading, progress, er
 
       {error && (
         <div className="file-upload-zone__error">
-          <span className="ti-alert-circle"></span>
+          <span className="ti ti-alert-circle"></span>
           <span>{error}</span>
         </div>
       )}

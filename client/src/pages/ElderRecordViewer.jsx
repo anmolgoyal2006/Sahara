@@ -160,14 +160,14 @@ export default function ElderRecordViewer() {
           {/* Download and External view backups in case iframe is blocked */}
           {!isDocMode && (
             <div className="pdf-fallback-card" style={{ marginTop: '16px' }}>
-              <span className="pdf-fallback-card__icon ti-file-text"></span>
+              <span className="pdf-fallback-card__icon ti ti-file-text"></span>
               <p className="pdf-fallback-card__title">PDF Report Previewed Above</p>
               <div className="pdf-fallback-card__actions">
                 <button
                   className="pdf-fallback-card__btn pdf-fallback-card__btn--open"
                   onClick={() => window.open(record.file_url, '_blank')}
                 >
-                  <span className="ti-export"></span>
+                  <span className="ti ti-export"></span>
                   <span>Open in New Tab</span>
                 </button>
                 <a
@@ -176,7 +176,7 @@ export default function ElderRecordViewer() {
                   className="pdf-fallback-card__btn pdf-fallback-card__btn--download"
                   style={{ textDecoration: 'none' }}
                 >
-                  <span className="ti-download"></span>
+                  <span className="ti ti-download"></span>
                   <span>Download PDF</span>
                 </a>
               </div>
@@ -228,7 +228,7 @@ export default function ElderRecordViewer() {
         <header className="viewer-header-bar">
           <div className="viewer-header-bar__left">
             <button className="viewer-header-bar__back" onClick={() => navigate(-1)}>
-              <span className="ti-arrow-left"></span>
+              <span className="ti ti-arrow-left"></span>
             </button>
             <div className="viewer-header-bar__info">
               <h2 className="viewer-header-bar__title">{record ? record.name : 'Loading...'}</h2>
@@ -249,12 +249,12 @@ export default function ElderRecordViewer() {
                 className="doc-mode-toggle doc-mode-toggle--inactive"
                 onClick={() => setDoctorMode(true)}
               >
-                <span className="ti-user"></span>
+                <span className="ti ti-user"></span>
                 <span>Doctor Mode</span>
               </button>
             )}
             <button className="viewer-header-bar__share" onClick={handleShare} title="Copy file link">
-              <span className="ti-share"></span>
+              <span className="ti ti-share"></span>
             </button>
           </div>
         </header>
@@ -263,12 +263,12 @@ export default function ElderRecordViewer() {
         <div className="viewer-content-body">
           {loading ? (
             <div style={{ textAlign: 'center', padding: '80px', color: '#5A7A9A' }}>
-              <span className="ti-reload" style={{ fontSize: '24px', display: 'inline-block', animation: 'spin 1.5s linear infinite' }}></span>
+              <span className="ti ti-reload" style={{ fontSize: '24px', display: 'inline-block', animation: 'spin 1.5s linear infinite' }}></span>
               <p style={{ marginTop: '8px' }}>Loading document details...</p>
             </div>
           ) : error ? (
             <div style={{ textAlign: 'center', padding: '80px', color: '#E24B4A' }}>
-              <span className="ti-alert" style={{ fontSize: '32px' }}></span>
+              <span className="ti ti-alert" style={{ fontSize: '32px' }}></span>
               <p style={{ marginTop: '8px' }}>{error}</p>
               <button
                 onClick={fetchRecordDetails}
@@ -292,7 +292,7 @@ export default function ElderRecordViewer() {
                     </span>
                   )}
                   <span className="report-info-card__date">
-                    <span className="ti-calendar"></span>
+                    <span className="ti ti-calendar"></span>
                     <span>{formatDate(record.report_date)}</span>
                   </span>
                 </div>
@@ -310,7 +310,7 @@ export default function ElderRecordViewer() {
               <div className="ai-analysis-card" id="ai-analysis-box">
                 <div className="ai-analysis-card__header">
                   <h3 className="ai-analysis-card__title">
-                    <span className="ai-analysis-card__icon ti-wand"></span>
+                    <span className="ai-analysis-card__icon ti ti-wand"></span>
                     <span>Sahara AI Analysis</span>
                   </h3>
                   <span className="ai-analysis-card__subtitle">Powered by Gemini AI</span>
@@ -318,7 +318,7 @@ export default function ElderRecordViewer() {
 
                 {aiError && (
                   <div className="error-banner-ai">
-                    <span className="ti-alert"></span>
+                    <span className="ti ti-alert"></span>
                     <span>{aiError}</span>
                   </div>
                 )}
@@ -340,7 +340,7 @@ export default function ElderRecordViewer() {
                     {record.ai_doctor_recommendation && (
                       <div className="ai-card-recommendation">
                         <h4 className="ai-card-title ai-card-title--rec">
-                          <span className="ti-stethoscope"></span>
+                          <span className="ti ti-stethoscope"></span>
                           <span>Which Doctor to See</span>
                         </h4>
                         <p className="ai-card-text">{record.ai_doctor_recommendation}</p>
@@ -366,13 +366,13 @@ export default function ElderRecordViewer() {
                   </div>
                 ) : (
                   <div className="ai-empty-state">
-                    <span className="ai-empty-state__icon ti-face-smile" style={{ fontSize: '48px' }}></span>
+                    <span className="ai-empty-state__icon ti ti-face-smile" style={{ fontSize: '48px' }}></span>
                     <h4 className="ai-empty-state__title">Get AI Analysis</h4>
                     <p className="ai-empty-state__desc">
                       Sahara AI will explain what this report means and suggest which doctor type to visit.
                     </p>
                     <button className="ai-analyse-btn" onClick={handleRunAIAnalysis}>
-                      <span className="ti-wand"></span>
+                      <span className="ti ti-wand"></span>
                       <span>Analyse This Report</span>
                     </button>
                   </div>
@@ -380,7 +380,7 @@ export default function ElderRecordViewer() {
 
                 {/* Disclaimer - always visible */}
                 <div className="ai-disclaimer-card">
-                  <span className="ai-disclaimer-card__icon ti-alert-circle"></span>
+                  <span className="ai-disclaimer-card__icon ti ti-alert-circle"></span>
                   <p className="ai-disclaimer-card__text">
                     This AI analysis is for information only. Always consult your doctor for medical advice.
                     Do not change medication based on this analysis.
