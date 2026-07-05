@@ -96,24 +96,6 @@ export default function ElderHome() {
           <HealthAlertBanner alerts={healthAlerts} onDismiss={() => setShowAlertBanner(false)} />
         )}
         <GreetingCard user={user} profile={profile} userId={userId} />
-        {activeBooking && activeLocationData && (
-          <ActiveBookingMap
-            booking={activeBooking}
-            workerLocation={{
-              lat: activeLocationData.worker?.lat,
-              lng: activeLocationData.worker?.lng,
-            }}
-            elderLocation={{
-              lat: activeLocationData.elder?.lat,
-              lng: activeLocationData.elder?.lng,
-            }}
-            workerName={activeLocationData.worker?.name}
-            workerPhone={activeLocationData.worker?.phone}
-            workerPhoto={activeBooking.workers?.photo_url}
-            workerRating={activeBooking.workers?.rating}
-            onRefresh={refreshActiveBooking}
-          />
-        )}
         <ServiceTiles />
         
         {/* My Health Section — Phase 11E */}
@@ -154,6 +136,27 @@ export default function ElderHome() {
           <UpcomingBookings bookings={bookings} />
         </div>
         <QuickActions todaySchedule={todaySchedule} />
+
+        {activeBooking && activeLocationData && (
+          <div style={{ marginTop: '20px' }}>
+            <ActiveBookingMap
+              booking={activeBooking}
+              workerLocation={{
+                lat: activeLocationData.worker?.lat,
+                lng: activeLocationData.worker?.lng,
+              }}
+              elderLocation={{
+                lat: activeLocationData.elder?.lat,
+                lng: activeLocationData.elder?.lng,
+              }}
+              workerName={activeLocationData.worker?.name}
+              workerPhone={activeLocationData.worker?.phone}
+              workerPhoto={activeBooking.workers?.photo_url}
+              workerRating={activeBooking.workers?.rating}
+              onRefresh={refreshActiveBooking}
+            />
+          </div>
+        )}
       </div>
       <style>{`
         @media (min-width: 1024px) {
