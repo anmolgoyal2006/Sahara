@@ -17,14 +17,21 @@ export default function AdherenceCard({ adherence }) {
   const { percentage = 100, taken = 0, total = 0, dailyBreakdown = [] } = adherence
   const color = pctColor(percentage)
 
-  const todayKey = new Date().toISOString().split('T')[0]
+  const localDateStr = (d) => {
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const dateVal = String(d.getDate()).padStart(2, '0')
+    return `${y}-${m}-${dateVal}`
+  }
+
+  const todayKey = localDateStr(new Date())
 
   // Build last 7 days including today
   const days = []
   for (let i = 6; i >= 0; i--) {
     const d = new Date()
     d.setDate(d.getDate() - i)
-    const key = d.toISOString().split('T')[0]
+    const key = localDateStr(d)
     const found = dailyBreakdown.find(b => b.date === key)
     days.push({
       date: key,
