@@ -80,12 +80,16 @@ Examples:
 - [ACTION:BOOK:driver:09:00:today:1] (book driver at 9 AM today for 1 hour)
 - [ACTION:BOOK:cook:11:00:tomorrow:1] when user says "1 ghante ke liye" or "ek ghanta"
 Service type mapping: khaana/cook/chef/kook → cook, nurse/nursing → nurse, driver/car → driver, maid/safaai → maid, physiotherapy → physiotherapist, repair → repair
-Duration mapping: 1/ek/एक → 1, 2/do/दो → 2, 3/teen/तीन → 3, 4/char/चार → 4, adha/adha ghanta → 1 (round up)
+Duration mapping: 1/ek/एक → 1, 2/do/दो → 2, 3/teen/तीन → 3, 4/char/char → 4, adha/adha ghanta → 1 (round up)
 If time/date/duration are not specified, use defaults: time=09:00, date=tomorrow, duration=2
 [ACTION:CALL_FAMILY]
 [ACTION:SOS]
 [ACTION:HEALTH_LOG]
 [ACTION:MEDICINES]
+[ACTION:MEDICAL_RECORDS]
+  Use this if the user asks about their medical reports, test results, or wants to see a specific report.
+[ACTION:ADD_MEDICAL_RECORD]
+  Use this if the user says they want to upload or add a new report/test.
 [ACTION:MARK_TAKEN:medicine_name]
   Use this when the user says they have taken a medicine (e.g. "maine dawai le li", "I took my medicine", "maine subah wali dawai kha li").
   Replace medicine_name with the closest matching name from their current medicines list above.
@@ -243,6 +247,10 @@ router.post('/chat', async (req, res) => {
           date, 
           duration 
         }
+      } else if (action === 'MEDICAL_RECORDS') {
+        actionData = { type: 'MEDICAL_RECORDS' }
+      } else if (action === 'ADD_MEDICAL_RECORD') {
+        actionData = { type: 'ADD_MEDICAL_RECORD' }
       } else {
         actionData = { type: action }
       }

@@ -40,7 +40,9 @@ function ActionCard({ action, onConfirm, onDismiss, onMarkTakenConfirm }) {
     CALL_FAMILY: { icon: 'ti-phone',              color: '#185FA5', bg: '#EBF4FF', title: 'Call your family?',            desc: 'Open a video call with your family.',            confirmLabel: 'Yes, Call',        confirmColor: '#185FA5' },
     SOS:         { icon: 'ti-urgent',             color: '#E24B4A', bg: '#FFF0F0', title: 'Send Emergency Alert?',        desc: 'This will alert your family immediately.',       confirmLabel: 'Yes, Send Alert',  confirmColor: '#E24B4A' },
     HEALTH_LOG:  { icon: 'ti-heart-rate-monitor', color: '#1D9E75', bg: '#F0FBF7', title: 'Log your health?',             desc: 'Record your health readings now.',               confirmLabel: 'Log Now',          confirmColor: '#1D9E75' },
-    MEDICINES:   { icon: 'ti-pill',               color: '#BA7517', bg: '#FAEEDA', title: 'View your medicines?',         desc: 'See your medicine schedule.',                    confirmLabel: 'Yes, View',        confirmColor: '#BA7517' },
+    MEDICINES:           { icon: 'ti-pill',               color: '#BA7517', bg: '#FAEEDA', title: 'View your medicines?',         desc: 'See your medicine schedule.',                    confirmLabel: 'Yes, View',        confirmColor: '#BA7517' },
+    MEDICAL_RECORDS:     { icon: 'ti-folder-medical',     color: '#185FA5', bg: '#EBF4FF', title: 'View Medical Reports',         desc: 'See your saved test results.',                    confirmLabel: 'Open Records',     confirmColor: '#185FA5' },
+    ADD_MEDICAL_RECORD:  { icon: 'ti-upload',             color: '#1D9E75', bg: '#F0FBF7', title: 'Add a New Medical Report',     desc: 'Upload a test result or doctor prescription.',    confirmLabel: 'Add Report',       confirmColor: '#1D9E75' },
   }
 
   // MARK_TAKEN is handled separately
@@ -323,6 +325,8 @@ export default function ElderCompanion() {
       navigate('/elder/health', hasVitals ? { state: { prefillVitals: lastResponseVitals } } : undefined)
     }
     else if (action.type === 'MEDICINES') navigate('/elder/medicines')
+    else if (action.type === 'MEDICAL_RECORDS') navigate('/elder/medical-records')
+    else if (action.type === 'ADD_MEDICAL_RECORD') navigate('/elder/medical-records', { state: { openAddModal: true } })
   }
 
   if (loading) {

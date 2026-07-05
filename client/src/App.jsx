@@ -22,6 +22,8 @@ import WorkerSchedule from './pages/WorkerSchedule'
 import WorkerLocation from './pages/WorkerLocation'
 import WorkerRatings from './pages/WorkerRatings'
 import FamilyDashboard from './pages/FamilyDashboard'
+import ElderMedicalRecords from './pages/ElderMedicalRecords'
+import ElderRecordViewer from './pages/ElderRecordViewer'
 
 function App() {
   return (
@@ -45,6 +47,8 @@ function App() {
         <Route path="/elder/sos" element={<ElderSOS />} />
         <Route path="/elder/sos/history" element={<ElderSOSHistory />} />
         <Route path="/elder/track-worker" element={<ElderTrackWorker />} />
+        <Route path="/elder/medical-records" element={<ElderMedicalRecords />} />
+        <Route path="/elder/medical-records/:recordId/view" element={<ElderRecordViewer />} />
         <Route path="/family/dashboard" element={<FamilyDashboard />} />
         <Route path="/worker/jobs" element={<WorkerJobs />} />
         <Route path="/worker/profile" element={<WorkerProfile />} />

@@ -57,6 +57,9 @@ app.use('/api/sos', sosRoutes)
 const familyRoutes = require('./routes/family')
 app.use('/api/family', familyRoutes)
 
+const medicalRoutes = require('./routes/medical')
+app.use('/api/medical', medicalRoutes)
+
 app.listen(PORT, () => {
   console.log(`Sahara server running on http://localhost:${PORT}`)
 })

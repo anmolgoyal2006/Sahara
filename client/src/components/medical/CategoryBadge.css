@@ -1,0 +1,36 @@
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+}
+
+.category-badge--inactive {
+  background: #FFFFFF;
+  color: #5A7A9A;
+  border: 1.5px solid #DDE8F5;
+}
+
+.category-badge--inactive:hover {
+  border-color: #1D9E75;
+  color: #1D9E75;
+  background-color: #F7FBFF;
+}
+
+.category-badge__icon {
+  font-size: 13px;
+}
+
+.category-badge__count {
+  font-size: 11px;
+  opacity: 0.9;
+}

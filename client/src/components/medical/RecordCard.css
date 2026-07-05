@@ -1,0 +1,175 @@
+.record-card {
+  background: #FFFFFF;
+  border: 1px solid #DDE8F5;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+  box-sizing: border-box;
+  box-shadow: 0 2px 4px rgba(10, 37, 64, 0.02);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.record-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(10, 37, 64, 0.05);
+}
+
+.record-card__left {
+  flex-shrink: 0;
+}
+
+.record-card__icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.record-card__icon {
+  font-size: 22px;
+}
+
+.record-card__center {
+  flex: 1;
+  min-width: 0; /* allows text truncation */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.record-card__title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #0A2540;
+  margin: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.record-card__category {
+  font-size: 11px;
+  color: #5A7A9A;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.record-card__date-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #5A7A9A;
+}
+
+.record-card__notes {
+  font-style: italic;
+  font-size: 11px;
+  color: #5A7A9A;
+  margin: 2px 0 0 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.record-card__ai-badge {
+  background: #F0FBF7;
+  color: #1D9E75;
+  border: 1px solid #C6F6D5;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  margin-top: 4px;
+  line-height: 1;
+}
+
+.record-card__right {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  align-items: center;
+}
+
+.record-card__btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #5A7A9A;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 14px;
+}
+
+.record-card__btn:hover {
+  background-color: #F7FBFF;
+  color: #0A2540;
+}
+
+.record-card__btn--favourite.active {
+  color: #FFB000;
+}
+
+.record-card__btn--favourite.active:hover {
+  color: #E09C00;
+}
+
+/* Dropdown Menu styling */
+.record-card__dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #FFFFFF;
+  border: 1px solid #DDE8F5;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(10, 37, 64, 0.1);
+  z-index: 10;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+  margin-top: 4px;
+}
+
+.record-card__dropdown-item {
+  background: none;
+  border: none;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: #0A2540;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.record-card__dropdown-item:hover {
+  background-color: #F7FBFF;
+}
+
+.record-card__dropdown-item--delete {
+  color: #E24B4A;
+}
+
+.record-card__dropdown-item--delete:hover {
+  background-color: #FFF0F0;
+}

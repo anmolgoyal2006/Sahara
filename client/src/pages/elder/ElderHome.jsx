@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useElderData } from '../../hooks/useElderData'
 import ElderLayout from '../../components/layout/ElderLayout'
 import GreetingCard from '../../components/elder/GreetingCard'
@@ -17,8 +18,10 @@ import { supabase } from '../../lib/supabase'
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 export default function ElderHome() {
+  const navigate = useNavigate()
   const { user, profile, healthLog, bookings, nextMedicine, loading } = useElderData()
   const [healthAlerts, setHealthAlerts] = useState([])
+  const [recordCount, setRecordCount] = useState(null)
   const [showAlertBanner, setShowAlertBanner] = useState(true)
   const [todaySchedule, setTodaySchedule] = useState([])
   const [userId, setUserId] = useState(null)
@@ -48,6 +51,10 @@ export default function ElderHome() {
       fetch(`${API_URL}/api/medicine/today/${uid}`)
         .then(r => r.json())
         .then(data => { if (data.success) setTodaySchedule(data.schedule) })
+        .catch(() => {})
+      fetch(`${API_URL}/api/medical/list/${uid}`)
+        .then(r => r.json())
+        .then(data => { if (data.success) setRecordCount(data.total) })
         .catch(() => {})
       // Update elder location silently for family dashboard visibility
       if (navigator.geolocation) {
@@ -108,6 +115,39 @@ export default function ElderHome() {
           />
         )}
         <ServiceTiles />
+        
+        {/* My Health Section — Phase 11E */}
+        <div className="my-health-section">
+          <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#0A2540', marginBottom: '12px' }}>My Health</h3>
+          <div className="my-health-grid">
+            <div className="my-health-tile" onClick={() => navigate('/elder/health')}>
+              <div className="my-health-tile__icon-box" style={{ backgroundColor: '#FFF0F0' }}>
+                <span className="my-health-tile__icon ti-pulse" style={{ color: '#E24B4A' }}></span>
+              </div>
+              <h4 className="my-health-tile__label">Health Log</h4>
+              <p className="my-health-tile__subtext">Daily vitals</p>
+            </div>
+            
+            <div className="my-health-tile" onClick={() => navigate('/elder/medicines')}>
+              <div className="my-health-tile__icon-box" style={{ backgroundColor: '#ECFDF5' }}>
+                <span className="my-health-tile__icon ti-notepad" style={{ color: '#059669' }}></span>
+              </div>
+              <h4 className="my-health-tile__label">Medicines</h4>
+              <p className="my-health-tile__subtext">Pill reminders</p>
+            </div>
+            
+            <div className="my-health-tile" onClick={() => navigate('/elder/medical-records')}>
+              <div className="my-health-tile__icon-box" style={{ backgroundColor: '#EBF4FF' }}>
+                <span className="my-health-tile__icon ti-folder-medical" style={{ color: '#185FA5', fontSize: '24px' }}></span>
+              </div>
+              <h4 className="my-health-tile__label">My Reports</h4>
+              <p className="my-health-tile__subtext">
+                {recordCount !== null ? `${recordCount} reports` : 'Tap to view'}
+              </p>
+            </div>
+          </div>
+        </div>
+
         <CompanionBanner userName={user?.name} language={user?.language} />
         <div className="health-bookings-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 0 }}>
           <HealthSummaryCard healthLog={healthLog} />
@@ -118,6 +158,59 @@ export default function ElderHome() {
       <style>{`
         @media (min-width: 1024px) {
           .health-bookings-grid { grid-template-columns: 1fr 1fr !important; gap: 16px !important; }
+        }
+        .my-health-section {
+          margin: 20px 0;
+        }
+        .my-health-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+        }
+        @media (max-width: 600px) {
+          .my-health-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        .my-health-tile {
+          background: #FFFFFF;
+          border: 1.5px solid #DDE8F5;
+          border-radius: 12px;
+          padding: 16px 12px;
+          text-align: center;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+        }
+        .my-health-tile:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 10px rgba(10, 37, 64, 0.05);
+        }
+        .my-health-tile__icon-box {
+          width: 44px;
+          height: 44px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .my-health-tile__icon {
+          font-size: 24px;
+        }
+        .my-health-tile__label {
+          font-size: 13px;
+          font-weight: bold;
+          color: #0A2540;
+          margin: 0;
+        }
+        .my-health-tile__subtext {
+          font-size: 10px;
+          color: #5A7A9A;
+          margin: 0;
+          font-weight: 500;
         }
       `}</style>
     </ElderLayout>
