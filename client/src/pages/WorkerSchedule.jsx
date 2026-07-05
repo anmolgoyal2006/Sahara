@@ -94,22 +94,22 @@ function SlotCard({ booking }) {
     <div style={{
       background: svc.bg,
       borderRadius: 8,
-      padding: '6px 8px',
-      marginBottom: 4,
-      borderLeft: `3px solid ${svc.color}`,
+      padding: '8px 10px',
+      marginBottom: 6,
+      borderLeft: `3.5px solid ${svc.color}`,
       minWidth: 0,
     }}>
       <p style={{
-        fontSize: 10, fontWeight: 700, color: svc.color,
+        fontSize: 11, fontWeight: 700, color: svc.color,
         margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
       }}>
         {svc.label}
       </p>
-      <p style={{ fontSize: 10, color: '#5A7A9A', margin: '1px 0 0', whiteSpace: 'nowrap' }}>
+      <p style={{ fontSize: 11, color: '#5A7A9A', margin: '2px 0 0', whiteSpace: 'nowrap' }}>
         {formatTime(booking.scheduled_at)}
       </p>
       <p style={{
-        fontSize: 10, color: '#A0B8D0', margin: '1px 0 0',
+        fontSize: 10.5, color: '#A0B8D0', margin: '2px 0 0',
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
       }}>
         {booking.users?.name || 'Elder'}
@@ -356,35 +356,35 @@ export default function WorkerSchedule() {
                 <div
                   key={idx}
                   style={{
-                    minWidth: COL_W, flex: `0 0 ${COL_W}px`,
+                    minWidth: 92, flex: 1,
                     borderRight: idx < 6 ? '1px solid #EEF4FB' : 'none',
-                    borderLeft: isToday ? '3px solid #1D9E75' : undefined,
+                    borderLeft: isToday ? '3.5px solid #1D9E75' : undefined,
                     display: 'flex', flexDirection: 'column',
                     opacity: isPast ? 0.55 : 1,
                   }}
                 >
                   {/* Day header */}
                   <div style={{
-                    padding: '10px 8px 8px',
+                    padding: '12px 10px 10px',
                     textAlign: 'center',
                     borderBottom: '1px solid #EEF4FB',
                     background: isToday ? '#F0FBF7' : 'transparent',
                   }}>
                     <p style={{
-                      fontSize: 10, fontWeight: 700, color: '#A0B8D0',
-                      textTransform: 'uppercase', letterSpacing: 0.5, margin: '0 0 4px',
+                      fontSize: 11, fontWeight: 700, color: '#A0B8D0',
+                      textTransform: 'uppercase', letterSpacing: 0.5, margin: '0 0 6px',
                     }}>
                       {DAY_NAMES[dayDate.getDay()]}
                     </p>
                     {/* Date circle */}
                     <div style={{
-                      width: 28, height: 28, borderRadius: '50%',
+                      width: 32, height: 32, borderRadius: '50%',
                       background: isToday ? '#1D9E75' : 'transparent',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       margin: '0 auto',
                     }}>
                       <span style={{
-                        fontSize: 14, fontWeight: 700,
+                        fontSize: 15, fontWeight: 700,
                         color: isToday ? 'white' : isPast ? '#C0D4E8' : '#0A2540',
                         lineHeight: 1,
                       }}>
@@ -393,25 +393,25 @@ export default function WorkerSchedule() {
                     </div>
                     {/* Booking count dot */}
                     {dayBookings.length > 0 && (
-                      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 4, gap: 2 }}>
+                      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 6, gap: 2.5 }}>
                         {dayBookings.slice(0, 3).map((_, i) => (
-                          <div key={i} style={{ width: 4, height: 4, borderRadius: '50%', background: '#1D9E75' }} />
+                          <div key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: '#1D9E75' }} />
                         ))}
                       </div>
                     )}
                   </div>
 
                   {/* Booking slots */}
-                  <div style={{ flex: 1, padding: '8px 6px', minHeight: 80 }}>
+                  <div style={{ flex: 1, padding: '10px 8px', minHeight: 90 }}>
                     {dayBookings.length > 0 ? (
                       dayBookings.map(b => <SlotCard key={b.id} booking={b} />)
                     ) : (
                       <div style={{
-                        height: '100%', minHeight: 64,
+                        height: '100%', minHeight: 72,
                         border: '1.5px dashed #EEF4FB', borderRadius: 8,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}>
-                        <span style={{ fontSize: 10, color: '#D0DDE8', fontWeight: 600 }}>Free</span>
+                        <span style={{ fontSize: 11, color: '#D0DDE8', fontWeight: 600 }}>Free</span>
                       </div>
                     )}
                   </div>
