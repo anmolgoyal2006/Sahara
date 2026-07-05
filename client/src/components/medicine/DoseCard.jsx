@@ -75,14 +75,21 @@ export default function DoseCard({ dose, onMarkTaken, onMarkSkipped }) {
       {/* Right action */}
       <div style={{ flexShrink: 0, textAlign: 'right', minWidth: 80 }}>
         {dose.status === 'taken' && (
-          <>
-            <i className="ti ti-circle-check" style={{ fontSize: 24, color: '#1D9E75', display: 'block', marginBottom: 2 }} />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+            <div style={{
+              width: 24, height: 24, borderRadius: '50%',
+              border: '2.5px solid #1D9E75', background: '#F0FBF7',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginBottom: 2, margin: '0 0 2px auto'
+            }}>
+              <i className="ti ti-check" style={{ fontSize: 12, color: '#1D9E75', fontWeight: 'bold' }} />
+            </div>
             <p style={{ fontSize: 11, color: '#1D9E75', margin: 0 }}>
               {dose.taken_at
                 ? `${new Date(dose.taken_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`
                 : 'Taken'}
             </p>
-          </>
+          </div>
         )}
 
         {dose.status === 'missed' && (
