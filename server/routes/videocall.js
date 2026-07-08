@@ -1,3 +1,10 @@
+/**
+ * videocall.js — Phase 12 (Jitsi Meet backend)
+ *
+ * Jitsi Meet is free, no API key, no credit card.
+ * We generate a unique room name, save the call record to Supabase,
+ * and return the Jitsi URL. Both participants open the same URL.
+ */
 const express = require('express')
 const router = express.Router()
 const { createClient } = require('@supabase/supabase-js')
@@ -7,29 +14,7 @@ const supabase = createClient(
   process.env.SUPABASE_SECRET_KEY
 )
 
-const DAILY_API_KEY = process.env.DAILY_API_KEY
-const DAILY_API_URL = 'https://api.daily.co/v1'
-
-/* ─────────────────────────────────────
-   Helper: Call Daily.co API
-───────────────────────────────────── */
-async function dailyAPI(endpoint, method = 'GET', body = null) {
-  const options = {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${DAILY_API_KEY}`
-    }
-  }
-  if (body) options.body = JSON.stringify(body)
-
-  const res = await fetch(`${DAILY_API_URL}${endpoint}`, options)
-  if (!res.ok) {
-    const error = await res.text()
-    throw new Error(`Daily.co API error: ${error}`)
-  }
-  return res.json()
-}
+const JITSI_BASE = 'https://meet.jit.si'
 
 /* ─────────────────────────────────────
    Helper: Generate unique room name
@@ -37,13 +22,12 @@ async function dailyAPI(endpoint, method = 'GET', body = null) {
 function generateRoomName(elderId) {
   const timestamp = Date.now()
   const shortId = elderId.replace(/-/g, '').substring(0, 8)
-  return `sahara-${shortId}-${timestamp}`
+  return `Sahara-${shortId}-${timestamp}`
 }
 
 /* ─────────────────────────────────────
    POST /api/videocall/create
-   Create a new Daily.co room and save
-   to Supabase
+   Create a Jitsi room and save to Supabase
 ───────────────────────────────────── */
 router.post('/create', async (req, res) => {
   const { created_by, elder_id, family_id } = req.body
@@ -57,32 +41,14 @@ router.post('/create', async (req, res) => {
 
   try {
     const roomName = generateRoomName(elder_id)
-
-    // Create room on Daily.co — expires after 2 hours automatically
-    const expiryTime = Math.floor(Date.now() / 1000) + (2 * 60 * 60)
-
-    const room = await dailyAPI('/rooms', 'POST', {
-      name: roomName,
-      privacy: 'private',
-      properties: {
-        exp: expiryTime,
-        max_participants: 2,
-        enable_chat: false,
-        enable_screenshare: false,
-        start_video_off: false,
-        start_audio_off: false,
-        // Mobile-friendly settings
-        enable_prejoin_ui: false,
-        lang: 'en'
-      }
-    })
+    const roomUrl = `${JITSI_BASE}/${roomName}`
 
     // Save to Supabase
     const { data: callRecord, error } = await supabase
       .from('video_calls')
       .insert({
         room_name: roomName,
-        room_url: room.url,
+        room_url: roomUrl,
         created_by,
         elder_id,
         family_id: family_id || null,
@@ -96,7 +62,7 @@ router.post('/create', async (req, res) => {
     return res.json({
       success: true,
       call: callRecord,
-      roomUrl: room.url,
+      roomUrl,
       roomName
     })
   } catch (e) {
@@ -107,11 +73,10 @@ router.post('/create', async (req, res) => {
 
 /* ─────────────────────────────────────
    PUT /api/videocall/start/:callId
-   Mark call as active when both join
+   Mark call as active
 ───────────────────────────────────── */
 router.put('/start/:callId', async (req, res) => {
   const { callId } = req.params
-
   try {
     const { data, error } = await supabase
       .from('video_calls')
@@ -124,7 +89,6 @@ router.put('/start/:callId', async (req, res) => {
       .single()
 
     if (error) throw error
-
     return res.json({ success: true, call: data })
   } catch (e) {
     return res.status(500).json({ success: false, error: e.message })
@@ -142,7 +106,7 @@ router.put('/end/:callId', async (req, res) => {
   try {
     const { data: call } = await supabase
       .from('video_calls')
-      .select('room_name, started_at')
+      .select('started_at')
       .eq('id', callId)
       .single()
 
@@ -152,14 +116,6 @@ router.put('/end/:callId', async (req, res) => {
         ? Math.floor((endTime - new Date(call.started_at)) / 1000)
         : 0
     )
-
-    // Delete room on Daily.co to free up resources
-    try {
-      await dailyAPI(`/rooms/${call?.room_name}`, 'DELETE')
-    } catch (deleteErr) {
-      // Non-critical — room will expire anyway
-      console.error('Room delete failed:', deleteErr)
-    }
 
     const { data, error } = await supabase
       .from('video_calls')
@@ -173,7 +129,6 @@ router.put('/end/:callId', async (req, res) => {
       .single()
 
     if (error) throw error
-
     return res.json({ success: true, call: data })
   } catch (e) {
     return res.status(500).json({ success: false, error: e.message })
@@ -182,12 +137,10 @@ router.put('/end/:callId', async (req, res) => {
 
 /* ─────────────────────────────────────
    GET /api/videocall/active/:elderId
-   Check if elder has an active/waiting
-   call (for notification polling)
+   Check if elder has a waiting/active call
 ───────────────────────────────────── */
 router.get('/active/:elderId', async (req, res) => {
   const { elderId } = req.params
-
   try {
     const { data } = await supabase
       .from('video_calls')
@@ -204,7 +157,6 @@ router.get('/active/:elderId', async (req, res) => {
       call: data || null
     })
   } catch (e) {
-    // .single() throws when no rows found — that's fine
     return res.json({ success: true, hasActiveCall: false, call: null })
   }
 })
@@ -237,7 +189,6 @@ router.get('/history/:userId', async (req, res) => {
 
     const { data, error } = await query
     if (error) throw error
-
     return res.json({ success: true, calls: data || [] })
   } catch (e) {
     return res.status(500).json({ success: false, calls: [] })
@@ -246,40 +197,11 @@ router.get('/history/:userId', async (req, res) => {
 
 /* ─────────────────────────────────────
    POST /api/videocall/token
-   Generate a meeting token for a
-   specific participant (more secure
-   than using the room URL directly)
+   No-op for Jitsi (no tokens needed)
+   Kept for API compatibility
 ───────────────────────────────────── */
 router.post('/token', async (req, res) => {
-  const { room_name, user_name, is_owner } = req.body
-
-  if (!room_name || !user_name) {
-    return res.status(400).json({
-      success: false,
-      error: 'room_name and user_name required'
-    })
-  }
-
-  try {
-    const expiryTime = Math.floor(Date.now() / 1000) + (2 * 60 * 60)
-
-    const token = await dailyAPI('/meeting-tokens', 'POST', {
-      properties: {
-        room_name,
-        user_name,
-        is_owner: is_owner || false,
-        exp: expiryTime,
-        enable_screenshare: false,
-        start_video_off: false,
-        start_audio_off: false
-      }
-    })
-
-    return res.json({ success: true, token: token.token })
-  } catch (e) {
-    console.error('Token creation error:', e)
-    return res.status(500).json({ success: false, error: e.message })
-  }
+  return res.json({ success: true, token: null })
 })
 
 module.exports = router

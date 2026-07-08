@@ -93,22 +93,21 @@ export default function ElderHome() {
 
   return (
     <ElderLayout userName={user?.name}>
-      {/* Incoming video call overlay — Phase 12D */}
+      {/* Incoming video call overlay — Phase 12D/Jitsi */}
       {incomingCall && (
         <IncomingCallModal
           call={incomingCall}
           elderName={user?.name}
           onAnswer={() => {
             dismissCall()
-            navigate(
-              `/call/${incomingCall.id}` +
-              `?role=elder` +
-              `&roomUrl=${encodeURIComponent(incomingCall.room_url)}` +
-              `&roomName=${incomingCall.room_name}` +
-              `&userName=${encodeURIComponent(user?.name || 'Elder')}` +
-              `&otherName=${encodeURIComponent('Family')}` +
-              `&isOwner=false`
-            )
+            // Mark call active on server
+            fetch(`${API_URL}/api/videocall/start/${incomingCall.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' }
+            }).catch(console.error)
+            // Open Jitsi in new tab
+            const jitsiUrl = `${incomingCall.room_url}#userInfo.displayName="${encodeURIComponent(user?.name || 'Elder')}"`
+            window.open(jitsiUrl, '_blank', 'noopener')
           }}
           onDecline={() => {
             dismissCall()

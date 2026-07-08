@@ -271,10 +271,10 @@ export default function ElderCompanion() {
     }
   }
 
-  // ── Phase 12E: Elder initiates a video call ────────────────────────────────
+  // ── Phase 12E: Elder initiates a video call (Jitsi) ──────────────────────
   async function handleCallFamily() {
     try {
-      // Look up who is linked to this elder (family member with elder_id = userId)
+      // Look up linked family member
       const linkedRes = await fetch(`${API_URL}/api/family/linked-family/${userId}`)
       const linkedData = await linkedRes.json()
       const familyId = linkedData.success ? linkedData.family_id : null
@@ -291,15 +291,15 @@ export default function ElderCompanion() {
       const data = await res.json()
       if (!data.success) throw new Error(data.error || 'Failed to start call')
 
-      const params = new URLSearchParams({
-        role: 'elder',
-        roomUrl: encodeURIComponent(data.roomUrl),
-        roomName: data.call.room_name,
-        userName: encodeURIComponent(context?.name || 'Elder'),
-        otherName: encodeURIComponent(linkedData.family_name || 'Family'),
-        isOwner: 'true'
-      })
-      navigate(`/call/${data.call.id}?${params.toString()}`)
+      // Mark active immediately
+      fetch(`${API_URL}/api/videocall/start/${data.call.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' }
+      }).catch(console.error)
+
+      // Open Jitsi in new tab
+      const jitsiUrl = `${data.roomUrl}#userInfo.displayName="${encodeURIComponent(context?.name || 'Elder')}"`
+      window.open(jitsiUrl, '_blank', 'noopener')
     } catch (e) {
       console.error('handleCallFamily error:', e)
       setVoiceToast('Could not start call. Please try again.')

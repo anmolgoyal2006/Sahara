@@ -1,15 +1,14 @@
 /**
- * CallButton — "Video Call [Name]" button shown on Family Dashboard.
+ * CallButton — "Video Call [Name]" button on Family Dashboard.
+ * Uses Jitsi Meet (free, no account needed).
  *
- * Props:
- *   userId      — family member's Supabase user ID
- *   elderId     — elder's Supabase user ID
- *   elderName   — elder's display name
- *   userName    — family member's display name (for token)
- *   onCallCreated(callData) — callback after room is ready
+ * Flow:
+ *   1. POST /api/videocall/create → get Jitsi room URL + callId
+ *   2. Open Jitsi in a new tab
+ *   3. Mark call as active
+ *   4. Elder gets notified via useIncomingCall polling
  */
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -20,7 +19,6 @@ export default function CallButton({
   userName = 'Family',
   onCallCreated
 }) {
-  const navigate = useNavigate()
   const [state, setState] = useState('idle') // idle | creating | error
 
   const handleCall = async () => {
@@ -28,7 +26,7 @@ export default function CallButton({
     setState('creating')
 
     try {
-      // Step 1 — Create room
+      // Step 1 — Create Jitsi room record
       const createRes = await fetch(`${API_URL}/api/videocall/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -41,26 +39,25 @@ export default function CallButton({
       const createData = await createRes.json()
       if (!createData.success) throw new Error(createData.error || 'Failed to create call')
 
-      const { call, roomUrl, roomName } = createData
-      const callId = call.id
+      const { call, roomUrl } = createData
 
-      // Step 2 — Notify parent so it can trigger elder polling
+      // Step 2 — Notify parent (triggers elder polling)
       if (onCallCreated) onCallCreated(call)
 
-      // Step 3 — Navigate to call page
-      const params = new URLSearchParams({
-        role: 'family',
-        roomUrl: encodeURIComponent(roomUrl),
-        roomName,
-        userName: encodeURIComponent(userName),
-        otherName: encodeURIComponent(elderName),
-        isOwner: 'true'
-      })
-      navigate(`/call/${callId}?${params.toString()}`)
+      // Step 3 — Mark as active immediately
+      fetch(`${API_URL}/api/videocall/start/${call.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' }
+      }).catch(console.error)
+
+      // Step 4 — Open Jitsi in new tab with display name
+      const jitsiUrl = `${roomUrl}#userInfo.displayName="${encodeURIComponent(userName)}"`
+      window.open(jitsiUrl, '_blank', 'noopener')
+
+      setState('idle')
     } catch (e) {
       console.error('CallButton error:', e)
       setState('error')
-      // Reset to idle after 2.5s
       setTimeout(() => setState('idle'), 2500)
     }
   }
@@ -119,8 +116,7 @@ function Spinner() {
   return (
     <>
       <div style={{
-        width: 18,
-        height: 18,
+        width: 18, height: 18,
         border: '2px solid rgba(255,255,255,0.3)',
         borderTop: '2px solid white',
         borderRadius: '50%',
