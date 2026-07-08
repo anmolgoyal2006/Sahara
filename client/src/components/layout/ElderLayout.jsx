@@ -4,12 +4,13 @@ import BottomNav from './BottomNav'
 import SOSButton from './SOSButton'
 
 const NAV_ITEMS = [
-  { icon: 'ti-home',               label: 'Home',      route: '/elder/home' },
-  { icon: 'ti-calendar-plus',      label: 'Book',      route: '/elder/book' },
-  { icon: 'ti-message-chatbot',    label: 'Chat',      route: '/elder/companion' },
-  { icon: 'ti-heart-rate-monitor', label: 'Health',    route: '/elder/health' },
-  { icon: 'ti-pill',               label: 'Medicines', route: '/elder/medicines' },
-  { icon: 'ti-folder',             label: 'Reports',   route: '/elder/medical-records' },
+  { icon: 'ti-home',               label: 'Home',        route: '/elder/home' },
+  { icon: 'ti-calendar-plus',      label: 'Book',        route: '/elder/book' },
+  { icon: 'ti-message-chatbot',    label: 'Chat',        route: '/elder/companion' },
+  { icon: 'ti-heart-rate-monitor', label: 'Health',      route: '/elder/health' },
+  { icon: 'ti-pill',               label: 'Medicines',   route: '/elder/medicines' },
+  { icon: 'ti-folder',             label: 'Reports',     route: '/elder/medical-records' },
+  { icon: 'ti-map-pin-check',      label: 'Safety Zone', route: '/elder/safety-zone' },
 ]
 
 export default function ElderLayout({ children, userName }) {

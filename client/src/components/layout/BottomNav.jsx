@@ -1,12 +1,11 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 
 const NAV_ITEMS = [
-  { icon: 'ti-home',               label: 'Home',   route: '/elder/home' },
-  { icon: 'ti-calendar-plus',      label: 'Book',   route: '/elder/book' },
-  { icon: 'ti-message-chatbot',    label: 'Chat',   route: '/elder/companion' },
-  { icon: 'ti-heart-rate-monitor', label: 'Health', route: '/elder/health' },
-  { icon: 'ti-pill',               label: 'Meds',   route: '/elder/medicines' },
-  { icon: 'ti-folder',             label: 'Reports',route: '/elder/medical-records' },
+  { icon: 'ti-home',               label: 'Home',    route: '/elder/home' },
+  { icon: 'ti-calendar-plus',      label: 'Book',    route: '/elder/book' },
+  { icon: 'ti-message-chatbot',    label: 'Chat',    route: '/elder/companion' },
+  { icon: 'ti-heart-rate-monitor', label: 'Health',  route: '/elder/health' },
+  { icon: 'ti-map-pin-check',      label: 'Zone',    route: '/elder/safety-zone' },
 ]
 
 export default function BottomNav() {

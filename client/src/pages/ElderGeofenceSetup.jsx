@@ -1,0 +1,568 @@
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import ElderLayout from '../components/layout/ElderLayout'
+import { supabase } from '../lib/supabase'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
+const RADIUS_PRESETS = [
+  { label: '200m', value: 200 },
+  { label: '500m', value: 500 },
+  { label: '1 km', value: 1000 },
+  { label: '2 km', value: 2000 },
+]
+
+function formatRadius(meters) {
+  if (meters < 1000) return `${meters} meters`
+  return `${(meters / 1000).toFixed(1)} km`
+}
+
+/* ─────────────────────────────────────
+   Leaflet Map with draggable marker + circle
+───────────────────────────────────── */
+function GeofenceMap({ centerLat, centerLng, radiusMeters, onMarkerDrag, mapKey }) {
+  const containerRef = useRef(null)
+  const mapRef       = useRef(null)
+  const markerRef    = useRef(null)
+  const circleRef    = useRef(null)
+
+  // Init map
+  useEffect(() => {
+    if (!containerRef.current || !centerLat || !centerLng) return
+
+    // Load Leaflet CSS once
+    if (!document.getElementById('leaflet-css')) {
+      const link = document.createElement('link')
+      link.id   = 'leaflet-css'
+      link.rel  = 'stylesheet'
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+      document.head.appendChild(link)
+    }
+
+    import('leaflet').then(({ default: L }) => {
+      // Destroy previous instance if re-keyed
+      if (mapRef.current) {
+        mapRef.current.remove()
+        mapRef.current  = null
+        markerRef.current = null
+        circleRef.current = null
+      }
+
+      const map = L.map(containerRef.current, {
+        zoomControl: true,
+        scrollWheelZoom: false,
+      }).setView([centerLat, centerLng], 15)
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }).addTo(map)
+
+      // Home marker icon
+      const homeIcon = L.divIcon({
+        className: '',
+        html: `<div style="
+          width:40px;height:40px;border-radius:50%;
+          background:#1D9E75;border:3px solid white;
+          box-shadow:0 2px 10px rgba(29,158,117,0.45);
+          display:flex;align-items:center;justify-content:center;
+          cursor:grab;
+        "><i class="ti ti-home" style="color:white;font-size:18px;"></i></div>`,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+        popupAnchor: [0, -22],
+      })
+
+      const marker = L.marker([centerLat, centerLng], {
+        icon: homeIcon,
+        draggable: true,
+      })
+        .addTo(map)
+        .bindPopup('<b style="font-size:13px">Drag to set home</b>')
+
+      marker.on('dragend', (e) => {
+        const { lat, lng } = e.target.getLatLng()
+        onMarkerDrag(lat, lng)
+      })
+
+      const circle = L.circle([centerLat, centerLng], {
+        radius: radiusMeters,
+        color: '#1D9E75',
+        fillColor: '#1D9E75',
+        fillOpacity: 0.1,
+        weight: 2,
+      }).addTo(map)
+
+      mapRef.current    = map
+      markerRef.current = marker
+      circleRef.current = circle
+    })
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove()
+        mapRef.current    = null
+        markerRef.current = null
+        circleRef.current = null
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapKey]) // re-init when mapKey changes (re-center triggered)
+
+  // Update circle radius live as slider changes
+  useEffect(() => {
+    if (!circleRef.current) return
+    circleRef.current.setRadius(radiusMeters)
+  }, [radiusMeters])
+
+  // Update marker + circle position when dragged (sync circle)
+  useEffect(() => {
+    if (!markerRef.current || !circleRef.current) return
+    markerRef.current.setLatLng([centerLat, centerLng])
+    circleRef.current.setLatLng([centerLat, centerLng])
+  }, [centerLat, centerLng])
+
+  if (!centerLat || !centerLng) {
+    return (
+      <div style={{
+        height: 260, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        background: '#F7FBFF', borderRadius: 12,
+        border: '1.5px dashed #DDE8F5', gap: 10,
+      }}>
+        <i className="ti ti-map-pin-off" style={{ fontSize: 36, color: '#DDE8F5' }} />
+        <p style={{ fontSize: 13, color: '#A0B8D0', margin: 0 }}>Getting your location…</p>
+      </div>
+    )
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      style={{ height: 260, width: '100%', borderRadius: 12, overflow: 'hidden' }}
+    />
+  )
+}
+
+/* ─────────────────────────────────────
+   Main page
+───────────────────────────────────── */
+export default function ElderGeofenceSetup() {
+  const navigate = useNavigate()
+
+  const [userId,     setUserId]     = useState(null)
+  const [loading,    setLoading]    = useState(true)
+  const [saving,     setSaving]     = useState(false)
+  const [error,      setError]      = useState(null)
+  const [toast,      setToast]      = useState(false)
+  const [hasZone,    setHasZone]    = useState(false)
+
+  // Zone fields
+  const [centerLat,     setCenterLat]     = useState(null)
+  const [centerLng,     setCenterLng]     = useState(null)
+  const [radiusMeters,  setRadiusMeters]  = useState(500)
+  const [label,         setLabel]         = useState('Home')
+  const [isActive,      setIsActive]      = useState(true)
+  const [zoneIsActive,  setZoneIsActive]  = useState(true) // from saved zone
+
+  // GPS + map
+  const [mapKey, setMapKey] = useState(0)
+  const [gpsLoading, setGpsLoading] = useState(false)
+
+  /* ── Load session + existing zone ── */
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) { window.location.href = '/login'; return }
+      const uid = session.user.id
+      setUserId(uid)
+
+      // Fetch existing zone
+      try {
+        const res  = await fetch(`${API_URL}/api/geofence/zone/${uid}`)
+        const data = await res.json()
+        if (data.hasZone && data.zone) {
+          setHasZone(true)
+          setCenterLat(data.zone.center_lat)
+          setCenterLng(data.zone.center_lng)
+          setRadiusMeters(data.zone.radius_meters)
+          setLabel(data.zone.label || 'Home')
+          setIsActive(data.zone.is_active)
+          setZoneIsActive(data.zone.is_active)
+        } else {
+          // No zone — get GPS for initial map center
+          getGPS()
+        }
+      } catch {
+        getGPS()
+      } finally {
+        setLoading(false)
+      }
+    })
+  }, [])
+
+  /* ── Get current GPS ── */
+  function getGPS(callback) {
+    if (!navigator.geolocation) return
+    setGpsLoading(true)
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setCenterLat(pos.coords.latitude)
+        setCenterLng(pos.coords.longitude)
+        setMapKey(k => k + 1)
+        setGpsLoading(false)
+        if (callback) callback(pos.coords.latitude, pos.coords.longitude)
+      },
+      () => setGpsLoading(false),
+      { enableHighAccuracy: true, timeout: 10000 }
+    )
+  }
+
+  /* ── Save ── */
+  async function handleSave() {
+    if (!centerLat || !centerLng) return
+    setSaving(true)
+    setError(null)
+
+    try {
+      // Create / update zone
+      const res = await fetch(`${API_URL}/api/geofence/zone`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          elder_id:      userId,
+          center_lat:    centerLat,
+          center_lng:    centerLng,
+          radius_meters: radiusMeters,
+          label,
+        }),
+      })
+      const data = await res.json()
+      if (!data.success) throw new Error(data.error || 'Save failed')
+
+      // Toggle active state only if it changed
+      if (isActive !== zoneIsActive) {
+        await fetch(`${API_URL}/api/geofence/zone/${userId}/toggle`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ is_active: isActive }),
+        })
+      }
+
+      setToast(true)
+      setTimeout(() => {
+        setToast(false)
+        navigate('/elder/home')
+      }, 1800)
+    } catch (e) {
+      setError(e.message || 'Something went wrong. Please try again.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <ElderLayout>
+        <div style={{ textAlign: 'center', padding: 60, color: '#A0B8D0' }}>
+          <i className="ti ti-loader-2" style={{ fontSize: 32, display: 'block', marginBottom: 10 }} />
+          Loading your safety zone…
+        </div>
+      </ElderLayout>
+    )
+  }
+
+  return (
+    <ElderLayout>
+      {/* ── Toast ── */}
+      {toast && (
+        <div style={{
+          position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)',
+          background: '#1D9E75', color: 'white', borderRadius: 12,
+          padding: '12px 24px', fontSize: 14, fontWeight: 700,
+          zIndex: 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <i className="ti ti-check" style={{ fontSize: 18 }} />
+          Safety zone saved!
+        </div>
+      )}
+
+      {/* ── Header ── */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0A2540, #185FA5)',
+        borderRadius: 16, padding: '24px 20px', marginBottom: 20,
+        position: 'relative',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+          <i className="ti ti-map-pin-check" style={{ fontSize: 28, color: 'white', marginTop: 2 }} />
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: 'white', margin: 0, marginBottom: 6 }}>
+              My Safety Zone
+            </h1>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', margin: 0 }}>
+              Family gets notified if you go outside this area
+            </p>
+          </div>
+        </div>
+
+        {/* Active/Paused pill */}
+        {hasZone && (
+          <div style={{
+            position: 'absolute', top: 16, right: 16,
+            background: zoneIsActive ? 'rgba(29,158,117,0.25)' : 'rgba(255,255,255,0.15)',
+            border: `1px solid ${zoneIsActive ? '#1D9E75' : 'rgba(255,255,255,0.3)'}`,
+            borderRadius: 20, padding: '4px 12px',
+            fontSize: 11, fontWeight: 700,
+            color: zoneIsActive ? '#9FE1CB' : 'rgba(255,255,255,0.6)',
+          }}>
+            {zoneIsActive ? '● Active' : '○ Paused'}
+          </div>
+        )}
+      </div>
+
+      {/* ── Onboarding card (no zone yet) OR info card (has zone) ── */}
+      {!hasZone ? (
+        <div style={{
+          background: '#F0FBF7', border: '1.5px solid #9FE1CB',
+          borderRadius: 12, padding: '14px 16px', marginBottom: 20,
+        }}>
+          <p style={{ fontSize: 15, fontWeight: 700, color: '#0F6E56', marginBottom: 6 }}>
+            Set up your Safety Zone
+          </p>
+          <p style={{ fontSize: 13, color: '#5A7A9A', lineHeight: 1.6, marginBottom: 8 }}>
+            Let your family know you are safe without needing to call.
+            They only get notified if you go far from home.
+          </p>
+          <p style={{ fontSize: 11, fontWeight: 700, color: '#1D9E75', margin: 0 }}>
+            Takes 1 minute to set up
+          </p>
+        </div>
+      ) : (
+        <div style={{
+          background: '#EBF4FF', border: '1.5px solid #DDE8F5',
+          borderRadius: 12, padding: '14px 16px', marginBottom: 20,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <i className="ti ti-info-circle" style={{ fontSize: 16, color: '#185FA5' }} />
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#185FA5' }}>How does this work?</span>
+          </div>
+          {[
+            { emoji: '📍', text: 'Set your home location on the map' },
+            { emoji: '📏', text: 'Choose a safe radius (200m — 5km)' },
+            { emoji: '🔔', text: 'Family gets notified if you go outside' },
+          ].map((row) => (
+            <div key={row.text} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <span style={{ fontSize: 13 }}>{row.emoji}</span>
+              <span style={{ fontSize: 11, color: '#185FA5' }}>{row.text}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Map section ── */}
+      <div style={{
+        background: 'white', border: '1.5px solid #DDE8F5',
+        borderRadius: 16, padding: 16, marginBottom: 20,
+      }}>
+        <p style={{
+          fontSize: 11, fontWeight: 700, color: '#A0B8D0',
+          textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12,
+        }}>
+          Your Home Location
+        </p>
+
+        <GeofenceMap
+          centerLat={centerLat}
+          centerLng={centerLng}
+          radiusMeters={radiusMeters}
+          mapKey={mapKey}
+          onMarkerDrag={(lat, lng) => {
+            setCenterLat(lat)
+            setCenterLng(lng)
+          }}
+        />
+
+        {/* Use current location button */}
+        <button
+          onClick={() => getGPS()}
+          disabled={gpsLoading}
+          style={{
+            width: '100%', height: 44, borderRadius: 12,
+            border: '1.5px solid #185FA5', background: 'white',
+            color: '#185FA5', fontSize: 14, fontWeight: 700,
+            cursor: gpsLoading ? 'not-allowed' : 'pointer',
+            fontFamily: 'inherit', marginTop: 12,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            opacity: gpsLoading ? 0.7 : 1,
+          }}
+        >
+          <i className="ti ti-current-location" style={{ fontSize: 16 }} />
+          {gpsLoading ? 'Getting location…' : 'Use My Current Location'}
+        </button>
+
+        {/* Coordinate display */}
+        {centerLat && centerLng && (
+          <p style={{ fontSize: 11, color: '#A0B8D0', textAlign: 'center', marginTop: 8, margin: '8px 0 0' }}>
+            {centerLat.toFixed(5)}, {centerLng.toFixed(5)}
+          </p>
+        )}
+      </div>
+
+      {/* ── Radius selector ── */}
+      <div style={{
+        background: 'white', border: '1.5px solid #DDE8F5',
+        borderRadius: 16, padding: 16, marginBottom: 20,
+      }}>
+        <p style={{
+          fontSize: 11, fontWeight: 700, color: '#A0B8D0',
+          textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12,
+        }}>
+          Safe Zone Radius
+        </p>
+
+        <p style={{ fontSize: 24, fontWeight: 700, color: '#1D9E75', margin: '0 0 2px' }}>
+          {formatRadius(radiusMeters)}
+        </p>
+        <p style={{ fontSize: 12, color: '#A0B8D0', marginBottom: 16 }}>
+          You can go up to {formatRadius(radiusMeters)} from home
+        </p>
+
+        {/* Slider */}
+        <input
+          type="range"
+          min={100}
+          max={5000}
+          step={100}
+          value={radiusMeters}
+          onChange={e => setRadiusMeters(parseInt(e.target.value))}
+          style={{ width: '100%', marginBottom: 16, accentColor: '#1D9E75', height: 6, cursor: 'pointer' }}
+        />
+
+        {/* Preset buttons */}
+        <div style={{ display: 'flex', gap: 8 }}>
+          {RADIUS_PRESETS.map(p => {
+            const active = radiusMeters === p.value
+            return (
+              <button
+                key={p.value}
+                onClick={() => setRadiusMeters(p.value)}
+                style={{
+                  flex: 1, height: 36, borderRadius: 20,
+                  border: active ? '2px solid #1D9E75' : '1.5px solid #DDE8F5',
+                  background: active ? '#1D9E75' : 'white',
+                  color: active ? 'white' : '#5A7A9A',
+                  fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                  fontFamily: 'inherit', transition: 'all 0.15s',
+                }}
+              >
+                {p.label}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ── Zone label ── */}
+      <div style={{
+        background: 'white', border: '1.5px solid #DDE8F5',
+        borderRadius: 16, padding: 16, marginBottom: 20,
+      }}>
+        <p style={{
+          fontSize: 11, fontWeight: 700, color: '#A0B8D0',
+          textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10,
+        }}>
+          Zone Name
+        </p>
+        <input
+          type="text"
+          value={label}
+          onChange={e => setLabel(e.target.value)}
+          placeholder="e.g. Home, Daughter's House"
+          maxLength={40}
+          style={{
+            width: '100%', height: 48, border: '1.5px solid #DDE8F5',
+            borderRadius: 12, padding: '0 14px', fontSize: 15,
+            color: '#0A2540', background: 'white', fontFamily: 'inherit',
+            outline: 'none', boxSizing: 'border-box',
+          }}
+        />
+      </div>
+
+      {/* ── Active toggle ── */}
+      <div style={{
+        background: 'white', border: '1.5px solid #DDE8F5',
+        borderRadius: 16, padding: 16, marginBottom: 24,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+      }}>
+        <div>
+          <p style={{ fontSize: 14, fontWeight: 700, color: '#0A2540', marginBottom: 2 }}>
+            Geofence Alerts
+          </p>
+          <p style={{ fontSize: 12, color: '#A0B8D0' }}>
+            Notify family when I leave this zone
+          </p>
+        </div>
+        {/* Toggle switch */}
+        <div
+          onClick={() => setIsActive(!isActive)}
+          style={{
+            width: 48, height: 28, borderRadius: 14,
+            background: isActive ? '#1D9E75' : '#DDE8F5',
+            position: 'relative', cursor: 'pointer',
+            transition: 'background 0.2s', flexShrink: 0,
+          }}
+        >
+          <div style={{
+            position: 'absolute', top: 3,
+            left: isActive ? 23 : 3,
+            width: 22, height: 22, borderRadius: '50%',
+            background: 'white',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+            transition: 'left 0.2s',
+          }} />
+        </div>
+      </div>
+
+      {/* ── Error ── */}
+      {error && (
+        <div style={{
+          background: '#FFF4F4', border: '1px solid #FECACA',
+          borderRadius: 10, padding: '10px 14px', marginBottom: 16,
+          color: '#E24B4A', fontSize: 13, fontWeight: 600,
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <i className="ti ti-alert-circle" style={{ fontSize: 16 }} />
+          {error}
+        </div>
+      )}
+
+      {/* ── Save button ── */}
+      <button
+        onClick={handleSave}
+        disabled={!centerLat || !centerLng || saving}
+        style={{
+          width: '100%', height: 52, borderRadius: 14,
+          background: (!centerLat || !centerLng || saving) ? '#A0B8D0' : '#1D9E75',
+          border: 'none', color: 'white', fontSize: 18, fontWeight: 700,
+          cursor: (!centerLat || !centerLng || saving) ? 'not-allowed' : 'pointer',
+          fontFamily: 'inherit', marginBottom: 16, transition: 'background 0.15s',
+        }}
+      >
+        {saving ? 'Saving…' : 'Save Safety Zone'}
+      </button>
+
+      {/* View history link */}
+      <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <button
+          onClick={() => navigate('/elder/location-history')}
+          style={{
+            background: 'none', border: 'none', padding: 0,
+            fontSize: 12, fontWeight: 700, color: '#185FA5',
+            cursor: 'pointer', fontFamily: 'inherit',
+          }}
+        >
+          View location history →
+        </button>
+      </div>
+    </ElderLayout>
+  )
+}

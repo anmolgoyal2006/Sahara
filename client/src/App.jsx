@@ -27,6 +27,8 @@ import ElderRecordViewer from './pages/ElderRecordViewer'
 import TestVideoCall from './pages/TestVideoCall'
 import VideoCallPage from './pages/VideoCallPage'
 import CallHistoryPage from './pages/CallHistoryPage'
+import ElderGeofenceSetup from './pages/ElderGeofenceSetup'
+import ElderLocationHistory from './pages/ElderLocationHistory'
 
 function App() {
   return (
@@ -52,6 +54,8 @@ function App() {
         <Route path="/elder/track-worker" element={<ElderTrackWorker />} />
         <Route path="/elder/medical-records" element={<ElderMedicalRecords />} />
         <Route path="/elder/medical-records/:recordId/view" element={<ElderRecordViewer />} />
+        <Route path="/elder/safety-zone" element={<ElderGeofenceSetup />} />
+        <Route path="/elder/location-history" element={<ElderLocationHistory />} />
         <Route path="/family/dashboard" element={<FamilyDashboard />} />
         <Route path="/worker/jobs" element={<WorkerJobs />} />
         <Route path="/worker/profile" element={<WorkerProfile />} />

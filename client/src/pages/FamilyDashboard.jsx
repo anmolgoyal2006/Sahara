@@ -14,7 +14,8 @@ import SOSAlertCard from '../components/sos/SOSAlertCard'
 import SOSHistoryList from '../components/sos/SOSHistoryList'
 import { useSOSNotifications } from '../hooks/useSOSNotifications'
 import CallButton from '../components/videocall/CallButton'
-// Phase 12 — Video Call
+import GeofenceAlertCard from '../components/family/GeofenceAlertCard'
+import { useGeofenceFamilyAlerts } from '../hooks/useGeofenceFamilyAlerts'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -46,9 +47,15 @@ export default function FamilyDashboard() {
   const [showNotifBanner, setShowNotifBanner] = useState(
     'Notification' in window && Notification.permission === 'default'
   )
+  const [geofenceAlerts, setGeofenceAlerts] = useState([])
+  const [geofenceZone,   setGeofenceZone]   = useState(null)
+  const [isOutside,      setIsOutside]      = useState(false)
 
   // SOS polling for family member
   useSOSNotifications(userId)
+
+  // Geofence alert polling — browser notifications when elder leaves/returns
+  useGeofenceFamilyAlerts(userId)
 
   const fetchOverview = useCallback(async (uid) => {
     try {
@@ -58,6 +65,12 @@ export default function FamilyDashboard() {
         setOverview(data)
         setLastRefreshed(new Date())
       }
+      // Fetch geofence alerts in parallel
+      const geofenceRes  = await fetch(`${API_URL}/api/geofence/family-alerts/${uid}`)
+      const geofenceData = await geofenceRes.json()
+      setGeofenceAlerts(geofenceData.alerts  || [])
+      setGeofenceZone(geofenceData.zone      || null)
+      setIsOutside(geofenceData.isOutside    || false)
     } catch { /* silent */ }
     finally { setLoading(false) }
   }, [])
@@ -196,6 +209,20 @@ export default function FamilyDashboard() {
 
         {/* Right column */}
         <div className="family-col-right">
+          {overview?.elder && (
+            <GeofenceAlertCard
+              alerts={geofenceAlerts}
+              zone={geofenceZone}
+              isOutside={isOutside}
+              elderName={overview.elder.name}
+              onAcknowledge={async (eventId) => {
+                await fetch(`${API_URL}/api/geofence/acknowledge/${eventId}`, { method: 'PUT' })
+                setGeofenceAlerts(prev =>
+                  prev.map(a => a.id === eventId ? { ...a, acknowledged: true } : a)
+                )
+              }}
+            />
+          )}
           <ElderLocationMap
             lat={elder?.lat}
             lng={elder?.lng}
