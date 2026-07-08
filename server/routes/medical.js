@@ -14,7 +14,7 @@ const supabase = createClient(supabaseUrl, supabaseSecret);
 
 // Vision model for analysing report images/PDFs
 const visionModel = genAI.getGenerativeModel({
-  model: 'gemini-1.5-flash',
+  model: 'gemini-3.1-flash-lite',
   generationConfig: {
     temperature: 0.2,
     maxOutputTokens: 4096

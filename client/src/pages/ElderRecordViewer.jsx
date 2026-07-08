@@ -333,7 +333,7 @@ export default function ElderRecordViewer() {
                     {/* Summary */}
                     <div className="ai-card-summary">
                       <h4 className="ai-card-title">What this report shows</h4>
-                      <p className="ai-card-text">{record.ai_analysis}</p>
+                      <p className="ai-card-text" dangerouslySetInnerHTML={{ __html: record.ai_analysis.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>') }}></p>
                     </div>
 
                     {/* Doctor Recommendation */}
@@ -343,7 +343,7 @@ export default function ElderRecordViewer() {
                           <span className="ti ti-stethoscope"></span>
                           <span>Which Doctor to See</span>
                         </h4>
-                        <p className="ai-card-text">{record.ai_doctor_recommendation}</p>
+                        <p className="ai-card-text" dangerouslySetInnerHTML={{ __html: record.ai_doctor_recommendation?.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>') }}></p>
                       </div>
                     )}
 
