@@ -44,13 +44,7 @@ export default function CallButton({
       // Step 2 — Notify parent (triggers elder polling)
       if (onCallCreated) onCallCreated(call)
 
-      // Step 3 — Mark as active immediately
-      fetch(`${API_URL}/api/videocall/start/${call.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' }
-      }).catch(console.error)
-
-      // Step 4 — Open Jitsi in new tab with display name
+      // Step 3 — Open Jitsi in new tab (keep status 'waiting' so elder sees the modal)
       const jitsiUrl = `${roomUrl}#userInfo.displayName="${encodeURIComponent(userName)}"`
       window.open(jitsiUrl, '_blank', 'noopener')
 

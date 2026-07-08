@@ -19,11 +19,11 @@ export function useIncomingCall(elderId) {
         const res = await fetch(`${API_URL}/api/videocall/active/${elderId}`)
         const data = await res.json()
 
-        // New waiting call that we haven't seen yet
+        // New incoming call (waiting OR active) that we haven't seen yet
         if (
           data.hasActiveCall &&
           data.call?.id !== lastCallId.current &&
-          data.call?.status === 'waiting'
+          (data.call?.status === 'waiting' || data.call?.status === 'active')
         ) {
           lastCallId.current = data.call.id
           setIncomingCall(data.call)
@@ -57,9 +57,9 @@ export function useIncomingCall(elderId) {
       }
     }
 
-    // Check immediately, then every 15s
+    // Check immediately, then every 5s for fast notification
     checkForCall()
-    intervalRef.current = setInterval(checkForCall, 15000)
+    intervalRef.current = setInterval(checkForCall, 5000)
 
     return () => clearInterval(intervalRef.current)
   }, [elderId])
