@@ -60,6 +60,9 @@ app.use('/api/family', familyRoutes)
 const medicalRoutes = require('./routes/medical')
 app.use('/api/medical', medicalRoutes)
 
+const videocallRoutes = require('./routes/videocall')
+app.use('/api/videocall', videocallRoutes)
+
 app.listen(PORT, () => {
   console.log(`Sahara server running on http://localhost:${PORT}`)
 })

@@ -271,6 +271,37 @@ export default function ElderCompanion() {
     }
   }
 
+  // ── Phase 12E: Elder initiates a video call ────────────────────────────────
+  async function handleCallFamily() {
+    try {
+      const res = await fetch(`${API_URL}/api/videocall/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          created_by: userId,
+          elder_id: userId,
+          family_id: null // family joins via IncomingCallModal notification
+        })
+      })
+      const data = await res.json()
+      if (!data.success) throw new Error(data.error || 'Failed to start call')
+
+      const params = new URLSearchParams({
+        role: 'elder',
+        roomUrl: encodeURIComponent(data.roomUrl),
+        roomName: data.call.room_name,
+        userName: encodeURIComponent(context?.name || 'Elder'),
+        otherName: encodeURIComponent('Family'),
+        isOwner: 'true'
+      })
+      navigate(`/call/${data.call.id}?${params.toString()}`)
+    } catch (e) {
+      console.error('handleCallFamily error:', e)
+      setVoiceToast('Could not start call. Please try again.')
+      setTimeout(() => setVoiceToast(null), 3000)
+    }
+  }
+
   async function handleMarkTakenFromCompanion(medicineName) {
     if (!userId) return
     try {
@@ -306,7 +337,7 @@ export default function ElderCompanion() {
       if (action.duration) params.set('duration', action.duration)
       navigate(`/elder/book?${params.toString()}`)
     }
-    else if (action.type === 'CALL_FAMILY') navigate('/family/dashboard')
+    else if (action.type === 'CALL_FAMILY') handleCallFamily()
     else if (action.type === 'SOS') {
       // Check for existing active SOS before navigating
       const checkAndNavigateSOS = async () => {
@@ -374,6 +405,18 @@ export default function ElderCompanion() {
             {LANG_OPTIONS.map(opt => (
               <button key={opt.key} onClick={() => { setLanguage(opt.key); if (isListening) stopListening() }} style={{ height: 24, padding: '0 8px', borderRadius: 20, border: language === opt.key ? 'none' : '1px solid #DDE8F5', background: language === opt.key ? '#1D9E75' : 'white', color: language === opt.key ? 'white' : '#A0B8D0', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>{opt.label}</button>
             ))}
+            {/* Call Family */}
+            <div style={{ width: 1, height: 18, background: '#EEF4FB', margin: '0 2px' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              <button
+                onClick={handleCallFamily}
+                title="Video Call Family"
+                style={{ width: 28, height: 28, borderRadius: '50%', border: '1.5px solid #1D9E75', background: '#F0FBF7', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+              >
+                <i className="ti ti-video" style={{ fontSize: 14, color: '#1D9E75' }} />
+              </button>
+              <span style={{ fontSize: 9, color: '#1D9E75', fontWeight: 700, letterSpacing: 0.3 }}>Call</span>
+            </div>
             {/* Clear */}
             <button onClick={() => setShowClearConfirm(true)} style={{ width: 26, height: 26, borderRadius: '50%', border: '1px solid #DDE8F5', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: 2 }}>
               <i className="ti ti-trash" style={{ fontSize: 13, color: '#A0B8D0' }} />

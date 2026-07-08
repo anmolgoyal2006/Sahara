@@ -14,6 +14,8 @@ import ActiveBookingMap from '../../components/elder/ActiveBookingMap'
 import { useMedicineNotifications } from '../../hooks/useMedicineNotifications'
 import { useActiveBookingLocation } from '../../hooks/useActiveBookingLocation'
 import { supabase } from '../../lib/supabase'
+import { useIncomingCall } from '../../hooks/useIncomingCall'
+import IncomingCallModal from '../../components/videocall/IncomingCallModal'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -38,6 +40,9 @@ export default function ElderHome() {
 
   // Background medicine notifications
   useMedicineNotifications(userId, todaySchedule)
+
+  // Incoming video call polling — Phase 12D
+  const { incomingCall, dismissCall } = useIncomingCall(userId)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -88,6 +93,34 @@ export default function ElderHome() {
 
   return (
     <ElderLayout userName={user?.name}>
+      {/* Incoming video call overlay — Phase 12D */}
+      {incomingCall && (
+        <IncomingCallModal
+          call={incomingCall}
+          elderName={user?.name}
+          onAnswer={() => {
+            dismissCall()
+            navigate(
+              `/call/${incomingCall.id}` +
+              `?role=elder` +
+              `&roomUrl=${encodeURIComponent(incomingCall.room_url)}` +
+              `&roomName=${incomingCall.room_name}` +
+              `&userName=${encodeURIComponent(user?.name || 'Elder')}` +
+              `&otherName=${encodeURIComponent('Family')}` +
+              `&isOwner=false`
+            )
+          }}
+          onDecline={() => {
+            dismissCall()
+            fetch(`${API_URL}/api/videocall/end/${incomingCall.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ duration_seconds: 0 })
+            }).catch(console.error)
+          }}
+        />
+      )}
+
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
         {showNotifBanner && (
           <NotificationPermissionBanner onDismiss={() => setShowNotifBanner(false)} />
@@ -157,6 +190,23 @@ export default function ElderHome() {
             />
           </div>
         )}
+
+        {/* Call History link — Phase 12E */}
+        <div style={{ textAlign: 'center', padding: '16px 0 8px' }}>
+          <button
+            onClick={() => navigate('/elder/call-history')}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: '#185FA5', fontSize: 13, fontWeight: 600,
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              fontFamily: 'inherit', padding: '4px 8px'
+            }}
+          >
+            <i className="ti ti-video" style={{ fontSize: 14 }} />
+            Call History
+            <i className="ti ti-arrow-right" style={{ fontSize: 12 }} />
+          </button>
+        </div>
       </div>
       <style>{`
         @media (min-width: 1024px) {

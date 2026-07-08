@@ -13,6 +13,7 @@ import ElderLocationMap from '../components/family/ElderLocationMap'
 import SOSAlertCard from '../components/sos/SOSAlertCard'
 import SOSHistoryList from '../components/sos/SOSHistoryList'
 import { useSOSNotifications } from '../hooks/useSOSNotifications'
+import CallButton from '../components/videocall/CallButton'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -150,6 +151,21 @@ export default function FamilyDashboard() {
         onUnlink={() => { setOverview(null); fetchOverview(userId) }}
       />
 
+      {/* Video Call button — Phase 12D */}
+      {elder && (
+        <div style={{ marginBottom: 16 }}>
+          <CallButton
+            userId={userId}
+            elderId={elder.id}
+            elderName={elder.name}
+            userName={userName || 'Family'}
+            onCallCreated={(callData) => {
+              console.log('Call created:', callData)
+            }}
+          />
+        </div>
+      )}
+
       {/* AI Summary */}
       <AISummaryCard familyUserId={userId} />
 
@@ -193,6 +209,23 @@ export default function FamilyDashboard() {
       <div style={{ marginTop: 8 }}>
         <p style={{ fontSize: 16, fontWeight: 700, color: '#0A2540', marginBottom: 12 }}>Emergency History</p>
         <SOSHistoryList alerts={sosEvents || []} />
+      </div>
+
+      {/* Call History link — Phase 12E */}
+      <div style={{ textAlign: 'center', padding: '16px 0 4px' }}>
+        <button
+          onClick={() => navigate('/family/call-history')}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            color: '#185FA5', fontSize: 13, fontWeight: 600,
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            fontFamily: 'inherit', padding: '4px 8px'
+          }}
+        >
+          <i className="ti ti-video" style={{ fontSize: 14 }} />
+          Call History
+          <i className="ti ti-arrow-right" style={{ fontSize: 12 }} />
+        </button>
       </div>
 
       <LastRefreshed time={lastRefreshed} onRefresh={() => fetchOverview(userId)} />

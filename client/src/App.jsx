@@ -24,6 +24,9 @@ import WorkerRatings from './pages/WorkerRatings'
 import FamilyDashboard from './pages/FamilyDashboard'
 import ElderMedicalRecords from './pages/ElderMedicalRecords'
 import ElderRecordViewer from './pages/ElderRecordViewer'
+import TestVideoCall from './pages/TestVideoCall'
+import VideoCallPage from './pages/VideoCallPage'
+import CallHistoryPage from './pages/CallHistoryPage'
 
 function App() {
   return (
@@ -55,6 +58,10 @@ function App() {
         <Route path="/worker/schedule" element={<WorkerSchedule />} />
         <Route path="/worker/location" element={<WorkerLocation />} />
         <Route path="/worker/ratings" element={<WorkerRatings />} />
+        <Route path="/test-call" element={<TestVideoCall />} />
+        <Route path="/call/:callId" element={<VideoCallPage />} />
+        <Route path="/elder/call-history" element={<CallHistoryPage role="elder" />} />
+        <Route path="/family/call-history" element={<CallHistoryPage role="family" />} />
       </Routes>
     </BrowserRouter>
   )
