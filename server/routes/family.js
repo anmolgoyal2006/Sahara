@@ -258,6 +258,31 @@ Be reassuring if things look normal. Gently flag if something seems concerning (
 })
 
 /* ─────────────────────────────────────
+   GET /api/family/linked-family/:elderId
+   Find the family member linked to an elder
+   (reverse lookup: who has elder_id = elderId)
+───────────────────────────────────── */
+router.get('/linked-family/:elderId', async (req, res) => {
+  const { elderId } = req.params
+  try {
+    const { data } = await supabase
+      .from('users')
+      .select('id, name')
+      .eq('elder_id', elderId)
+      .eq('role', 'family')
+      .limit(1)
+      .single()
+
+    if (!data) {
+      return res.json({ success: false, family_id: null, family_name: null })
+    }
+    return res.json({ success: true, family_id: data.id, family_name: data.name })
+  } catch (e) {
+    return res.json({ success: false, family_id: null, family_name: null })
+  }
+})
+
+/* ─────────────────────────────────────
    POST /api/family/link-elder
    Link a family member to an elder by their Sahara User ID.
    Also writes the reverse link: elder.family_id = family_user_id
@@ -310,8 +335,7 @@ router.post('/link-elder', async (req, res) => {
       .eq('id', elderData.id)
       .then(() => {}) // non-critical, silent fail if column missing
 
-    return res.json({ success: true, elder: { id: elderData.id, name: elderData.name } })
-  } catch (e) {
+    return res.json({ success: true, elder: { id: elderData.id, name: elderData.name } })  } catch (e) {
     return res.status(500).json({ success: false, error: e.message })
   }
 })

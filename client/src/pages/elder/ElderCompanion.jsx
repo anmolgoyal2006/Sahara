@@ -274,13 +274,18 @@ export default function ElderCompanion() {
   // ── Phase 12E: Elder initiates a video call ────────────────────────────────
   async function handleCallFamily() {
     try {
+      // Look up who is linked to this elder (family member with elder_id = userId)
+      const linkedRes = await fetch(`${API_URL}/api/family/linked-family/${userId}`)
+      const linkedData = await linkedRes.json()
+      const familyId = linkedData.success ? linkedData.family_id : null
+
       const res = await fetch(`${API_URL}/api/videocall/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           created_by: userId,
           elder_id: userId,
-          family_id: null // family joins via IncomingCallModal notification
+          family_id: familyId
         })
       })
       const data = await res.json()
@@ -291,7 +296,7 @@ export default function ElderCompanion() {
         roomUrl: encodeURIComponent(data.roomUrl),
         roomName: data.call.room_name,
         userName: encodeURIComponent(context?.name || 'Elder'),
-        otherName: encodeURIComponent('Family'),
+        otherName: encodeURIComponent(linkedData.family_name || 'Family'),
         isOwner: 'true'
       })
       navigate(`/call/${data.call.id}?${params.toString()}`)
