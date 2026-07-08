@@ -12,7 +12,8 @@ export default function RecordCard({
   onAnalyse
 }) {
   const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef(null);
+  const actionsRef = useRef(null);
+  const moreBtnRef = useRef(null);
 
   // Format date nicely (e.g., "12 Jul 2026")
   const formatDate = (dateStr) => {
@@ -32,13 +33,25 @@ export default function RecordCard({
   // Close dropdown on click outside
   useEffect(() => {
     function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (actionsRef.current && !actionsRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const closeMenuAndFocusTrigger = () => {
+    setShowDropdown(false);
+    moreBtnRef.current?.focus();
+  };
+
+  const handleMenuKeyDown = (event) => {
+    if (event.key === 'Escape') {
+      event.stopPropagation();
+      closeMenuAndFocusTrigger();
+    }
+  };
 
   const handleShare = async () => {
     try {
@@ -64,10 +77,12 @@ export default function RecordCard({
     }
   };
 
+  const favouriteLabel = record.is_favourite ? 'Remove from favourites' : 'Add to favourites';
+
   return (
     <div className="record-card">
-      {/* Left Icon Box */}
-      <div className="record-card__left">
+      {/* Left: icon + report info */}
+      <div className="record-card__info">
         <div
           className="record-card__icon-box"
           style={{ backgroundColor: categoryInfo?.bg || '#F0FBF7' }}
@@ -77,60 +92,95 @@ export default function RecordCard({
             style={{ color: categoryInfo?.color || '#1D9E75' }}
           ></span>
         </div>
-      </div>
 
-      {/* Center Details */}
-      <div className="record-card__center">
-        <h4 className="record-card__title">{record.name}</h4>
-        <span className="record-card__category">{categoryInfo?.label || 'General'}</span>
-        <div className="record-card__date-row">
-          <span className="ti ti-calendar"></span>
-          <span>{formatDate(record.report_date)}</span>
-        </div>
-        {record.notes && <p className="record-card__notes">"{record.notes}"</p>}
-        {record.ai_analysis && (
-          <div className="record-card__ai-badge">
-            <span>AI Analysed</span>
-            <span className="ti ti-check"></span>
+        <div className="record-card__details">
+          <h4 className="record-card__title">{record.name}</h4>
+          <span className="record-card__category">{categoryInfo?.label || 'General'}</span>
+          <div className="record-card__date-row">
+            <span className="ti ti-calendar"></span>
+            <span>{formatDate(record.report_date)}</span>
           </div>
-        )}
+          {record.notes && <p className="record-card__notes">"{record.notes}"</p>}
+          {record.ai_analysis && (
+            <div className="record-card__ai-badge">
+              <span>AI Analysed</span>
+              <span className="ti ti-check"></span>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Right Actions */}
-      <div className="record-card__right" ref={dropdownRef}>
-        {/* Favourite Star */}
+      {/* Right: action group */}
+      <div className="record-card__actions" ref={actionsRef}>
         <button
-          className={`record-card__btn record-card__btn--favourite ${
+          type="button"
+          className={`record-card__icon-btn record-card__icon-btn--favourite ${
             record.is_favourite ? 'active' : ''
           }`}
           onClick={() => onFavourite(record)}
-          title={record.is_favourite ? 'Remove from Favourites' : 'Add to Favourites'}
+          aria-label={favouriteLabel}
+          aria-pressed={!!record.is_favourite}
+          data-tooltip={favouriteLabel}
         >
-          <span className={record.is_favourite ? 'ti ti-star-filled' : 'ti ti-star'}></span>
+          <span className="ti ti-star"></span>
         </button>
 
-        {/* View Document */}
         <button
-          className="record-card__btn"
+          type="button"
+          className="record-card__icon-btn record-card__icon-btn--view"
           onClick={() => onView(record)}
-          title="View Document"
+          aria-label="View report"
+          data-tooltip="View report"
         >
           <span className="ti ti-eye"></span>
         </button>
 
-        {/* More Actions Dropdown */}
         <button
-          className="record-card__btn"
-          onClick={() => setShowDropdown(!showDropdown)}
-          title="More options"
+          type="button"
+          ref={moreBtnRef}
+          className="record-card__icon-btn record-card__icon-btn--more"
+          onClick={() => setShowDropdown((prev) => !prev)}
+          aria-label="More options"
+          aria-haspopup="true"
+          aria-expanded={showDropdown}
+          data-tooltip="More options"
         >
           <span className="ti ti-dots-vertical"></span>
         </button>
 
         {showDropdown && (
-          <div className="record-card__dropdown">
+          <div className="record-card__menu" role="menu" onKeyDown={handleMenuKeyDown}>
+            {/* Shown at all sizes so there's always a visible text label */}
             <button
-              className="record-card__dropdown-item"
+              type="button"
+              role="menuitem"
+              className="record-card__menu-item record-card__menu-item--favourite-mobile"
+              onClick={() => {
+                setShowDropdown(false);
+                onFavourite(record);
+              }}
+            >
+              <span className="ti ti-star"></span>
+              <span>{favouriteLabel}</span>
+            </button>
+            <a
+              role="menuitem"
+              className="record-card__menu-item"
+              href={record.file_url}
+              download={record.file_name || record.name}
+              onClick={() => setShowDropdown(false)}
+            >
+              <span className="ti ti-download"></span>
+              <span>Download</span>
+            </a>
+            <button type="button" role="menuitem" className="record-card__menu-item" onClick={handleShare}>
+              <span className="ti ti-share"></span>
+              <span>Share</span>
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              className="record-card__menu-item"
               onClick={() => {
                 setShowDropdown(false);
                 onEdit(record);
@@ -140,7 +190,9 @@ export default function RecordCard({
               <span>Edit</span>
             </button>
             <button
-              className="record-card__dropdown-item"
+              type="button"
+              role="menuitem"
+              className="record-card__menu-item"
               onClick={() => {
                 setShowDropdown(false);
                 onAnalyse(record);
@@ -149,12 +201,10 @@ export default function RecordCard({
               <span className="ti ti-wand"></span>
               <span>Analyse with AI</span>
             </button>
-            <button className="record-card__dropdown-item" onClick={handleShare}>
-              <span className="ti ti-share"></span>
-              <span>Share</span>
-            </button>
             <button
-              className="record-card__dropdown-item record-card__dropdown-item--delete"
+              type="button"
+              role="menuitem"
+              className="record-card__menu-item record-card__menu-item--delete"
               onClick={handleDeleteClick}
             >
               <span className="ti ti-trash"></span>

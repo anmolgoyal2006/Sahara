@@ -8,7 +8,7 @@ const model = genAI.getGenerativeModel({
   model: MODEL_NAME,
   generationConfig: {
     temperature: 0.3,
-    maxOutputTokens: 500,
+    maxOutputTokens: 2048,
   }
 })
 
@@ -16,7 +16,7 @@ const chatModel = genAI.getGenerativeModel({
   model: MODEL_NAME,
   generationConfig: {
     temperature: 0.7,
-    maxOutputTokens: 200,
+    maxOutputTokens: 1024,
   }
 })
 
@@ -24,7 +24,7 @@ const fastModel = genAI.getGenerativeModel({
   model: MODEL_NAME,
   generationConfig: {
     temperature: 0.2,
-    maxOutputTokens: 100,
+    maxOutputTokens: 512,
   }
 })
 

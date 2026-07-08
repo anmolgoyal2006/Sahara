@@ -17,7 +17,7 @@ const visionModel = genAI.getGenerativeModel({
   model: 'gemini-1.5-flash',
   generationConfig: {
     temperature: 0.2,
-    maxOutputTokens: 800
+    maxOutputTokens: 4096
   }
 });
 
