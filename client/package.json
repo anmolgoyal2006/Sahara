@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@daily-co/daily-js": "^0.70.0",
     "@supabase/supabase-js": "^2.38.0",
     "@tabler/icons-webfont": "^3.44.0",
     "cloudinary": "^2.10.0",

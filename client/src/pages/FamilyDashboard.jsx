@@ -14,6 +14,7 @@ import SOSAlertCard from '../components/sos/SOSAlertCard'
 import SOSHistoryList from '../components/sos/SOSHistoryList'
 import { useSOSNotifications } from '../hooks/useSOSNotifications'
 import CallButton from '../components/videocall/CallButton'
+// Phase 12 — Video Call
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
