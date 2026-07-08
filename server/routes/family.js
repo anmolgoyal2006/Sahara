@@ -259,7 +259,8 @@ Be reassuring if things look normal. Gently flag if something seems concerning (
 
 /* ─────────────────────────────────────
    POST /api/family/link-elder
-   Link a family member to an elder by their Sahara User ID
+   Link a family member to an elder by their Sahara User ID.
+   Also writes the reverse link: elder.family_id = family_user_id
 ───────────────────────────────────── */
 router.post('/link-elder', async (req, res) => {
   const { family_user_id, elder_code } = req.body
@@ -294,13 +295,20 @@ router.post('/link-elder', async (req, res) => {
       return res.json({ success: false, error: 'You cannot link to your own account.' })
     }
 
-    // Link family member to elder
-    const { error } = await supabase
+    // Link family → elder
+    const { error: familyLinkError } = await supabase
       .from('users')
       .update({ elder_id: elderData.id })
       .eq('id', family_user_id)
 
-    if (error) throw error
+    if (familyLinkError) throw familyLinkError
+
+    // Reverse link: elder → family (best-effort — column may not exist yet)
+    await supabase
+      .from('users')
+      .update({ family_id: family_user_id })
+      .eq('id', elderData.id)
+      .then(() => {}) // non-critical, silent fail if column missing
 
     return res.json({ success: true, elder: { id: elderData.id, name: elderData.name } })
   } catch (e) {
