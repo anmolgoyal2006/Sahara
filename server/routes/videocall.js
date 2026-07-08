@@ -69,7 +69,6 @@ router.post('/create', async (req, res) => {
         max_participants: 2,
         enable_chat: false,
         enable_screenshare: false,
-        enable_recording: 'none',
         start_video_off: false,
         start_audio_off: false,
         // Mobile-friendly settings
