@@ -19,8 +19,9 @@ function formatRadius(meters) {
 
 /* ─────────────────────────────────────
    Leaflet Map with draggable marker + circle
+   + optional read-only elder location pin
 ───────────────────────────────────── */
-function GeofenceMap({ centerLat, centerLng, radiusMeters, onMarkerDrag, mapKey }) {
+function GeofenceMap({ centerLat, centerLng, radiusMeters, onMarkerDrag, mapKey, elderLat, elderLng, elderName }) {
   const containerRef = useRef(null)
   const mapRef       = useRef(null)
   const markerRef    = useRef(null)
@@ -54,6 +55,26 @@ function GeofenceMap({ centerLat, centerLng, radiusMeters, onMarkerDrag, mapKey 
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       }).addTo(map)
 
+      // ── Elder's current location pin (read-only, blue) ──
+      if (elderLat && elderLng) {
+        const elderIcon = L.divIcon({
+          className: '',
+          html: `<div style="
+            width:36px;height:36px;border-radius:50%;
+            background:#185FA5;border:3px solid white;
+            box-shadow:0 2px 10px rgba(24,95,165,0.45);
+            display:flex;align-items:center;justify-content:center;
+          "><i class="ti ti-user" style="color:white;font-size:16px;"></i></div>`,
+          iconSize: [36, 36],
+          iconAnchor: [18, 18],
+          popupAnchor: [0, -20],
+        })
+        L.marker([elderLat, elderLng], { icon: elderIcon, interactive: true })
+          .addTo(map)
+          .bindPopup(`<b style="font-size:13px">${elderName || 'Elder'}'s current location</b>`)
+      }
+
+      // ── Home / zone centre marker (draggable, green) ──
       const homeIcon = L.divIcon({
         className: '',
         html: `<div style="
@@ -147,6 +168,8 @@ export default function FamilyGeofenceSetup() {
   const [userName,      setUserName]      = useState(null)
   const [elderId,       setElderId]       = useState(null)
   const [elderName,     setElderName]     = useState(null)
+  const [elderLat,      setElderLat]      = useState(null)
+  const [elderLng,      setElderLng]      = useState(null)
   const [loading,       setLoading]       = useState(true)
   const [saving,        setSaving]        = useState(false)
   const [error,         setError]         = useState(null)
@@ -162,9 +185,15 @@ export default function FamilyGeofenceSetup() {
   const [isActive,     setIsActive]     = useState(true)
   const [zoneIsActive, setZoneIsActive] = useState(true)
 
-  // GPS + map
-  const [mapKey,      setMapKey]      = useState(0)
-  const [gpsLoading,  setGpsLoading]  = useState(false)
+  // Address search
+  const [searchQuery,    setSearchQuery]    = useState('')
+  const [searchResults,  setSearchResults]  = useState([])
+  const [searchLoading,  setSearchLoading]  = useState(false)
+  const [searchError,    setSearchError]    = useState(null)
+  const searchDebounceRef = useRef(null)
+
+  // Map
+  const [mapKey, setMapKey] = useState(0)
 
   /* ── Load session + linked elder + existing zone ── */
   useEffect(() => {
@@ -189,6 +218,14 @@ export default function FamilyGeofenceSetup() {
         setElderId(eid)
         setElderName(overviewData.elder.name)
 
+        // Store elder's last known location for the map pin
+        const eLat = overviewData.elder.lat
+        const eLng = overviewData.elder.lng
+        if (eLat && eLng) {
+          setElderLat(eLat)
+          setElderLng(eLng)
+        }
+
         // Fetch existing zone for the elder
         const zoneRes  = await fetch(`${API_URL}/api/geofence/zone/${eid}`)
         const zoneData = await zoneRes.json()
@@ -201,32 +238,55 @@ export default function FamilyGeofenceSetup() {
           setLabel(zoneData.zone.label || 'Home')
           setIsActive(zoneData.zone.is_active)
           setZoneIsActive(zoneData.zone.is_active)
-        } else {
-          getGPS()
+        } else if (eLat && eLng) {
+          // Seed map to elder's current location when no zone exists
+          setCenterLat(eLat)
+          setCenterLng(eLng)
+          setMapKey(k => k + 1)
         }
+        // else: map stays blank until user searches an address
       } catch {
-        getGPS()
+        // silent — map stays blank, user can search
       } finally {
         setLoading(false)
       }
     })
   }, [])
 
-  /* ── Get caretaker's current GPS as map starting point ── */
-  function getGPS(callback) {
-    if (!navigator.geolocation) return
-    setGpsLoading(true)
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setCenterLat(pos.coords.latitude)
-        setCenterLng(pos.coords.longitude)
-        setMapKey(k => k + 1)
-        setGpsLoading(false)
-        if (callback) callback(pos.coords.latitude, pos.coords.longitude)
-      },
-      () => setGpsLoading(false),
-      { enableHighAccuracy: true, timeout: 10000 }
-    )
+  /* ── Address search via Nominatim (OpenStreetMap, no key needed) ── */
+  function handleSearchInput(value) {
+    setSearchQuery(value)
+    setSearchResults([])
+    setSearchError(null)
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
+    if (!value.trim() || value.trim().length < 3) return
+    searchDebounceRef.current = setTimeout(() => doSearch(value.trim()), 450)
+  }
+
+  async function doSearch(query) {
+    setSearchLoading(true)
+    setSearchError(null)
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`
+      const res = await fetch(url, { headers: { 'Accept-Language': 'en' } })
+      const data = await res.json()
+      if (!data.length) setSearchError('No results found. Try a more specific address.')
+      setSearchResults(data)
+    } catch {
+      setSearchError('Search failed. Check your connection.')
+    } finally {
+      setSearchLoading(false)
+    }
+  }
+
+  function selectResult(result) {
+    const lat = parseFloat(result.lat)
+    const lng = parseFloat(result.lon)
+    setCenterLat(lat)
+    setCenterLng(lng)
+    setMapKey(k => k + 1)
+    setSearchQuery(result.display_name.split(',').slice(0, 2).join(','))
+    setSearchResults([])
   }
 
   /* ── Save (saves against the elder's ID) ── */
@@ -421,36 +481,125 @@ export default function FamilyGeofenceSetup() {
             Home Location
           </p>
 
+          {/* ── Address search ── */}
+          <div style={{ position: 'relative', marginBottom: 12 }}>
+            <div style={{
+              display: 'flex', alignItems: 'center',
+              border: '1.5px solid #DDE8F5', borderRadius: 12,
+              background: '#F7FAFF', overflow: 'visible',
+            }}>
+              <i className="ti ti-search" style={{ fontSize: 16, color: '#A0B8D0', padding: '0 10px', flexShrink: 0 }} />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => handleSearchInput(e.target.value)}
+                placeholder="Search address, landmark or area…"
+                style={{
+                  flex: 1, height: 44, border: 'none', background: 'transparent',
+                  fontSize: 14, color: '#0A2540', fontFamily: 'inherit',
+                  outline: 'none', paddingRight: 36,
+                }}
+              />
+              {searchLoading && (
+                <i className="ti ti-loader-2" style={{
+                  fontSize: 16, color: '#A0B8D0', padding: '0 10px', flexShrink: 0,
+                  animation: 'spin 0.8s linear infinite',
+                }} />
+              )}
+              {searchQuery && !searchLoading && (
+                <button
+                  onClick={() => { setSearchQuery(''); setSearchResults([]); setSearchError(null) }}
+                  style={{ background: 'none', border: 'none', padding: '0 10px', cursor: 'pointer', color: '#A0B8D0', fontSize: 16 }}
+                >
+                  <i className="ti ti-x" />
+                </button>
+              )}
+            </div>
+
+            {/* Results dropdown */}
+            {(searchResults.length > 0 || searchError) && (
+              <div style={{
+                position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 200,
+                background: 'white', border: '1.5px solid #DDE8F5', borderRadius: 12,
+                boxShadow: '0 8px 24px rgba(0,0,0,0.1)', marginTop: 4,
+                overflow: 'hidden',
+              }}>
+                {searchError && (
+                  <div style={{ padding: '12px 14px', fontSize: 13, color: '#A0B8D0' }}>
+                    {searchError}
+                  </div>
+                )}
+                {searchResults.map((r, i) => (
+                  <button
+                    key={r.place_id}
+                    onClick={() => selectResult(r)}
+                    style={{
+                      width: '100%', background: 'none', border: 'none',
+                      borderTop: i > 0 ? '1px solid #F0F4F8' : 'none',
+                      padding: '11px 14px', cursor: 'pointer', textAlign: 'left',
+                      fontFamily: 'inherit', display: 'flex', alignItems: 'flex-start', gap: 10,
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#F7FAFF'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                  >
+                    <i className="ti ti-map-pin" style={{ fontSize: 15, color: '#1D9E75', flexShrink: 0, marginTop: 2 }} />
+                    <span style={{ fontSize: 13, color: '#0A2540', lineHeight: 1.4 }}>
+                      {r.display_name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Map */}
           <GeofenceMap
             centerLat={centerLat}
             centerLng={centerLng}
             radiusMeters={radiusMeters}
             mapKey={mapKey}
+            elderLat={elderLat}
+            elderLng={elderLng}
+            elderName={elderName}
             onMarkerDrag={(lat, lng) => {
               setCenterLat(lat)
               setCenterLng(lng)
             }}
           />
 
-          <button
-            onClick={() => getGPS()}
-            disabled={gpsLoading}
-            style={{
-              width: '100%', height: 44, borderRadius: 12,
-              border: '1.5px solid #185FA5', background: 'white',
-              color: '#185FA5', fontSize: 14, fontWeight: 700,
-              cursor: gpsLoading ? 'not-allowed' : 'pointer',
-              fontFamily: 'inherit', marginTop: 12,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              opacity: gpsLoading ? 0.7 : 1,
-            }}
-          >
-            <i className="ti ti-current-location" style={{ fontSize: 16 }} />
-            {gpsLoading ? 'Getting location…' : 'Use My Current Location'}
-          </button>
+          {/* Legend */}
+          <div style={{ display: 'flex', gap: 16, marginTop: 10, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#1D9E75', flexShrink: 0 }} />
+              <span style={{ fontSize: 11, color: '#5A7A9A', fontWeight: 600 }}>Zone centre (drag to adjust)</span>
+            </div>
+            {elderLat && elderLng && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#185FA5', flexShrink: 0 }} />
+                <span style={{ fontSize: 11, color: '#5A7A9A', fontWeight: 600 }}>{elderName || 'Elder'}'s current location</span>
+              </div>
+            )}
+          </div>
+
+          {/* Jump-to shortcuts */}
+          {elderLat && elderLng && (
+            <button
+              onClick={() => { setCenterLat(elderLat); setCenterLng(elderLng); setMapKey(k => k + 1) }}
+              style={{
+                marginTop: 10, height: 36, padding: '0 14px', borderRadius: 10,
+                border: '1.5px solid #DDE8F5', background: 'white',
+                color: '#185FA5', fontSize: 12, fontWeight: 700,
+                cursor: 'pointer', fontFamily: 'inherit',
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+              }}
+            >
+              <i className="ti ti-user-pin" style={{ fontSize: 13 }} />
+              Centre on {elderName || 'Elder'}
+            </button>
+          )}
 
           {centerLat && centerLng && (
-            <p style={{ fontSize: 11, color: '#A0B8D0', textAlign: 'center', margin: '8px 0 0' }}>
+            <p style={{ fontSize: 11, color: '#A0B8D0', margin: '8px 0 0' }}>
               {centerLat.toFixed(5)}, {centerLng.toFixed(5)}
             </p>
           )}
@@ -610,6 +759,7 @@ export default function FamilyGeofenceSetup() {
           </button>
         </div>
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </FamilyLayout>
   )
 }
