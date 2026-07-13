@@ -31,6 +31,7 @@ import FamilyGeofenceSetup from './pages/FamilyGeofenceSetup'
 import FamilyLocationHistory from './pages/FamilyLocationHistory'
 import ElderSchemes from './pages/elder/ElderSchemes'
 import FamilySchemes from './pages/family/FamilySchemes'
+import FamilyHealthHistory from './pages/FamilyHealthHistory'
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
         <Route path="/elder/medical-records" element={<ElderMedicalRecords />} />
         <Route path="/elder/medical-records/:recordId/view" element={<ElderRecordViewer />} />
         <Route path="/family/dashboard" element={<FamilyDashboard />} />
+        <Route path="/family/health" element={<FamilyHealthHistory />} />
         <Route path="/family/safety-zone" element={<FamilyGeofenceSetup />} />
         <Route path="/family/location-history" element={<FamilyLocationHistory />} />
         <Route path="/worker/jobs" element={<WorkerJobs />} />
