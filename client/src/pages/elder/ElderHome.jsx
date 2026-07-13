@@ -173,9 +173,6 @@ export default function ElderHome() {
             lastCheck={geofenceLastCheck}
           />
         </div>
-        {activeBooking && activeLocationData && (
-          <ActiveBookingMap
-        
         {/* My Health Section — Phase 11E */}
         <div className="my-health-section">
           <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#0A2540', marginBottom: '12px' }}>My Health</h3>
