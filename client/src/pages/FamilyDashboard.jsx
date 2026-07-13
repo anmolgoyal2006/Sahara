@@ -215,6 +215,8 @@ export default function FamilyDashboard() {
               zone={geofenceZone}
               isOutside={isOutside}
               elderName={overview.elder.name}
+              onSetupZone={() => navigate('/family/safety-zone')}
+              onViewHistory={() => navigate('/family/location-history')}
               onAcknowledge={async (eventId) => {
                 await fetch(`${API_URL}/api/geofence/acknowledge/${eventId}`, { method: 'PUT' })
                 setGeofenceAlerts(prev =>

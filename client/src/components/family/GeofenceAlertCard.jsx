@@ -9,7 +9,7 @@ function timeAgo(isoString) {
 }
 
 export default function GeofenceAlertCard({
-  alerts, zone, isOutside, elderName, onAcknowledge,
+  alerts, zone, isOutside, elderName, onAcknowledge, onSetupZone, onViewHistory,
 }) {
   const [ackLoading, setAckLoading] = useState(null)
 
@@ -30,9 +30,22 @@ export default function GeofenceAlertCard({
             <i className="ti ti-map-pin-off" style={{ fontSize: 18, color: '#5A7A9A' }} />
             <span style={{ fontSize: 13, fontWeight: 700, color: '#0A2540' }}>No safety zone configured</span>
           </div>
-          <p style={{ fontSize: 12, color: '#5A7A9A', margin: 0 }}>
-            Ask {name} to set up a safety zone in their Sahara app.
+          <p style={{ fontSize: 12, color: '#5A7A9A', margin: '0 0 10px' }}>
+            Set up a safety zone for {name} to get notified when they leave home.
           </p>
+          {onSetupZone && (
+            <button
+              onClick={onSetupZone}
+              style={{
+                height: 34, padding: '0 16px', borderRadius: 10,
+                background: '#185FA5', border: 'none',
+                color: 'white', fontSize: 12, fontWeight: 700,
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              Set up Safety Zone
+            </button>
+          )}
         </div>
       )
     }
@@ -160,6 +173,20 @@ export default function GeofenceAlertCard({
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
         <i className="ti ti-map-pin-check" style={{ fontSize: 18, color: '#185FA5' }} />
         <p style={{ fontSize: 16, fontWeight: 700, color: '#0A2540', margin: 0 }}>Safety Zone</p>
+        {onSetupZone && zone && (
+          <button
+            onClick={onSetupZone}
+            style={{
+              marginLeft: 'auto', background: 'none', border: 'none', padding: 0,
+              fontSize: 12, fontWeight: 700, color: '#185FA5',
+              cursor: 'pointer', fontFamily: 'inherit',
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+            }}
+          >
+            <i className="ti ti-settings" style={{ fontSize: 13 }} />
+            Manage
+          </button>
+        )}
       </div>
 
       <StatusSection />
@@ -169,9 +196,24 @@ export default function GeofenceAlertCard({
         background: 'white', border: '1.5px solid #DDE8F5',
         borderRadius: 14, padding: 16,
       }}>
-        <p style={{ fontSize: 14, fontWeight: 700, color: '#0A2540', marginBottom: 12 }}>
-          Location History
-        </p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <p style={{ fontSize: 14, fontWeight: 700, color: '#0A2540', margin: 0 }}>
+            Location History
+          </p>
+          {onViewHistory && (
+            <button
+              onClick={onViewHistory}
+              style={{
+                background: 'none', border: 'none', padding: 0,
+                fontSize: 12, fontWeight: 700, color: '#185FA5',
+                cursor: 'pointer', fontFamily: 'inherit',
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+              }}
+            >
+              View all <i className="ti ti-arrow-right" style={{ fontSize: 11 }} />
+            </button>
+          )}
+        </div>
 
         {!hasHistory ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0' }}>

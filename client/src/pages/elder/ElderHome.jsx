@@ -13,12 +13,9 @@ import NotificationPermissionBanner from '../../components/elder/NotificationPer
 import ActiveBookingMap from '../../components/elder/ActiveBookingMap'
 import { useMedicineNotifications } from '../../hooks/useMedicineNotifications'
 import { useActiveBookingLocation } from '../../hooks/useActiveBookingLocation'
-import { useGeofenceMonitor } from '../../hooks/useGeofenceMonitor'
 import { supabase } from '../../lib/supabase'
 import { useIncomingCall } from '../../hooks/useIncomingCall'
 import IncomingCallModal from '../../components/videocall/IncomingCallModal'
-import GeofenceStatusBadge from '../../components/elder/GeofenceStatusBadge'
-import GeofenceSetupPrompt from '../../components/elder/GeofenceSetupPrompt'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -33,9 +30,6 @@ export default function ElderHome() {
   const [showNotifBanner, setShowNotifBanner] = useState(
     'Notification' in window && Notification.permission === 'default'
   )
-  const [hasZone, setHasZone] = useState(false)
-  const [geofenceZone, setGeofenceZone] = useState(null)
-  const [showGeofencePrompt, setShowGeofencePrompt] = useState(false)
 
   // Active booking live location (polls every 30s)
   const {
@@ -43,19 +37,6 @@ export default function ElderHome() {
     locationData: activeLocationData,
     refresh: refreshActiveBooking,
   } = useActiveBookingLocation(userId, 'elder')
-
-  // Geofence monitoring — runs every 2 min while page is open
-  const {
-    currentStatus: geofenceStatus,
-    lastCheck: geofenceLastCheck,
-  } = useGeofenceMonitor(userId, hasZone)
-
-  // Show setup prompt once for elders with no zone
-  useEffect(() => {
-    if (!hasZone && !localStorage.getItem('sahara_geofence_prompt_dismissed')) {
-      setShowGeofencePrompt(true)
-    }
-  }, [hasZone])
 
   // Background medicine notifications
   useMedicineNotifications(userId, todaySchedule)
@@ -79,14 +60,6 @@ export default function ElderHome() {
       fetch(`${API_URL}/api/medical/list/${uid}`)
         .then(r => r.json())
         .then(data => { if (data.success) setRecordCount(data.total) })
-        .catch(() => {})
-      // Check if elder has a geofence zone
-      fetch(`${API_URL}/api/geofence/zone/${uid}`)
-        .then(r => r.json())
-        .then(data => {
-          setHasZone(data.hasZone)
-          setGeofenceZone(data.zone || null)
-        })
         .catch(() => {})
       // Update elder location silently for family dashboard visibility
       if (navigator.geolocation) {
@@ -154,25 +127,7 @@ export default function ElderHome() {
         {healthAlerts.length > 0 && showAlertBanner && (
           <HealthAlertBanner alerts={healthAlerts} onDismiss={() => setShowAlertBanner(false)} />
         )}
-        {showGeofencePrompt && !hasZone && (
-          <GeofenceSetupPrompt
-            onDismiss={() => {
-              setShowGeofencePrompt(false)
-              localStorage.setItem('sahara_geofence_prompt_dismissed', 'true')
-            }}
-          />
-        )}
         <GreetingCard user={user} profile={profile} userId={userId} />
-        <div style={{ marginTop: -16, marginBottom: 20 }}>
-          <GeofenceStatusBadge
-            status={geofenceStatus}
-            zone={geofenceZone ? {
-              radiusMeters: geofenceZone.radius_meters,
-              label: geofenceZone.label,
-            } : null}
-            lastCheck={geofenceLastCheck}
-          />
-        </div>
         {/* My Health Section — Phase 11E */}
         <div className="my-health-section">
           <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#0A2540', marginBottom: '12px' }}>My Health</h3>

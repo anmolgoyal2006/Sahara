@@ -5,7 +5,7 @@ const NAV_ITEMS = [
   { icon: 'ti-calendar-plus',      label: 'Book',    route: '/elder/book' },
   { icon: 'ti-message-chatbot',    label: 'Chat',    route: '/elder/companion' },
   { icon: 'ti-heart-rate-monitor', label: 'Health',  route: '/elder/health' },
-  { icon: 'ti-map-pin-check',      label: 'Zone',    route: '/elder/safety-zone' },
+  { icon: 'ti-pill',               label: 'Medicine',route: '/elder/medicines' },
 ]
 
 export default function BottomNav() {
