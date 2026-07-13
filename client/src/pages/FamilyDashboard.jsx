@@ -254,6 +254,39 @@ export default function FamilyDashboard() {
             address={elder?.address}
           />
           <FamilyBookingsSection bookings={bookings} />
+
+          {/* Quick links card */}
+          <div style={{ background: 'white', border: '1.5px solid #DDE8F5', borderRadius: 14, padding: 20, marginBottom: 20 }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: '#0A2540', margin: '0 0 14px' }}>Quick Actions</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[
+                { icon: 'ti-heart-rate-monitor', label: 'View Health History',   color: '#E24B4A', bg: '#FFF0F0', path: '/family/health' },
+                { icon: 'ti-map-pin-check',      label: 'Manage Safety Zone',    color: '#185FA5', bg: '#EBF4FF', path: '/family/safety-zone' },
+                { icon: 'ti-map-pin',            label: 'Location History',      color: '#1D9E75', bg: '#F0FBF7', path: '/family/location-history' },
+                { icon: 'ti-video',              label: 'Call History',          color: '#8B5CF6', bg: '#F5F3FF', path: '/family/call-history' },
+              ].map(item => (
+                <button
+                  key={item.path}
+                  onClick={() => navigate(item.path)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    padding: '10px 12px', borderRadius: 10,
+                    border: '1.5px solid #EEF4FB', background: 'white',
+                    cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
+                    width: '100%', transition: 'background 0.15s',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = item.bg}
+                  onMouseLeave={e => e.currentTarget.style.background = 'white'}
+                >
+                  <div style={{ width: 34, height: 34, borderRadius: 9, background: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <i className={`ti ${item.icon}`} style={{ fontSize: 16, color: item.color }} />
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#0A2540', flex: 1 }}>{item.label}</span>
+                  <i className="ti ti-chevron-right" style={{ fontSize: 14, color: '#A0B8D0' }} />
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

@@ -49,10 +49,10 @@ export default function ElderLocationMap({ lat, lng, elderName, address }) {
           <p style={{ fontSize: 14, fontWeight: 700, color: '#0A2540', margin: '0 0 2px' }}>Last Known Location</p>
           <p style={{ fontSize: 11, color: '#A0B8D0', margin: 0 }}>Updates when parent has Sahara open</p>
         </div>
-        <div style={{ height: 160, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+        <div style={{ height: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#F7FAFF' }}>
           <i className="ti ti-map-pin-off" style={{ fontSize: 40, color: '#DDE8F5' }} />
-          <p style={{ fontSize: 14, color: '#A0B8D0', margin: 0 }}>Location not available</p>
-          <p style={{ fontSize: 12, color: '#A0B8D0', margin: 0 }}>Location is shared when your parent uses Sahara</p>
+          <p style={{ fontSize: 14, color: '#A0B8D0', margin: 0, fontWeight: 600 }}>Location not yet shared</p>
+          <p style={{ fontSize: 12, color: '#C0D4E8', margin: 0, textAlign: 'center', maxWidth: 220, lineHeight: 1.5 }}>Location updates whenever your parent opens the Sahara app</p>
         </div>
       </div>
     )
@@ -72,7 +72,7 @@ export default function ElderLocationMap({ lat, lng, elderName, address }) {
       </div>
 
       {/* Map */}
-      <div style={{ height: 220, borderRadius: '0 0 0 0' }}>
+      <div style={{ height: 300 }}>
         <MapContainer
           center={[lat, lng]}
           zoom={14}

@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom'
+
 const SERVICE_LABEL = {
   maid: 'Maid', nurse: 'Nurse', driver: 'Driver',
   cook: 'Cook', physiotherapist: 'Physio', repair: 'Repair',
@@ -19,6 +21,13 @@ const STATUS_STYLE = {
   cancelled: { color: '#E24B4A', bg: '#FFF0F0', border: '#FECACA' },
 }
 
+const SERVICE_CHIPS = [
+  { icon: 'ti-home',        label: 'Maid',   color: '#185FA5', bg: '#EBF4FF' },
+  { icon: 'ti-stethoscope', label: 'Nurse',  color: '#E24B4A', bg: '#FFF0F0' },
+  { icon: 'ti-car',         label: 'Driver', color: '#1D9E75', bg: '#F0FBF7' },
+  { icon: 'ti-tools-kitchen-2', label: 'Cook', color: '#BA7517', bg: '#FAEEDA' },
+]
+
 function formatBookingDate(iso) {
   if (!iso) return ''
   return new Date(iso).toLocaleString('en-IN', {
@@ -28,6 +37,8 @@ function formatBookingDate(iso) {
 }
 
 export default function FamilyBookingsSection({ bookings = [] }) {
+  const navigate = useNavigate()
+
   return (
     <div style={{
       background: 'white', border: '1.5px solid #DDE8F5',
@@ -35,15 +46,61 @@ export default function FamilyBookingsSection({ bookings = [] }) {
       fontFamily: 'Noto Sans, sans-serif',
     }}>
       {/* Header */}
-      <p style={{ fontSize: 16, fontWeight: 700, color: '#0A2540', margin: '0 0 16px' }}>
-        Upcoming Services
-      </p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <p style={{ fontSize: 16, fontWeight: 700, color: '#0A2540', margin: 0 }}>Upcoming Services</p>
+        {bookings.length > 0 && (
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#1D9E75', background: '#F0FBF7', border: '1px solid #9FE1CB', borderRadius: 20, padding: '2px 10px' }}>
+            {bookings.length} scheduled
+          </span>
+        )}
+      </div>
 
-      {/* Empty state */}
+      {/* Empty state — actionable */}
       {bookings.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '20px 0' }}>
-          <i className="ti ti-calendar-off" style={{ fontSize: 40, color: '#DDE8F5', display: 'block', marginBottom: 10 }} />
-          <p style={{ fontSize: 13, color: '#A0B8D0', margin: 0 }}>No upcoming bookings</p>
+        <div>
+          <div style={{ background: '#F7FAFF', borderRadius: 12, padding: '20px 16px', textAlign: 'center', marginBottom: 16 }}>
+            <i className="ti ti-calendar-plus" style={{ fontSize: 36, color: '#A0B8D0', display: 'block', marginBottom: 10 }} />
+            <p style={{ fontSize: 14, fontWeight: 700, color: '#0A2540', margin: '0 0 4px' }}>No upcoming services</p>
+            <p style={{ fontSize: 12, color: '#A0B8D0', margin: '0 0 14px', lineHeight: 1.5 }}>
+              Book a caregiver for your elder — maid, nurse, driver and more
+            </p>
+            <button
+              onClick={() => navigate('/elder/book')}
+              style={{
+                height: 36, padding: '0 20px', borderRadius: 10,
+                background: '#1D9E75', border: 'none',
+                color: 'white', fontSize: 13, fontWeight: 700,
+                cursor: 'pointer', fontFamily: 'inherit',
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+              }}
+            >
+              <i className="ti ti-plus" style={{ fontSize: 13 }} />
+              Book a Service
+            </button>
+          </div>
+
+          {/* Service type chips */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            {SERVICE_CHIPS.map(s => (
+              <div
+                key={s.label}
+                onClick={() => navigate('/elder/book')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '10px 12px', borderRadius: 10,
+                  border: '1.5px solid #EEF4FB', cursor: 'pointer',
+                  transition: 'background 0.15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = s.bg}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <i className={`ti ${s.icon}`} style={{ fontSize: 16, color: s.color }} />
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#0A2540' }}>{s.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         bookings.map((booking, i) => {
