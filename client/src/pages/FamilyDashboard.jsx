@@ -11,7 +11,6 @@ import FamilyMedicineSection from '../components/family/FamilyMedicineSection'
 import FamilyBookingsSection from '../components/family/FamilyBookingsSection'
 import ElderLocationMap from '../components/family/ElderLocationMap'
 import SOSAlertCard from '../components/sos/SOSAlertCard'
-import SOSHistoryList from '../components/sos/SOSHistoryList'
 import { useSOSNotifications } from '../hooks/useSOSNotifications'
 import CallButton from '../components/videocall/CallButton'
 import GeofenceAlertCard from '../components/family/GeofenceAlertCard'
@@ -227,6 +226,35 @@ export default function FamilyDashboard() {
             medLogs={medLogs}
             medicineCompliance={medicineCompliance}
           />
+          {/* Emergency History — compact, inside left col */}
+          <div style={{ background: 'white', border: '1.5px solid #DDE8F5', borderRadius: 14, padding: '16px 20px', marginBottom: 20, fontFamily: 'Noto Sans, sans-serif' }}>
+            <p style={{ fontSize: 15, fontWeight: 700, color: '#0A2540', margin: '0 0 12px' }}>Emergency History</p>
+            {!sosEvents?.length ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0' }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#F0FBF7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <i className="ti ti-shield-check" style={{ fontSize: 16, color: '#1D9E75' }} />
+                </div>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: '#0A2540', margin: 0 }}>No emergency alerts</p>
+                  <p style={{ fontSize: 11, color: '#1D9E75', margin: 0 }}>All is well</p>
+                </div>
+              </div>
+            ) : (
+              (sosEvents || []).slice(0, 3).map((alert, i, arr) => (
+                <div key={alert.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < arr.length - 1 ? '1px solid #F4F8FC' : 'none' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: alert.resolved ? '#1D9E75' : '#E24B4A' }} />
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontSize: 12, fontWeight: 600, color: '#0A2540', margin: 0 }}>
+                      {new Date(alert.triggered_at).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true })}
+                    </p>
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: alert.resolved ? '#1D9E75' : '#E24B4A' }}>
+                    {alert.resolved ? 'Resolved' : 'Active'}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
         {/* Right column */}
@@ -254,63 +282,7 @@ export default function FamilyDashboard() {
             address={elder?.address}
           />
           <FamilyBookingsSection bookings={bookings} />
-
-          {/* Quick links card */}
-          <div style={{ background: 'white', border: '1.5px solid #DDE8F5', borderRadius: 14, padding: 20, marginBottom: 20 }}>
-            <p style={{ fontSize: 14, fontWeight: 700, color: '#0A2540', margin: '0 0 14px' }}>Quick Actions</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[
-                { icon: 'ti-heart-rate-monitor', label: 'View Health History',   color: '#E24B4A', bg: '#FFF0F0', path: '/family/health' },
-                { icon: 'ti-map-pin-check',      label: 'Manage Safety Zone',    color: '#185FA5', bg: '#EBF4FF', path: '/family/safety-zone' },
-                { icon: 'ti-map-pin',            label: 'Location History',      color: '#1D9E75', bg: '#F0FBF7', path: '/family/location-history' },
-                { icon: 'ti-video',              label: 'Call History',          color: '#8B5CF6', bg: '#F5F3FF', path: '/family/call-history' },
-              ].map(item => (
-                <button
-                  key={item.path}
-                  onClick={() => navigate(item.path)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 12,
-                    padding: '10px 12px', borderRadius: 10,
-                    border: '1.5px solid #EEF4FB', background: 'white',
-                    cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
-                    width: '100%', transition: 'background 0.15s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.background = item.bg}
-                  onMouseLeave={e => e.currentTarget.style.background = 'white'}
-                >
-                  <div style={{ width: 34, height: 34, borderRadius: 9, background: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <i className={`ti ${item.icon}`} style={{ fontSize: 16, color: item.color }} />
-                  </div>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#0A2540', flex: 1 }}>{item.label}</span>
-                  <i className="ti ti-chevron-right" style={{ fontSize: 14, color: '#A0B8D0' }} />
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
-      </div>
-
-      {/* SOS History */}
-      <div style={{ marginTop: 8 }}>
-        <p style={{ fontSize: 16, fontWeight: 700, color: '#0A2540', marginBottom: 12 }}>Emergency History</p>
-        <SOSHistoryList alerts={sosEvents || []} />
-      </div>
-
-      {/* Call History link — Phase 12E */}
-      <div style={{ textAlign: 'center', padding: '16px 0 4px' }}>
-        <button
-          onClick={() => navigate('/family/call-history')}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            color: '#185FA5', fontSize: 13, fontWeight: 600,
-            display: 'inline-flex', alignItems: 'center', gap: 5,
-            fontFamily: 'inherit', padding: '4px 8px'
-          }}
-        >
-          <i className="ti ti-video" style={{ fontSize: 14 }} />
-          Call History
-          <i className="ti ti-arrow-right" style={{ fontSize: 12 }} />
-        </button>
       </div>
 
       <LastRefreshed time={lastRefreshed} onRefresh={() => fetchOverview(userId)} />
@@ -320,6 +292,7 @@ export default function FamilyDashboard() {
           .family-two-col {
             grid-template-columns: 1fr 1fr !important;
             gap: 20px !important;
+            align-items: start !important;
           }
         }
       `}</style>

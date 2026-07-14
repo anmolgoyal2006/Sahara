@@ -46,8 +46,8 @@ export default function FamilyBookingsSection({ bookings = [] }) {
       fontFamily: 'Noto Sans, sans-serif',
     }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <p style={{ fontSize: 16, fontWeight: 700, color: '#0A2540', margin: 0 }}>Upcoming Services</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <p style={{ fontSize: 15, fontWeight: 700, color: '#0A2540', margin: 0 }}>Upcoming Services</p>
         {bookings.length > 0 && (
           <span style={{ fontSize: 11, fontWeight: 700, color: '#1D9E75', background: '#F0FBF7', border: '1px solid #9FE1CB', borderRadius: 20, padding: '2px 10px' }}>
             {bookings.length} scheduled
@@ -55,53 +55,48 @@ export default function FamilyBookingsSection({ bookings = [] }) {
         )}
       </div>
 
-      {/* Empty state — actionable */}
       {bookings.length === 0 ? (
-        <div>
-          <div style={{ background: '#F7FAFF', borderRadius: 12, padding: '20px 16px', textAlign: 'center', marginBottom: 16 }}>
-            <i className="ti ti-calendar-plus" style={{ fontSize: 36, color: '#A0B8D0', display: 'block', marginBottom: 10 }} />
-            <p style={{ fontSize: 14, fontWeight: 700, color: '#0A2540', margin: '0 0 4px' }}>No upcoming services</p>
-            <p style={{ fontSize: 12, color: '#A0B8D0', margin: '0 0 14px', lineHeight: 1.5 }}>
-              Book a caregiver for your elder — maid, nurse, driver and more
-            </p>
-            <button
-              onClick={() => navigate('/elder/book')}
-              style={{
-                height: 36, padding: '0 20px', borderRadius: 10,
-                background: '#1D9E75', border: 'none',
-                color: 'white', fontSize: 13, fontWeight: 700,
-                cursor: 'pointer', fontFamily: 'inherit',
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-              }}
-            >
-              <i className="ti ti-plus" style={{ fontSize: 13 }} />
-              Book a Service
-            </button>
-          </div>
+        <>
+          {/* Compact empty message */}
+          <p style={{ fontSize: 13, color: '#A0B8D0', margin: '0 0 12px' }}>No services booked yet</p>
 
-          {/* Service type chips */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          {/* Service chips in a tight 2×2 grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
             {SERVICE_CHIPS.map(s => (
               <div
                 key={s.label}
                 onClick={() => navigate('/elder/book')}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '10px 12px', borderRadius: 10,
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '8px 10px', borderRadius: 10,
                   border: '1.5px solid #EEF4FB', cursor: 'pointer',
-                  transition: 'background 0.15s',
+                  background: 'white', transition: 'background 0.12s',
                 }}
                 onMouseEnter={e => e.currentTarget.style.background = s.bg}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                onMouseLeave={e => e.currentTarget.style.background = 'white'}
               >
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <i className={`ti ${s.icon}`} style={{ fontSize: 16, color: s.color }} />
+                <div style={{ width: 28, height: 28, borderRadius: 7, background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <i className={`ti ${s.icon}`} style={{ fontSize: 14, color: s.color }} />
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#0A2540' }}>{s.label}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#0A2540' }}>{s.label}</span>
               </div>
             ))}
           </div>
-        </div>
+
+          <button
+            onClick={() => navigate('/elder/book')}
+            style={{
+              width: '100%', height: 38, borderRadius: 10,
+              background: '#1D9E75', border: 'none',
+              color: 'white', fontSize: 13, fontWeight: 700,
+              cursor: 'pointer', fontFamily: 'inherit',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            }}
+          >
+            <i className="ti ti-plus" style={{ fontSize: 13 }} />
+            Book a Service
+          </button>
+        </>
       ) : (
         bookings.map((booking, i) => {
           const svc     = booking.service_type
@@ -171,6 +166,32 @@ export default function FamilyBookingsSection({ bookings = [] }) {
           )
         })
       )}
+
+      {/* Quick links — always visible at bottom */}
+      <div style={{ borderTop: '1px solid #EEF4FB', marginTop: 12, paddingTop: 10 }}>
+        {[
+          { icon: 'ti-heart-rate-monitor', label: 'Health History',  color: '#E24B4A', path: '/family/health' },
+          { icon: 'ti-map-pin-check',      label: 'Safety Zone',     color: '#185FA5', path: '/family/safety-zone' },
+          { icon: 'ti-map-pin',            label: 'Location History',color: '#1D9E75', path: '/family/location-history' },
+          { icon: 'ti-video',              label: 'Call History',    color: '#8B5CF6', path: '/family/call-history' },
+        ].map((item, i, arr) => (
+          <button
+            key={item.path}
+            onClick={() => navigate(item.path)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              width: '100%', padding: '8px 0',
+              background: 'none', border: 'none',
+              borderBottom: i < arr.length - 1 ? '1px solid #F4F8FC' : 'none',
+              cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
+            }}
+          >
+            <i className={`ti ${item.icon}`} style={{ fontSize: 15, color: item.color, flexShrink: 0 }} />
+            <span style={{ fontSize: 13, color: '#0A2540', fontWeight: 600, flex: 1 }}>{item.label}</span>
+            <i className="ti ti-chevron-right" style={{ fontSize: 12, color: '#C0D4E8' }} />
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
