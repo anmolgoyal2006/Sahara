@@ -19,21 +19,32 @@
       "aadhaar_required": true,
       "bank_account_required": true,
       "gender": "all",
-      "states": ["all"],
+      "states": [
+        "all"
+      ],
       "conditions": [],
       "verifiable_by_rules": true
     },
-    "documents": ["Aadhaar card", "BPL ration card or SECC listing", "Bank passbook", "Age proof"],
+    "documents": [
+      "Aadhaar card",
+      "BPL ration card or SECC listing",
+      "Bank passbook",
+      "Age proof"
+    ],
     "how_to_apply": [
       "Visit your local Gram Panchayat or Urban Local Body office",
       "Fill the NSAP application form",
-      "Attach required documents",
-      "Submit to Block Development Officer or Municipal office"
+      "Submit to Block Development Officer"
     ],
     "apply_url": "https://nsap.nic.in",
     "helpline": "1800-111-555",
     "helpline_free": true,
-    "tags": ["pension", "elderly", "BPL", "NSAP"],
+    "tags": [
+      "pension",
+      "elderly",
+      "BPL",
+      "NSAP"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
@@ -57,20 +68,32 @@
       "aadhaar_required": true,
       "bank_account_required": false,
       "gender": "all",
-      "states": ["all"],
-      "conditions": ["Must be listed in SECC 2011 database OR belong to specified occupational categories"],
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be listed in SECC 2011 database OR belong to specified occupational categories"
+      ],
       "verifiable_by_rules": false
     },
-    "documents": ["Aadhaar card", "Ration card or SECC document", "PM-JAY eligibility letter (if issued)"],
+    "documents": [
+      "Aadhaar card",
+      "Ration card or SECC document"
+    ],
     "how_to_apply": [
-      "Check eligibility at mera.pmjay.gov.in using mobile number or ration card",
+      "Check eligibility at mera.pmjay.gov.in",
       "Visit nearest Common Service Centre or empanelled hospital",
       "Get Ayushman card issued on-spot"
     ],
     "apply_url": "https://pmjay.gov.in",
     "helpline": "14555",
     "helpline_free": true,
-    "tags": ["health", "insurance", "hospitalisation", "Ayushman"],
+    "tags": [
+      "health",
+      "insurance",
+      "hospitalisation",
+      "Ayushman"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
@@ -94,20 +117,32 @@
       "aadhaar_required": true,
       "bank_account_required": true,
       "gender": "all",
-      "states": ["all"],
-      "conditions": ["Must own cultivable land as per land records", "Income-tax payers not eligible", "Government employees not eligible"],
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must own cultivable land as per land records",
+        "Income-tax payers not eligible",
+        "Government employees not eligible"
+      ],
       "verifiable_by_rules": false
     },
-    "documents": ["Aadhaar card", "Land ownership records (Khasra/Khatauni)", "Bank passbook"],
+    "documents": [
+      "Aadhaar card",
+      "Land ownership records (Khasra/Khatauni)",
+      "Bank passbook"
+    ],
     "how_to_apply": [
-      "Register at pmkisan.gov.in or nearest Common Service Centre",
-      "Self-registration possible via the PM-KISAN mobile app",
-      "Submit Aadhaar and land records for verification"
+      "Register at pmkisan.gov.in or nearest Common Service Centre"
     ],
     "apply_url": "https://pmkisan.gov.in",
     "helpline": "155261",
     "helpline_free": true,
-    "tags": ["agriculture", "farmer", "income support"],
+    "tags": [
+      "agriculture",
+      "farmer",
+      "income support"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
@@ -131,25 +166,36 @@
       "aadhaar_required": true,
       "bank_account_required": true,
       "gender": "all",
-      "states": ["all"],
+      "states": [
+        "all"
+      ],
       "conditions": [],
       "verifiable_by_rules": true
     },
-    "documents": ["Aadhaar card", "PAN card", "Bank passbook", "Age proof", "Address proof"],
+    "documents": [
+      "Aadhaar card",
+      "PAN card",
+      "Bank passbook",
+      "Age proof"
+    ],
     "how_to_apply": [
       "Visit any LIC branch office",
-      "Apply online at licindia.in",
-      "Submit KYC documents and lump-sum purchase amount"
+      "Apply online at licindia.in"
     ],
     "apply_url": "https://licindia.in/home/insurance-plan/pension-plans/pm-vaya-vandana-yojana",
     "helpline": "022-68276827",
     "helpline_free": false,
-    "tags": ["pension", "senior citizen", "LIC", "investment"],
+    "tags": [
+      "pension",
+      "senior citizen",
+      "LIC",
+      "investment"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
   {
-    "id": "svy",
+    "id": "scss",
     "name": "Senior Citizen Savings Scheme",
     "short_name": "SCSS",
     "category": "savings",
@@ -168,20 +214,32 @@
       "aadhaar_required": true,
       "bank_account_required": true,
       "gender": "all",
-      "states": ["all"],
-      "conditions": ["Retired defence personnel eligible from age 50"],
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Retired defence personnel eligible from age 50"
+      ],
       "verifiable_by_rules": false
     },
-    "documents": ["Aadhaar card", "PAN card", "Age proof", "Address proof", "Passport-size photos"],
+    "documents": [
+      "Aadhaar card",
+      "PAN card",
+      "Age proof"
+    ],
     "how_to_apply": [
       "Visit any authorised bank branch or post office",
-      "Fill SCSS account opening form",
-      "Deposit minimum ₹1,000 (maximum ₹30 lakh)"
+      "Fill SCSS account opening form"
     ],
     "apply_url": "https://www.indiapost.gov.in/financial/pages/content/scss.aspx",
     "helpline": "1800-266-6868",
     "helpline_free": true,
-    "tags": ["savings", "senior citizen", "interest", "post office", "bank"],
+    "tags": [
+      "savings",
+      "senior citizen",
+      "interest",
+      "post office"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
@@ -205,20 +263,34 @@
       "aadhaar_required": true,
       "bank_account_required": true,
       "gender": "female",
-      "states": ["all"],
-      "conditions": ["Applicant must be a widow"],
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Applicant must be a widow"
+      ],
       "verifiable_by_rules": false
     },
-    "documents": ["Aadhaar card", "BPL card or SECC listing", "Husband's death certificate", "Bank passbook"],
+    "documents": [
+      "Aadhaar card",
+      "BPL card or SECC listing",
+      "Husband's death certificate",
+      "Bank passbook"
+    ],
     "how_to_apply": [
       "Apply through Gram Panchayat or Urban Local Body",
-      "Submit NSAP application form with widow proof",
-      "District Social Welfare office will verify and approve"
+      "Submit NSAP application form with widow proof"
     ],
     "apply_url": "https://nsap.nic.in",
     "helpline": "1800-111-555",
     "helpline_free": true,
-    "tags": ["pension", "widow", "BPL", "NSAP", "women"],
+    "tags": [
+      "pension",
+      "widow",
+      "BPL",
+      "NSAP",
+      "women"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
@@ -242,20 +314,33 @@
       "aadhaar_required": true,
       "bank_account_required": true,
       "gender": "all",
-      "states": ["all"],
-      "conditions": ["Must have 80% or more disability or multiple disabilities as certified by government medical board"],
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must have 80% or more disability or multiple disabilities as certified by government medical board"
+      ],
       "verifiable_by_rules": false
     },
-    "documents": ["Aadhaar card", "BPL card", "Disability certificate (80%+ from government hospital)", "Bank passbook"],
+    "documents": [
+      "Aadhaar card",
+      "BPL card",
+      "Disability certificate (80%+)",
+      "Bank passbook"
+    ],
     "how_to_apply": [
       "Obtain disability certificate from district hospital",
-      "Apply at Gram Panchayat or Urban Local Body",
-      "Submit NSAP form with disability certificate"
+      "Apply at Gram Panchayat or Urban Local Body"
     ],
     "apply_url": "https://nsap.nic.in",
     "helpline": "1800-111-555",
     "helpline_free": true,
-    "tags": ["disability", "pension", "BPL", "NSAP"],
+    "tags": [
+      "disability",
+      "pension",
+      "BPL",
+      "NSAP"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
@@ -279,20 +364,28 @@
       "aadhaar_required": true,
       "bank_account_required": true,
       "gender": "all",
-      "states": ["all"],
+      "states": [
+        "all"
+      ],
       "conditions": [],
       "verifiable_by_rules": true
     },
-    "documents": ["Aadhaar card", "Bank account with auto-debit enabled"],
+    "documents": [
+      "Aadhaar card",
+      "Bank account with auto-debit enabled"
+    ],
     "how_to_apply": [
       "Visit your bank branch or net banking portal",
-      "Enroll under PMSBY scheme with auto-debit consent",
-      "₹20 premium auto-debited annually each June"
+      "Enroll under PMSBY with auto-debit consent"
     ],
     "apply_url": "https://financialservices.gov.in/insurance-divisions/Government-Sponsored-&-Social-Security-Schemes/Pradhan-Mantri-Suraksha-Bima-Yojana(PMSBY)",
     "helpline": "1800-180-1111",
     "helpline_free": true,
-    "tags": ["insurance", "accident", "low premium"],
+    "tags": [
+      "insurance",
+      "accident",
+      "low premium"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
@@ -316,20 +409,28 @@
       "aadhaar_required": true,
       "bank_account_required": true,
       "gender": "all",
-      "states": ["all"],
+      "states": [
+        "all"
+      ],
       "conditions": [],
       "verifiable_by_rules": true
     },
-    "documents": ["Aadhaar card", "Bank account with auto-debit enabled", "Nominee details"],
+    "documents": [
+      "Aadhaar card",
+      "Bank account with auto-debit enabled",
+      "Nominee details"
+    ],
     "how_to_apply": [
-      "Enroll through your bank branch, net banking, or mobile banking",
-      "Submit auto-debit consent form",
-      "₹436 premium auto-debited annually each June"
+      "Enroll through your bank branch, net banking, or mobile banking"
     ],
     "apply_url": "https://financialservices.gov.in/insurance-divisions/Government-Sponsored-&-Social-Security-Schemes/Pradhan-Mantri-Jeevan-Jyoti-Bima-Yojana(PMJJBY)",
     "helpline": "1800-180-1111",
     "helpline_free": true,
-    "tags": ["insurance", "life", "low premium"],
+    "tags": [
+      "insurance",
+      "life",
+      "low premium"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
@@ -353,20 +454,33 @@
       "aadhaar_required": true,
       "bank_account_required": true,
       "gender": "all",
-      "states": ["all"],
-      "conditions": ["Must not be a member of any statutory social security scheme (EPF, NPS, ESIC etc.)", "Income tax payers not eligible from May 2022 onwards"],
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must not be a member of any statutory social security scheme (EPF, NPS, ESIC etc.)",
+        "Income tax payers not eligible from May 2022 onwards"
+      ],
       "verifiable_by_rules": false
     },
-    "documents": ["Aadhaar card", "Mobile number linked to Aadhaar", "Bank savings account"],
+    "documents": [
+      "Aadhaar card",
+      "Mobile number linked to Aadhaar",
+      "Bank savings account"
+    ],
     "how_to_apply": [
       "Visit your bank branch or use net banking",
-      "Fill APY registration form with nominee details",
-      "Choose desired pension amount — contribution debited monthly"
+      "Fill APY registration form with nominee details"
     ],
     "apply_url": "https://npscra.nsdl.co.in/scheme-details.php",
     "helpline": "1800-110-069",
     "helpline_free": true,
-    "tags": ["pension", "unorganised sector", "retirement", "NPS"],
+    "tags": [
+      "pension",
+      "unorganised sector",
+      "retirement",
+      "NPS"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
@@ -390,26 +504,37 @@
       "aadhaar_required": true,
       "bank_account_required": true,
       "gender": "female",
-      "states": ["all"],
-      "conditions": ["No existing LPG connection in the household"],
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "No existing LPG connection in the household"
+      ],
       "verifiable_by_rules": false
     },
-    "documents": ["Aadhaar card", "BPL ration card", "Bank passbook", "Address proof"],
+    "documents": [
+      "Aadhaar card",
+      "BPL ration card",
+      "Bank passbook"
+    ],
     "how_to_apply": [
       "Visit nearest LPG distributor (IOC / BPCL / HPCL)",
-      "Fill PMUY application form (KYC2 form)",
-      "Submit with BPL card and Aadhaar",
-      "Connection issued after verification"
+      "Fill PMUY application form (KYC2 form)"
     ],
     "apply_url": "https://www.pmuy.gov.in",
     "helpline": "1906",
     "helpline_free": true,
-    "tags": ["LPG", "cooking gas", "BPL", "women", "health"],
+    "tags": [
+      "LPG",
+      "cooking gas",
+      "BPL",
+      "women"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
   {
-    "id": "pmasby",
+    "id": "pmayg",
     "name": "Pradhan Mantri Awas Yojana – Gramin",
     "short_name": "PMAY-G",
     "category": "housing",
@@ -428,20 +553,33 @@
       "aadhaar_required": true,
       "bank_account_required": true,
       "gender": "all",
-      "states": ["all"],
-      "conditions": ["Must be listed in SECC 2011 Permanent Wait List (PWL)", "Household must be houseless or living in 0–1 room kutcha house"],
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be listed in SECC 2011 Permanent Wait List (PWL)",
+        "Household must be houseless or living in 0–1 room kutcha house"
+      ],
       "verifiable_by_rules": false
     },
-    "documents": ["Aadhaar card", "SECC/BPL listing proof", "Bank passbook", "Land ownership document or NOC"],
+    "documents": [
+      "Aadhaar card",
+      "SECC/BPL listing proof",
+      "Bank passbook"
+    ],
     "how_to_apply": [
       "Check eligibility on awaassoft.nic.in",
-      "Beneficiaries are identified from SECC 2011 list — no direct walk-in application",
       "Contact Block Development Officer if listed but not contacted"
     ],
     "apply_url": "https://pmayg.nic.in",
     "helpline": "1800-11-6446",
     "helpline_free": true,
-    "tags": ["housing", "rural", "BPL", "SECC"],
+    "tags": [
+      "housing",
+      "rural",
+      "BPL",
+      "SECC"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
@@ -465,30 +603,43 @@
       "aadhaar_required": true,
       "bank_account_required": true,
       "gender": "all",
-      "states": ["all"],
-      "conditions": ["Deceased breadwinner must have been aged 18–59", "Application must be filed within 90 days of death"],
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Deceased breadwinner must have been aged 18–59",
+        "Application must be filed within 90 days of death"
+      ],
       "verifiable_by_rules": false
     },
-    "documents": ["Aadhaar card of applicant", "Death certificate of breadwinner", "BPL ration card", "Bank passbook", "Proof of relationship"],
+    "documents": [
+      "Aadhaar card of applicant",
+      "Death certificate of breadwinner",
+      "BPL ration card",
+      "Bank passbook"
+    ],
     "how_to_apply": [
-      "Apply within 90 days of death at Gram Panchayat or Block office",
-      "Submit NSAP NFBS form with death certificate",
-      "District Collector approves and disburses"
+      "Apply within 90 days of death at Gram Panchayat or Block office"
     ],
     "apply_url": "https://nsap.nic.in",
     "helpline": "1800-111-555",
     "helpline_free": true,
-    "tags": ["death benefit", "BPL", "lump sum", "NSAP"],
+    "tags": [
+      "death benefit",
+      "BPL",
+      "lump sum",
+      "NSAP"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
   {
-    "id": "cgs-disability",
-    "name": "Central Government Scheme for Persons with Disabilities – Assistance to Disabled Persons",
+    "id": "adip",
+    "name": "Assistance to Disabled Persons for Purchase/Fitting of Aids and Appliances",
     "short_name": "ADIP",
     "category": "disability",
     "ministry": "Ministry of Social Justice and Empowerment",
-    "description": "Free or subsidised assistive devices (wheelchairs, hearing aids, crutches, calipers, artificial limbs, braille kits) for disabled persons.",
+    "description": "Free or subsidised assistive devices (wheelchairs, hearing aids, crutches, artificial limbs, braille kits) for disabled persons with income up to ₹20,000/month.",
     "benefit": {
       "type": "in-kind",
       "amount": "Assistive device worth up to ₹16,000 (varies by device category)",
@@ -502,20 +653,33 @@
       "aadhaar_required": true,
       "bank_account_required": false,
       "gender": "all",
-      "states": ["all"],
-      "conditions": ["Must have at least 40% disability as certified by government medical authority", "UDID (Unique Disability ID) recommended"],
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must have at least 40% disability as certified by government medical authority"
+      ],
       "verifiable_by_rules": false
     },
-    "documents": ["Aadhaar card", "Disability certificate (40%+ from government hospital)", "Income certificate", "UDID card (preferred)"],
+    "documents": [
+      "Aadhaar card",
+      "Disability certificate (40%+)",
+      "Income certificate",
+      "UDID card (preferred)"
+    ],
     "how_to_apply": [
-      "Apply through ALIMCO (Artificial Limbs Manufacturing Corporation of India) camps or district office",
-      "Register at adip.msje.gov.in",
-      "Camp-based distribution also happens — check district social welfare office"
+      "Apply through ALIMCO camps or district office",
+      "Register at adip.msje.gov.in"
     ],
     "apply_url": "https://adip.msje.gov.in",
     "helpline": "1800-180-5129",
     "helpline_free": true,
-    "tags": ["disability", "assistive device", "wheelchair", "hearing aid"],
+    "tags": [
+      "disability",
+      "assistive device",
+      "wheelchair",
+      "hearing aid"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   },
@@ -539,20 +703,893 @@
       "aadhaar_required": true,
       "bank_account_required": false,
       "gender": "all",
-      "states": ["all"],
-      "conditions": ["Must have age-related disability (vision, hearing, mobility, dental)"],
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must have age-related disability (vision, hearing, mobility, dental)"
+      ],
       "verifiable_by_rules": false
     },
-    "documents": ["Aadhaar card", "BPL ration card", "Age proof", "Medical assessment (done at camp)"],
+    "documents": [
+      "Aadhaar card",
+      "BPL ration card",
+      "Age proof"
+    ],
     "how_to_apply": [
-      "Scheme operates through district-level camps organised by ALIMCO and NGOs",
       "Register at rashtriyavayoshri.gov.in or contact district Social Welfare office",
-      "Attend designated camp for assessment and device distribution"
+      "Attend designated camp for device distribution"
     ],
     "apply_url": "https://rashtriyavayoshri.gov.in",
     "helpline": "1800-180-5129",
     "helpline_free": true,
-    "tags": ["elderly", "disability", "assistive device", "BPL", "senior citizen"],
+    "tags": [
+      "elderly",
+      "disability",
+      "assistive device",
+      "BPL",
+      "senior citizen"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmay-urban",
+    "name": "Pradhan Mantri Awas Yojana – Urban",
+    "short_name": "PMAY-U",
+    "category": "housing",
+    "ministry": "Ministry of Housing and Urban Affairs",
+    "description": "Credit-linked subsidy and direct benefit for urban poor to own a pucca house. Covers EWS, LIG and MIG categories.",
+    "benefit": {
+      "type": "cash",
+      "amount": "Interest subsidy up to ₹2.67 lakh (EWS/LIG) or ₹2.35 lakh (MIG-I/II) on home loan",
+      "duration": "one-time subsidy on loan tenure"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Family must not own a pucca house anywhere in India",
+        "EWS income ≤ ₹3 lakh/year; LIG ₹3–6 lakh; MIG-I ₹6–12 lakh; MIG-II ₹12–18 lakh"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Income certificate",
+      "Property documents or allotment letter"
+    ],
+    "how_to_apply": [
+      "Apply through empanelled banks or housing finance companies",
+      "Submit application with income proof and property documents"
+    ],
+    "apply_url": "https://pmaymis.gov.in",
+    "helpline": "1800-11-6163",
+    "helpline_free": true,
+    "tags": [
+      "housing",
+      "urban",
+      "home loan",
+      "subsidy",
+      "EWS",
+      "LIG"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "sukanya-samridhi",
+    "name": "Sukanya Samriddhi Yojana",
+    "short_name": "SSY",
+    "category": "savings",
+    "ministry": "Ministry of Finance",
+    "description": "High-interest savings scheme for girl children under age 10, providing 8.2% p.a. interest for education and marriage expenses.",
+    "benefit": {
+      "type": "interest",
+      "amount": "8.2% per annum (tax-free interest, subject to revision)",
+      "duration": "21 years from account opening or until girl's marriage after 18"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": false,
+      "gender": "female",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Account opened for girl child below 10 years of age by parent/guardian"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Girl child's birth certificate",
+      "Parent/guardian Aadhaar",
+      "Address proof"
+    ],
+    "how_to_apply": [
+      "Visit any post office or authorised bank branch",
+      "Fill SSY account opening form",
+      "Minimum deposit ₹250/year"
+    ],
+    "apply_url": "https://www.indiapost.gov.in/financial/pages/content/sukanya-samridhi-yojana.aspx",
+    "helpline": "1800-266-6868",
+    "helpline_free": true,
+    "tags": [
+      "savings",
+      "girl child",
+      "education",
+      "post office",
+      "women"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "nps",
+    "name": "National Pension System",
+    "short_name": "NPS",
+    "category": "pension",
+    "ministry": "Ministry of Finance / PFRDA",
+    "description": "Voluntary, long-term retirement savings scheme regulated by PFRDA. Pension corpus at 60; partial withdrawals allowed.",
+    "benefit": {
+      "type": "pension",
+      "amount": "Market-linked pension corpus at 60; annuity provides regular monthly pension (amount depends on corpus size)",
+      "duration": "lifetime annuity from age 60"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": 70,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [],
+      "verifiable_by_rules": true
+    },
+    "documents": [
+      "Aadhaar card",
+      "PAN card",
+      "Bank account details"
+    ],
+    "how_to_apply": [
+      "Register online at enps.nsdl.com or eNPS portal",
+      "Or visit Point of Presence (POP) — banks, post offices"
+    ],
+    "apply_url": "https://enps.nsdl.com",
+    "helpline": "1800-110-708",
+    "helpline_free": true,
+    "tags": [
+      "pension",
+      "retirement",
+      "NPS",
+      "PFRDA",
+      "long-term savings"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmegp",
+    "name": "Prime Minister's Employment Generation Programme",
+    "short_name": "PMEGP",
+    "category": "employment",
+    "ministry": "Ministry of Micro, Small and Medium Enterprises",
+    "description": "Credit-linked subsidy scheme to generate employment by establishing micro-enterprises in rural and urban areas.",
+    "benefit": {
+      "type": "cash",
+      "amount": "15–35% margin money subsidy on project cost (up to ₹50 lakh for manufacturing; ₹20 lakh for services)",
+      "duration": "one-time subsidy"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Minimum VIII standard pass for projects above ₹10 lakh (manufacturing) or ₹5 lakh (services)"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Educational qualification certificate",
+      "Project report",
+      "Caste certificate (if applicable)"
+    ],
+    "how_to_apply": [
+      "Apply online at kviconline.gov.in/pmegpeportal",
+      "Submit to nearest KVIC/KVIB/DIC office"
+    ],
+    "apply_url": "https://kviconline.gov.in/pmegpeportal",
+    "helpline": "1800-3000-0034",
+    "helpline_free": true,
+    "tags": [
+      "employment",
+      "self-employment",
+      "MSME",
+      "subsidy",
+      "business"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "mudra-loan",
+    "name": "Pradhan Mantri MUDRA Yojana",
+    "short_name": "PMMY",
+    "category": "employment",
+    "ministry": "Ministry of Finance",
+    "description": "Collateral-free loans to micro and small enterprises under three categories: Shishu (≤₹50k), Kishor (₹50k–5L), Tarun (₹5L–10L).",
+    "benefit": {
+      "type": "loan",
+      "amount": "Up to ₹10,00,000 collateral-free loan (Tarun category); Shishu up to ₹50,000; Kishor up to ₹5,00,000",
+      "duration": "loan repayment tenure as per bank terms"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be a non-farm income-generating micro/small enterprise",
+        "No default on any previous loan"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "PAN card",
+      "Business plan/profile",
+      "Address proof of business"
+    ],
+    "how_to_apply": [
+      "Apply at any bank, MFI, or NBFC",
+      "Apply online at mudra.org.in"
+    ],
+    "apply_url": "https://mudra.org.in",
+    "helpline": "1800-180-1111",
+    "helpline_free": true,
+    "tags": [
+      "loan",
+      "self-employment",
+      "MUDRA",
+      "micro enterprise",
+      "small business"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "standup-india",
+    "name": "Stand-Up India Scheme",
+    "short_name": "Stand-Up India",
+    "category": "employment",
+    "ministry": "Ministry of Finance",
+    "description": "Bank loans between ₹10 lakh and ₹1 crore to at least one SC/ST borrower and one woman borrower per bank branch for greenfield enterprises.",
+    "benefit": {
+      "type": "loan",
+      "amount": "₹10 lakh to ₹1 crore composite loan (term + working capital)",
+      "duration": "up to 7 years repayment"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be SC/ST or woman borrower",
+        "Must be setting up a greenfield (new) enterprise in manufacturing, services, or trading"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "PAN card",
+      "Caste certificate (SC/ST)",
+      "Business plan",
+      "Address proof"
+    ],
+    "how_to_apply": [
+      "Apply online at standupmitra.in",
+      "Or approach any scheduled commercial bank branch"
+    ],
+    "apply_url": "https://standupmitra.in",
+    "helpline": "1800-180-1111",
+    "helpline_free": true,
+    "tags": [
+      "loan",
+      "SC/ST",
+      "women",
+      "entrepreneurship",
+      "greenfield",
+      "bank loan"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "nrega",
+    "name": "Mahatma Gandhi National Rural Employment Guarantee Scheme",
+    "short_name": "MGNREGS",
+    "category": "employment",
+    "ministry": "Ministry of Rural Development",
+    "description": "Guarantees 100 days of unskilled manual wage employment per year to adult members of rural households willing to do public work.",
+    "benefit": {
+      "type": "cash",
+      "amount": "₹267/day (Central wage rate 2024; states may pay more) for up to 100 days/year per household",
+      "duration": "100 days per financial year, ongoing entitlement"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be an adult member of a rural household",
+        "Willing to do unskilled manual work"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Job card (issued by Gram Panchayat)",
+      "Bank/post office passbook"
+    ],
+    "how_to_apply": [
+      "Register at Gram Panchayat to get a Job Card",
+      "Apply for work in writing or verbally to Gram Panchayat"
+    ],
+    "apply_url": "https://nrega.nic.in",
+    "helpline": "1800-111-555",
+    "helpline_free": true,
+    "tags": [
+      "employment",
+      "rural",
+      "wage",
+      "manual work",
+      "guarantee"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pm-scholarship",
+    "name": "Prime Minister's Scholarship Scheme",
+    "short_name": "PMSS",
+    "category": "education",
+    "ministry": "Ministry of Home Affairs / Department of Ex-Servicemen Welfare",
+    "description": "Scholarships for dependent wards and widows of ex-servicemen/police personnel for professional degree courses.",
+    "benefit": {
+      "type": "cash",
+      "amount": "₹2,500/month (boys) or ₹3,000/month (girls) for 1–5 years depending on course",
+      "duration": "duration of the professional course"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be dependent ward or widow of ex-serviceman/paramilitary personnel",
+        "Must be studying in first year of professional degree (BE, MBBS, MBA, MCA, BEd, BPharm etc.)"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Ex-serviceman/PPO certificate",
+      "Mark sheets",
+      "Admission letter",
+      "Bank passbook"
+    ],
+    "how_to_apply": [
+      "Apply online at ksb.gov.in during the scholarship window (Aug–Nov each year)"
+    ],
+    "apply_url": "https://ksb.gov.in",
+    "helpline": "011-26173215",
+    "helpline_free": false,
+    "tags": [
+      "education",
+      "scholarship",
+      "ex-serviceman",
+      "defence",
+      "professional degree"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "nsp-merit",
+    "name": "National Means-cum-Merit Scholarship Scheme",
+    "short_name": "NMMSS",
+    "category": "education",
+    "ministry": "Ministry of Education",
+    "description": "Scholarship of ₹12,000/year for meritorious students from economically weaker sections to reduce dropout at Class VIII and encourage study up to Class XII.",
+    "benefit": {
+      "type": "cash",
+      "amount": "₹12,000/year (₹1,000/month)",
+      "duration": "4 years (Class IX to XII)"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": 150000,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must have passed Class VIII with at least 55% marks (50% for SC/ST)",
+        "Must be studying in Class IX in a government/aided school",
+        "Family income ≤ ₹1.5 lakh/year"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Class VIII marksheet",
+      "Income certificate",
+      "Caste certificate (if applicable)"
+    ],
+    "how_to_apply": [
+      "Apply through state government / school",
+      "Register on scholarships.gov.in"
+    ],
+    "apply_url": "https://scholarships.gov.in",
+    "helpline": "0120-6619540",
+    "helpline_free": false,
+    "tags": [
+      "education",
+      "scholarship",
+      "school",
+      "meritorious",
+      "EWS"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pm-jan-dhan",
+    "name": "Pradhan Mantri Jan Dhan Yojana",
+    "short_name": "PMJDY",
+    "category": "banking",
+    "ministry": "Ministry of Finance",
+    "description": "Zero-balance bank account with RuPay debit card, ₹1 lakh accident insurance, ₹30,000 life cover, and overdraft facility up to ₹10,000.",
+    "benefit": {
+      "type": "banking",
+      "amount": "Zero-balance account + ₹1,00,000 accident insurance + ₹30,000 life cover + ₹10,000 overdraft facility",
+      "duration": "ongoing"
+    },
+    "eligibility": {
+      "min_age": 10,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": false,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must not already have a bank account (unbanked individual)"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card OR any officially valid document (voter ID, driving licence, NREGA card)"
+    ],
+    "how_to_apply": [
+      "Visit any bank branch with KYC documents",
+      "Account opened on the spot — no minimum balance required"
+    ],
+    "apply_url": "https://pmjdy.gov.in",
+    "helpline": "1800-11-0001",
+    "helpline_free": true,
+    "tags": [
+      "banking",
+      "zero balance",
+      "RuPay",
+      "financial inclusion",
+      "insurance"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "esic",
+    "name": "Employees' State Insurance Scheme",
+    "short_name": "ESIC",
+    "category": "health",
+    "ministry": "Ministry of Labour and Employment",
+    "description": "Medical, sickness, maternity, disablement, and dependent benefits for workers in organised sector establishments with wages up to ₹21,000/month.",
+    "benefit": {
+      "type": "insurance",
+      "amount": "Full medical care for insured person and family at ESI hospitals; cash benefits during sickness (70% of wages), maternity (26 weeks full wages), disablement (90% of wages)",
+      "duration": "ongoing while employed and contributing"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": 21000,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be an employee in an ESIC-covered establishment (10+ workers)",
+        "Wage ≤ ₹21,000/month (₹25,000 for persons with disability)"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Employee ID",
+      "Employer registration number"
+    ],
+    "how_to_apply": [
+      "Employer registers on esic.gov.in and enrols employees",
+      "ESIC Pehchan card issued to insured person"
+    ],
+    "apply_url": "https://esic.gov.in",
+    "helpline": "1800-11-2526",
+    "helpline_free": true,
+    "tags": [
+      "health",
+      "insurance",
+      "organised sector",
+      "workers",
+      "sickness benefit"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "epfo-eps",
+    "name": "Employees' Pension Scheme",
+    "short_name": "EPS-95",
+    "category": "pension",
+    "ministry": "Ministry of Labour and Employment / EPFO",
+    "description": "Monthly pension for EPFO members on superannuation, early retirement, disablement, or to family on death. Minimum pension ₹1,000/month.",
+    "benefit": {
+      "type": "pension",
+      "amount": "Minimum ₹1,000/month; actual amount based on pensionable salary and service years (formula-based)",
+      "duration": "lifetime; family pension continues to widow/widower"
+    },
+    "eligibility": {
+      "min_age": 58,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must have at least 10 years of pensionable service",
+        "Must be a member of EPFO"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "UAN (Universal Account Number)",
+      "Aadhaar card",
+      "Bank passbook",
+      "Service records from employer"
+    ],
+    "how_to_apply": [
+      "Submit pension commencement form (Form 10D) to EPFO office through employer",
+      "Track at unifiedportal-mem.epfindia.gov.in"
+    ],
+    "apply_url": "https://unifiedportal-mem.epfindia.gov.in",
+    "helpline": "1800-118-005",
+    "helpline_free": true,
+    "tags": [
+      "pension",
+      "EPFO",
+      "organised sector",
+      "retirement",
+      "provident fund"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "annapurna",
+    "name": "Annapurna Scheme",
+    "short_name": "Annapurna",
+    "category": "welfare",
+    "ministry": "Ministry of Rural Development",
+    "description": "10 kg free food grain per month for senior citizens aged 65 and above who are eligible but not covered under the National Old Age Pension Scheme.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "10 kg food grain free per month (rice or wheat as per state allocation)",
+      "duration": "ongoing monthly"
+    },
+    "eligibility": {
+      "min_age": 65,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": true,
+      "aadhaar_required": true,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must not be receiving benefit under IGNOAPS",
+        "Must be destitute with no regular income or family support"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "BPL ration card",
+      "Age proof"
+    ],
+    "how_to_apply": [
+      "Apply through Gram Panchayat or local food distribution office",
+      "Beneficiary identified by state government"
+    ],
+    "apply_url": "https://dfpd.gov.in",
+    "helpline": "1800-111-555",
+    "helpline_free": true,
+    "tags": [
+      "food",
+      "elderly",
+      "BPL",
+      "destitute",
+      "food security"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmgsy",
+    "name": "Pradhan Mantri Gram Sadak Yojana",
+    "short_name": "PMGSY",
+    "category": "welfare",
+    "ministry": "Ministry of Rural Development",
+    "description": "All-weather road connectivity to unconnected rural habitations above 500 population (250 in hilly/tribal/desert areas).",
+    "benefit": {
+      "type": "infrastructure",
+      "amount": "All-weather road constructed free of charge to connect village (beneficiary receives road connectivity, not cash)",
+      "duration": "permanent infrastructure"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": false,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Habitation must be unconnected and have population ≥ 500 (or ≥ 250 in special category areas)"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [],
+    "how_to_apply": [
+      "Habitations are identified by state government; no individual application required",
+      "Contact Block Development Officer to report unconnected village"
+    ],
+    "apply_url": "https://omms.nic.in",
+    "helpline": "1800-111-555",
+    "helpline_free": true,
+    "tags": [
+      "rural",
+      "roads",
+      "infrastructure",
+      "connectivity"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "jal-jeevan",
+    "name": "Jal Jeevan Mission",
+    "short_name": "JJM",
+    "category": "welfare",
+    "ministry": "Ministry of Jal Shakti",
+    "description": "Functional Household Tap Connection (FHTC) with safe drinking water at 55 litres per capita per day to every rural household by 2024.",
+    "benefit": {
+      "type": "infrastructure",
+      "amount": "Tap water connection to household (no cash; infrastructure provided free to BPL/rural households)",
+      "duration": "permanent connection"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be a rural household without an existing functional tap connection"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Proof of rural residence"
+    ],
+    "how_to_apply": [
+      "Register complaint through Gram Panchayat or JJM helpline if your village has no tap connection"
+    ],
+    "apply_url": "https://jaljeevanmission.gov.in",
+    "helpline": "1800-180-1551",
+    "helpline_free": true,
+    "tags": [
+      "water",
+      "rural",
+      "tap connection",
+      "drinking water",
+      "infrastructure"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "cghs",
+    "name": "Central Government Health Scheme",
+    "short_name": "CGHS",
+    "category": "health",
+    "ministry": "Ministry of Health and Family Welfare",
+    "description": "Comprehensive healthcare for Central Government employees, pensioners and their dependents through CGHS wellness centres and empanelled hospitals in covered cities.",
+    "benefit": {
+      "type": "insurance",
+      "amount": "Cashless OPD, IPD, specialist consultations, medicines at CGHS rates in covered cities; ₹30,000–5 lakh reimbursement cap depending on category",
+      "duration": "ongoing while enrolled"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be serving/retired Central Government employee, judge, MP, freedom fighter, or accredited journalist in a CGHS-covered city"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Service/retirement certificate",
+      "CGHS card (applied through employer/CGHS office)"
+    ],
+    "how_to_apply": [
+      "Apply through your department's admin section or nearest CGHS zonal office",
+      "Pensioners apply at cghs.nic.in"
+    ],
+    "apply_url": "https://cghs.nic.in",
+    "helpline": "1800-110-188",
+    "helpline_free": true,
+    "tags": [
+      "health",
+      "central government",
+      "pensioner",
+      "OPD",
+      "cashless"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "swachh-bharat-toilet",
+    "name": "Swachh Bharat Mission – Individual Household Latrine",
+    "short_name": "SBM-IHHL",
+    "category": "welfare",
+    "ministry": "Ministry of Jal Shakti",
+    "description": "One-time financial incentive of ₹12,000 to BPL/APL (below ₹1 lakh income) households for construction of a toilet.",
+    "benefit": {
+      "type": "cash",
+      "amount": "₹12,000 (incentive paid after toilet construction and use is verified)",
+      "duration": "one-time"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Household must not already have a toilet",
+        "Prioritised for BPL, SC/ST, small/marginal farmers, women-headed households"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "BPL/APL ration card or income certificate",
+      "Bank passbook"
+    ],
+    "how_to_apply": [
+      "Apply through Gram Panchayat",
+      "Construct toilet first; incentive paid on verification by Swachhagrahis"
+    ],
+    "apply_url": "https://swachhbharatmission.gov.in",
+    "helpline": "1800-11-1565",
+    "helpline_free": true,
+    "tags": [
+      "sanitation",
+      "toilet",
+      "rural",
+      "BPL",
+      "Swachh Bharat"
+    ],
     "last_verified": "2025-07-14",
     "source": "manual curation"
   }
