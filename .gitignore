@@ -154,3 +154,7 @@ server/.env.production
 # Example env files are safe to commit
 !client/.env.example
 !server/.env.example
+
+# Scheme ingestion scratch files (never commit — can be large)
+server/scripts/ingest-schemes/raw_myscheme.json
+server/scripts/ingest-schemes/review-queue.json

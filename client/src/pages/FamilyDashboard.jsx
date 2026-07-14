@@ -183,6 +183,28 @@ export default function FamilyDashboard() {
       {/* AI Summary */}
       <AISummaryCard familyUserId={userId} />
 
+      {/* Government Schemes — Phase 14G */}
+      <div
+        onClick={() => navigate('/family/schemes')}
+        style={{
+          background: 'linear-gradient(135deg, #185FA5 0%, #0A3D6B 100%)',
+          borderRadius: 16, padding: '16px 20px', marginBottom: 20,
+          display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer',
+          boxShadow: '0 4px 12px rgba(24,95,165,0.2)',
+        }}
+      >
+        <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <i className="ti ti-building-bank" style={{ fontSize: 24, color: 'white' }} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: 15, fontWeight: 800, color: 'white', margin: 0 }}>Government Schemes</p>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', margin: '2px 0 0' }}>
+            Check schemes {elder?.name ? `for ${elder.name}` : 'for your family member'}
+          </p>
+        </div>
+        <i className="ti ti-arrow-right" style={{ fontSize: 18, color: 'rgba(255,255,255,0.7)' }} />
+      </div>
+
       {/* 4 overview cards */}
       <OverviewCards
         todayHealth={todayHealth}

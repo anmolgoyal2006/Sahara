@@ -160,6 +160,26 @@ export default function ElderHome() {
           </div>
         </div>
 
+        {/* Government Schemes tile — Phase 14F */}
+        <div
+          onClick={() => navigate('/elder/schemes')}
+          style={{
+            background: 'linear-gradient(135deg, #185FA5 0%, #0A3D6B 100%)',
+            borderRadius: 16, padding: '16px 20px', marginBottom: 20,
+            display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(24,95,165,0.2)',
+          }}
+        >
+          <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <span className="ti ti-building-bank" style={{ fontSize: 24, color: 'white' }} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: 15, fontWeight: 800, color: 'white', margin: 0 }}>Government Schemes</p>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', margin: '2px 0 0' }}>Check which schemes you qualify for</p>
+          </div>
+          <span className="ti ti-arrow-right" style={{ fontSize: 18, color: 'rgba(255,255,255,0.7)' }} />
+        </div>
+
         <CompanionBanner userName={user?.name} language={user?.language} />
         <div className="health-bookings-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 0 }}>
           <HealthSummaryCard healthLog={healthLog} />

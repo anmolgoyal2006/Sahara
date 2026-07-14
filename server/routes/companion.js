@@ -90,6 +90,9 @@ If time/date/duration are not specified, use defaults: time=09:00, date=tomorrow
   Use this if the user asks about their medical reports, test results, or wants to see a specific report.
 [ACTION:ADD_MEDICAL_RECORD]
   Use this if the user says they want to upload or add a new report/test.
+[ACTION:GOVT_SCHEMES]
+  Use this if the user asks about government schemes, benefits, pensions, yojana, sarkar ki madad, allowances, or any question about what government help they can get.
+  Examples: "kaun si yojana mil sakti hai", "what pension can I get", "government benefits for elderly", "sarkar ki koi scheme hai kya"
 [ACTION:MARK_TAKEN:medicine_name]
   Use this when the user says they have taken a medicine (e.g. "maine dawai le li", "I took my medicine", "maine subah wali dawai kha li").
   Replace medicine_name with the closest matching name from their current medicines list above.
@@ -251,6 +254,8 @@ router.post('/chat', async (req, res) => {
         actionData = { type: 'MEDICAL_RECORDS' }
       } else if (action === 'ADD_MEDICAL_RECORD') {
         actionData = { type: 'ADD_MEDICAL_RECORD' }
+      } else if (action === 'GOVT_SCHEMES') {
+        actionData = { type: 'GOVT_SCHEMES' }
       } else {
         actionData = { type: action }
       }

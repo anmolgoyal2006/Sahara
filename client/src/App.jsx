@@ -29,6 +29,8 @@ import VideoCallPage from './pages/VideoCallPage'
 import CallHistoryPage from './pages/CallHistoryPage'
 import FamilyGeofenceSetup from './pages/FamilyGeofenceSetup'
 import FamilyLocationHistory from './pages/FamilyLocationHistory'
+import ElderSchemes from './pages/elder/ElderSchemes'
+import FamilySchemes from './pages/family/FamilySchemes'
 
 function App() {
   return (
@@ -66,6 +68,8 @@ function App() {
         <Route path="/call/:callId" element={<VideoCallPage />} />
         <Route path="/elder/call-history" element={<CallHistoryPage role="elder" />} />
         <Route path="/family/call-history" element={<CallHistoryPage role="family" />} />
+        <Route path="/elder/schemes" element={<ElderSchemes />} />
+        <Route path="/family/schemes" element={<FamilySchemes />} />
       </Routes>
     </BrowserRouter>
   )

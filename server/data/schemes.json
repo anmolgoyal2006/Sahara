@@ -1,0 +1,559 @@
+[
+  {
+    "id": "ignoaps",
+    "name": "Indira Gandhi National Old Age Pension Scheme",
+    "short_name": "IGNOAPS",
+    "category": "pension",
+    "ministry": "Ministry of Rural Development",
+    "description": "Monthly pension for BPL elderly citizens aged 60 and above under the National Social Assistance Programme.",
+    "benefit": {
+      "type": "cash",
+      "amount": "₹200–₹500/month (Central contribution; states may add more)",
+      "duration": "ongoing"
+    },
+    "eligibility": {
+      "min_age": 60,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": true,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": ["all"],
+      "conditions": [],
+      "verifiable_by_rules": true
+    },
+    "documents": ["Aadhaar card", "BPL ration card or SECC listing", "Bank passbook", "Age proof"],
+    "how_to_apply": [
+      "Visit your local Gram Panchayat or Urban Local Body office",
+      "Fill the NSAP application form",
+      "Attach required documents",
+      "Submit to Block Development Officer or Municipal office"
+    ],
+    "apply_url": "https://nsap.nic.in",
+    "helpline": "1800-111-555",
+    "helpline_free": true,
+    "tags": ["pension", "elderly", "BPL", "NSAP"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmjay",
+    "name": "Pradhan Mantri Jan Arogya Yojana (Ayushman Bharat)",
+    "short_name": "PM-JAY",
+    "category": "health",
+    "ministry": "Ministry of Health and Family Welfare",
+    "description": "Health insurance cover of ₹5 lakh per family per year for secondary and tertiary hospitalisation at empanelled hospitals.",
+    "benefit": {
+      "type": "insurance",
+      "amount": "₹5,00,000/year per family",
+      "duration": "annual, renewable"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": ["all"],
+      "conditions": ["Must be listed in SECC 2011 database OR belong to specified occupational categories"],
+      "verifiable_by_rules": false
+    },
+    "documents": ["Aadhaar card", "Ration card or SECC document", "PM-JAY eligibility letter (if issued)"],
+    "how_to_apply": [
+      "Check eligibility at mera.pmjay.gov.in using mobile number or ration card",
+      "Visit nearest Common Service Centre or empanelled hospital",
+      "Get Ayushman card issued on-spot"
+    ],
+    "apply_url": "https://pmjay.gov.in",
+    "helpline": "14555",
+    "helpline_free": true,
+    "tags": ["health", "insurance", "hospitalisation", "Ayushman"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmkisan",
+    "name": "PM-KISAN Samman Nidhi",
+    "short_name": "PM-KISAN",
+    "category": "agriculture",
+    "ministry": "Ministry of Agriculture and Farmers Welfare",
+    "description": "Income support of ₹6,000/year in three equal instalments to small and marginal farmer families.",
+    "benefit": {
+      "type": "cash",
+      "amount": "₹6,000/year (₹2,000 per instalment)",
+      "duration": "ongoing, annual"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": ["all"],
+      "conditions": ["Must own cultivable land as per land records", "Income-tax payers not eligible", "Government employees not eligible"],
+      "verifiable_by_rules": false
+    },
+    "documents": ["Aadhaar card", "Land ownership records (Khasra/Khatauni)", "Bank passbook"],
+    "how_to_apply": [
+      "Register at pmkisan.gov.in or nearest Common Service Centre",
+      "Self-registration possible via the PM-KISAN mobile app",
+      "Submit Aadhaar and land records for verification"
+    ],
+    "apply_url": "https://pmkisan.gov.in",
+    "helpline": "155261",
+    "helpline_free": true,
+    "tags": ["agriculture", "farmer", "income support"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmvvy",
+    "name": "Pradhan Mantri Vaya Vandana Yojana",
+    "short_name": "PMVVY",
+    "category": "pension",
+    "ministry": "Ministry of Finance",
+    "description": "Guaranteed pension scheme for senior citizens providing 7.4% per annum return on a lump-sum investment, administered by LIC of India.",
+    "benefit": {
+      "type": "pension",
+      "amount": "₹1,000–₹9,250/month depending on investment (max purchase ₹15 lakh)",
+      "duration": "10 years"
+    },
+    "eligibility": {
+      "min_age": 60,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": ["all"],
+      "conditions": [],
+      "verifiable_by_rules": true
+    },
+    "documents": ["Aadhaar card", "PAN card", "Bank passbook", "Age proof", "Address proof"],
+    "how_to_apply": [
+      "Visit any LIC branch office",
+      "Apply online at licindia.in",
+      "Submit KYC documents and lump-sum purchase amount"
+    ],
+    "apply_url": "https://licindia.in/home/insurance-plan/pension-plans/pm-vaya-vandana-yojana",
+    "helpline": "022-68276827",
+    "helpline_free": false,
+    "tags": ["pension", "senior citizen", "LIC", "investment"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "svy",
+    "name": "Senior Citizen Savings Scheme",
+    "short_name": "SCSS",
+    "category": "savings",
+    "ministry": "Ministry of Finance",
+    "description": "Government-backed savings scheme for senior citizens offering higher interest rates (currently ~8.2% p.a.) with quarterly payouts.",
+    "benefit": {
+      "type": "interest",
+      "amount": "8.2% per annum (quarterly payout, subject to revision each quarter)",
+      "duration": "5 years, extendable by 3 years"
+    },
+    "eligibility": {
+      "min_age": 60,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": ["all"],
+      "conditions": ["Retired defence personnel eligible from age 50"],
+      "verifiable_by_rules": false
+    },
+    "documents": ["Aadhaar card", "PAN card", "Age proof", "Address proof", "Passport-size photos"],
+    "how_to_apply": [
+      "Visit any authorised bank branch or post office",
+      "Fill SCSS account opening form",
+      "Deposit minimum ₹1,000 (maximum ₹30 lakh)"
+    ],
+    "apply_url": "https://www.indiapost.gov.in/financial/pages/content/scss.aspx",
+    "helpline": "1800-266-6868",
+    "helpline_free": true,
+    "tags": ["savings", "senior citizen", "interest", "post office", "bank"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "nsap-widow",
+    "name": "Indira Gandhi National Widow Pension Scheme",
+    "short_name": "IGNWPS",
+    "category": "pension",
+    "ministry": "Ministry of Rural Development",
+    "description": "Monthly pension for BPL widows aged 40–79 under the National Social Assistance Programme.",
+    "benefit": {
+      "type": "cash",
+      "amount": "₹300/month (Central contribution; states add supplementary amounts)",
+      "duration": "ongoing"
+    },
+    "eligibility": {
+      "min_age": 40,
+      "max_age": 79,
+      "income_limit": null,
+      "bpl_required": true,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "female",
+      "states": ["all"],
+      "conditions": ["Applicant must be a widow"],
+      "verifiable_by_rules": false
+    },
+    "documents": ["Aadhaar card", "BPL card or SECC listing", "Husband's death certificate", "Bank passbook"],
+    "how_to_apply": [
+      "Apply through Gram Panchayat or Urban Local Body",
+      "Submit NSAP application form with widow proof",
+      "District Social Welfare office will verify and approve"
+    ],
+    "apply_url": "https://nsap.nic.in",
+    "helpline": "1800-111-555",
+    "helpline_free": true,
+    "tags": ["pension", "widow", "BPL", "NSAP", "women"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "nsap-disabled",
+    "name": "Indira Gandhi National Disability Pension Scheme",
+    "short_name": "IGNDPS",
+    "category": "pension",
+    "ministry": "Ministry of Rural Development",
+    "description": "Monthly pension for BPL persons aged 18–79 with severe or multiple disabilities, under NSAP.",
+    "benefit": {
+      "type": "cash",
+      "amount": "₹300/month (Central; states add more)",
+      "duration": "ongoing"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": 79,
+      "income_limit": null,
+      "bpl_required": true,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": ["all"],
+      "conditions": ["Must have 80% or more disability or multiple disabilities as certified by government medical board"],
+      "verifiable_by_rules": false
+    },
+    "documents": ["Aadhaar card", "BPL card", "Disability certificate (80%+ from government hospital)", "Bank passbook"],
+    "how_to_apply": [
+      "Obtain disability certificate from district hospital",
+      "Apply at Gram Panchayat or Urban Local Body",
+      "Submit NSAP form with disability certificate"
+    ],
+    "apply_url": "https://nsap.nic.in",
+    "helpline": "1800-111-555",
+    "helpline_free": true,
+    "tags": ["disability", "pension", "BPL", "NSAP"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmsby",
+    "name": "Pradhan Mantri Suraksha Bima Yojana",
+    "short_name": "PMSBY",
+    "category": "insurance",
+    "ministry": "Ministry of Finance",
+    "description": "Accidental death and disability insurance cover of ₹2 lakh at an annual premium of just ₹20.",
+    "benefit": {
+      "type": "insurance",
+      "amount": "₹2,00,000 (accidental death/full disability) or ₹1,00,000 (partial disability)",
+      "duration": "annual, renewable"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": 70,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": ["all"],
+      "conditions": [],
+      "verifiable_by_rules": true
+    },
+    "documents": ["Aadhaar card", "Bank account with auto-debit enabled"],
+    "how_to_apply": [
+      "Visit your bank branch or net banking portal",
+      "Enroll under PMSBY scheme with auto-debit consent",
+      "₹20 premium auto-debited annually each June"
+    ],
+    "apply_url": "https://financialservices.gov.in/insurance-divisions/Government-Sponsored-&-Social-Security-Schemes/Pradhan-Mantri-Suraksha-Bima-Yojana(PMSBY)",
+    "helpline": "1800-180-1111",
+    "helpline_free": true,
+    "tags": ["insurance", "accident", "low premium"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmjjby",
+    "name": "Pradhan Mantri Jeevan Jyoti Bima Yojana",
+    "short_name": "PMJJBY",
+    "category": "insurance",
+    "ministry": "Ministry of Finance",
+    "description": "Life insurance cover of ₹2 lakh for death due to any cause, at a premium of ₹436/year.",
+    "benefit": {
+      "type": "insurance",
+      "amount": "₹2,00,000 (death benefit to nominee)",
+      "duration": "annual, renewable"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": 50,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": ["all"],
+      "conditions": [],
+      "verifiable_by_rules": true
+    },
+    "documents": ["Aadhaar card", "Bank account with auto-debit enabled", "Nominee details"],
+    "how_to_apply": [
+      "Enroll through your bank branch, net banking, or mobile banking",
+      "Submit auto-debit consent form",
+      "₹436 premium auto-debited annually each June"
+    ],
+    "apply_url": "https://financialservices.gov.in/insurance-divisions/Government-Sponsored-&-Social-Security-Schemes/Pradhan-Mantri-Jeevan-Jyoti-Bima-Yojana(PMJJBY)",
+    "helpline": "1800-180-1111",
+    "helpline_free": true,
+    "tags": ["insurance", "life", "low premium"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "atal-pension",
+    "name": "Atal Pension Yojana",
+    "short_name": "APY",
+    "category": "pension",
+    "ministry": "Ministry of Finance",
+    "description": "Guaranteed minimum pension of ₹1,000–₹5,000/month at age 60, for workers in the unorganised sector.",
+    "benefit": {
+      "type": "pension",
+      "amount": "₹1,000–₹5,000/month at age 60 (choice of subscriber)",
+      "duration": "lifetime from age 60"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": 40,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": ["all"],
+      "conditions": ["Must not be a member of any statutory social security scheme (EPF, NPS, ESIC etc.)", "Income tax payers not eligible from May 2022 onwards"],
+      "verifiable_by_rules": false
+    },
+    "documents": ["Aadhaar card", "Mobile number linked to Aadhaar", "Bank savings account"],
+    "how_to_apply": [
+      "Visit your bank branch or use net banking",
+      "Fill APY registration form with nominee details",
+      "Choose desired pension amount — contribution debited monthly"
+    ],
+    "apply_url": "https://npscra.nsdl.co.in/scheme-details.php",
+    "helpline": "1800-110-069",
+    "helpline_free": true,
+    "tags": ["pension", "unorganised sector", "retirement", "NPS"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmuy",
+    "name": "Pradhan Mantri Ujjwala Yojana",
+    "short_name": "PMUY",
+    "category": "welfare",
+    "ministry": "Ministry of Petroleum and Natural Gas",
+    "description": "Free LPG connection to women from BPL households to replace cooking with solid fuels and improve health outcomes.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "Free LPG connection (cylinder + stove deposit covered by government loan)",
+      "duration": "one-time connection"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": true,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "female",
+      "states": ["all"],
+      "conditions": ["No existing LPG connection in the household"],
+      "verifiable_by_rules": false
+    },
+    "documents": ["Aadhaar card", "BPL ration card", "Bank passbook", "Address proof"],
+    "how_to_apply": [
+      "Visit nearest LPG distributor (IOC / BPCL / HPCL)",
+      "Fill PMUY application form (KYC2 form)",
+      "Submit with BPL card and Aadhaar",
+      "Connection issued after verification"
+    ],
+    "apply_url": "https://www.pmuy.gov.in",
+    "helpline": "1906",
+    "helpline_free": true,
+    "tags": ["LPG", "cooking gas", "BPL", "women", "health"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmasby",
+    "name": "Pradhan Mantri Awas Yojana – Gramin",
+    "short_name": "PMAY-G",
+    "category": "housing",
+    "ministry": "Ministry of Rural Development",
+    "description": "Financial assistance for construction of a pucca house for rural homeless or kutcha-house BPL families.",
+    "benefit": {
+      "type": "cash",
+      "amount": "₹1,20,000 (plain areas) or ₹1,30,000 (hilly/north-east/IAP areas)",
+      "duration": "one-time"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": true,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": ["all"],
+      "conditions": ["Must be listed in SECC 2011 Permanent Wait List (PWL)", "Household must be houseless or living in 0–1 room kutcha house"],
+      "verifiable_by_rules": false
+    },
+    "documents": ["Aadhaar card", "SECC/BPL listing proof", "Bank passbook", "Land ownership document or NOC"],
+    "how_to_apply": [
+      "Check eligibility on awaassoft.nic.in",
+      "Beneficiaries are identified from SECC 2011 list — no direct walk-in application",
+      "Contact Block Development Officer if listed but not contacted"
+    ],
+    "apply_url": "https://pmayg.nic.in",
+    "helpline": "1800-11-6446",
+    "helpline_free": true,
+    "tags": ["housing", "rural", "BPL", "SECC"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "nfbs",
+    "name": "National Family Benefit Scheme",
+    "short_name": "NFBS",
+    "category": "welfare",
+    "ministry": "Ministry of Rural Development",
+    "description": "One-time lump-sum assistance to BPL households on the death of a breadwinner aged 18–59.",
+    "benefit": {
+      "type": "cash",
+      "amount": "₹20,000 (one-time)",
+      "duration": "one-time"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": true,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": ["all"],
+      "conditions": ["Deceased breadwinner must have been aged 18–59", "Application must be filed within 90 days of death"],
+      "verifiable_by_rules": false
+    },
+    "documents": ["Aadhaar card of applicant", "Death certificate of breadwinner", "BPL ration card", "Bank passbook", "Proof of relationship"],
+    "how_to_apply": [
+      "Apply within 90 days of death at Gram Panchayat or Block office",
+      "Submit NSAP NFBS form with death certificate",
+      "District Collector approves and disburses"
+    ],
+    "apply_url": "https://nsap.nic.in",
+    "helpline": "1800-111-555",
+    "helpline_free": true,
+    "tags": ["death benefit", "BPL", "lump sum", "NSAP"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "cgs-disability",
+    "name": "Central Government Scheme for Persons with Disabilities – Assistance to Disabled Persons",
+    "short_name": "ADIP",
+    "category": "disability",
+    "ministry": "Ministry of Social Justice and Empowerment",
+    "description": "Free or subsidised assistive devices (wheelchairs, hearing aids, crutches, calipers, artificial limbs, braille kits) for disabled persons.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "Assistive device worth up to ₹16,000 (varies by device category)",
+      "duration": "once every 3–5 years per device"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": 20000,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": ["all"],
+      "conditions": ["Must have at least 40% disability as certified by government medical authority", "UDID (Unique Disability ID) recommended"],
+      "verifiable_by_rules": false
+    },
+    "documents": ["Aadhaar card", "Disability certificate (40%+ from government hospital)", "Income certificate", "UDID card (preferred)"],
+    "how_to_apply": [
+      "Apply through ALIMCO (Artificial Limbs Manufacturing Corporation of India) camps or district office",
+      "Register at adip.msje.gov.in",
+      "Camp-based distribution also happens — check district social welfare office"
+    ],
+    "apply_url": "https://adip.msje.gov.in",
+    "helpline": "1800-180-5129",
+    "helpline_free": true,
+    "tags": ["disability", "assistive device", "wheelchair", "hearing aid"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "rashtriya-vayoshri",
+    "name": "Rashtriya Vayoshri Yojana",
+    "short_name": "RVY",
+    "category": "disability",
+    "ministry": "Ministry of Social Justice and Empowerment",
+    "description": "Free assistive devices (spectacles, hearing aids, walking sticks, wheelchairs, dentures) for BPL senior citizens with age-related disabilities.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "Assistive devices free of cost (spectacles, hearing aids, wheelchairs, walking sticks, dentures)",
+      "duration": "one-time per camp cycle"
+    },
+    "eligibility": {
+      "min_age": 60,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": true,
+      "aadhaar_required": true,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": ["all"],
+      "conditions": ["Must have age-related disability (vision, hearing, mobility, dental)"],
+      "verifiable_by_rules": false
+    },
+    "documents": ["Aadhaar card", "BPL ration card", "Age proof", "Medical assessment (done at camp)"],
+    "how_to_apply": [
+      "Scheme operates through district-level camps organised by ALIMCO and NGOs",
+      "Register at rashtriyavayoshri.gov.in or contact district Social Welfare office",
+      "Attend designated camp for assessment and device distribution"
+    ],
+    "apply_url": "https://rashtriyavayoshri.gov.in",
+    "helpline": "1800-180-5129",
+    "helpline_free": true,
+    "tags": ["elderly", "disability", "assistive device", "BPL", "senior citizen"],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  }
+]

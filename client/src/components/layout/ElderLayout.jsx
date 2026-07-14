@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { icon: 'ti-heart-rate-monitor', label: 'Health',    route: '/elder/health' },
   { icon: 'ti-pill',               label: 'Medicines', route: '/elder/medicines' },
   { icon: 'ti-folder',             label: 'Reports',   route: '/elder/medical-records' },
+  { icon: 'ti-building-bank',      label: 'Schemes',   route: '/elder/schemes' },
 ]
 
 export default function ElderLayout({ children, userName }) {

@@ -43,6 +43,7 @@ function ActionCard({ action, onConfirm, onDismiss, onMarkTakenConfirm }) {
     MEDICINES:           { icon: 'ti-pill',               color: '#BA7517', bg: '#FAEEDA', title: 'View your medicines?',         desc: 'See your medicine schedule.',                    confirmLabel: 'Yes, View',        confirmColor: '#BA7517' },
     MEDICAL_RECORDS:     { icon: 'ti-folder',             color: '#185FA5', bg: '#EBF4FF', title: 'View Medical Reports',         desc: 'See your saved test results.',                    confirmLabel: 'Open Records',     confirmColor: '#185FA5' },
     ADD_MEDICAL_RECORD:  { icon: 'ti-upload',             color: '#1D9E75', bg: '#F0FBF7', title: 'Add a New Medical Report',     desc: 'Upload a test result or doctor prescription.',    confirmLabel: 'Add Report',       confirmColor: '#1D9E75' },
+    GOVT_SCHEMES:        { icon: 'ti-building-bank',      color: '#185FA5', bg: '#EBF4FF', title: 'Check Government Schemes',     desc: 'See which schemes you qualify for.',              confirmLabel: 'Check Schemes',    confirmColor: '#185FA5' },
   }
 
   // MARK_TAKEN is handled separately
@@ -363,6 +364,7 @@ export default function ElderCompanion() {
     else if (action.type === 'MEDICINES') navigate('/elder/medicines')
     else if (action.type === 'MEDICAL_RECORDS') navigate('/elder/medical-records')
     else if (action.type === 'ADD_MEDICAL_RECORD') navigate('/elder/medical-records', { state: { openAddModal: true } })
+    else if (action.type === 'GOVT_SCHEMES') navigate('/elder/schemes')
   }
 
   if (loading) {

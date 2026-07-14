@@ -66,6 +66,9 @@ app.use('/api/videocall', videocallRoutes)
 const geofenceRoutes = require('./routes/geofence')
 app.use('/api/geofence', geofenceRoutes)
 
+const schemesRoutes = require('./routes/schemes')
+app.use('/api/schemes', schemesRoutes)
+
 app.listen(PORT, () => {
   console.log(`Sahara server running on http://localhost:${PORT}`)
 })
