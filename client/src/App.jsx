@@ -35,9 +35,6 @@ import FamilyHealthHistory from './pages/FamilyHealthHistory'
 import GuideBrowse from './pages/elder/GuideBrowse'
 import GuideViewer from './pages/elder/GuideViewer'
 import MyGuides from './pages/elder/MyGuides'
-import GuideBrowse from './pages/elder/GuideBrowse'
-import GuideViewer from './pages/elder/GuideViewer'
-import MyGuides from './pages/elder/MyGuides'
 
 function App() {
   return (
@@ -78,9 +75,6 @@ function App() {
         <Route path="/family/call-history" element={<CallHistoryPage role="family" />} />
         <Route path="/elder/schemes" element={<ElderSchemes />} />
         <Route path="/family/schemes" element={<FamilySchemes />} />
-        <Route path="/elder/guides" element={<GuideBrowse />} />
-        <Route path="/elder/guides/my-guides" element={<MyGuides />} />
-        <Route path="/elder/guide/:slug" element={<GuideViewer />} />
         <Route path="/elder/guides" element={<GuideBrowse />} />
         <Route path="/elder/guides/my-guides" element={<MyGuides />} />
         <Route path="/elder/guide/:slug" element={<GuideViewer />} />
