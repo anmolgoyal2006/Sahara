@@ -208,7 +208,10 @@ export default function GuideBrowse() {
 
   return (
     <ElderLayout>
-      <div style={{ maxWidth: 720, margin: '0 auto', background: p.bg, minHeight: '100vh', padding: '0 0 40px' }}>
+      {/* Full-bleed day/night background — sits behind content, clears the desktop sidebar */}
+      <div className="guide-bg" style={{ background: p.bg }} />
+
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: 1080, margin: '0 auto', minHeight: '100vh', padding: '0 0 40px' }}>
 
         {/* ── Header ── */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 0 16px' }}>
@@ -463,12 +466,24 @@ export default function GuideBrowse() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg) } }
         .pop-scroll::-webkit-scrollbar { display: none }
+        /* Full-bleed themed background — covers the whole main area in both themes.
+           Negative margins cancel .elder-main padding so the colour reaches every edge. */
+        .guide-bg {
+          position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+          z-index: 0; pointer-events: none;
+        }
+        @media (min-width: 1024px) {
+          .guide-bg { left: 240px; }  /* clear the fixed sidebar */
+        }
         @media (max-width: 480px) {
           .cat-grid  { grid-template-columns: repeat(5, 1fr) !important; }
           .guide-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
         @media (min-width: 640px) {
           .guide-grid { grid-template-columns: repeat(3, 1fr) !important; }
+        }
+        @media (min-width: 1024px) {
+          .guide-grid { grid-template-columns: repeat(4, 1fr) !important; }
         }
       `}</style>
     </ElderLayout>

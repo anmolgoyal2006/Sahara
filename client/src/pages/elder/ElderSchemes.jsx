@@ -370,7 +370,7 @@ export default function ElderSchemes ({ overrideProfile, showHeader = true }) {
 
   return (
     <ElderLayout userName={null}>
-      <div style={{ maxWidth: 700, margin: '0 auto', fontFamily: 'Noto Sans, sans-serif' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto', fontFamily: 'Noto Sans, sans-serif' }}>
         {/* Header */}
         {showHeader && (
           <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>

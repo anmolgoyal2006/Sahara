@@ -516,7 +516,7 @@ export default function GuideViewer() {
     const mins = startedAt ? Math.max(1, Math.round((Date.now() - startedAt.getTime()) / 60000)) : guide.estimated_minutes
     return (
       <ElderLayout>
-        <div style={{ maxWidth: 540, margin: '0 auto', textAlign: 'center', padding: '40px 16px' }}>
+        <div style={{ maxWidth: 640, margin: '0 auto', textAlign: 'center', padding: '40px 16px' }}>
           <div style={{ width: 96, height: 96, borderRadius: '50%', background: '#F0FBF7', border: '4px solid #1D9E75', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
             <i className="ti ti-check" style={{ fontSize: 48, color: '#1D9E75' }} />
           </div>
@@ -564,7 +564,7 @@ export default function GuideViewer() {
     const resumeStep = progressDoc?.current_step ?? null
     return (
       <ElderLayout>
-        <div style={{ maxWidth: 540, margin: '0 auto' }}>
+        <div style={{ maxWidth: 640, margin: '0 auto' }}>
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
             <button onClick={() => navigate('/elder/guides')} style={{ background: 'none', border: 'none', color: '#185FA5', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -635,7 +635,7 @@ export default function GuideViewer() {
 
   return (
     <ElderLayout>
-      <div style={{ maxWidth: 540, margin: '0 auto' }}>
+      <div style={{ maxWidth: 640, margin: '0 auto' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <button onClick={() => navigate('/elder/guides')} style={{ background: 'none', border: 'none', color: '#185FA5', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 5 }}>

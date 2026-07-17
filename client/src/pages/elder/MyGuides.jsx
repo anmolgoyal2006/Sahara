@@ -101,7 +101,7 @@ export default function MyGuides() {
 
   return (
     <ElderLayout>
-      <div style={{ maxWidth: 640, margin: '0 auto' }}>
+      <div style={{ maxWidth: 960, margin: '0 auto' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
           <button onClick={() => navigate('/elder/guides')}
@@ -120,7 +120,7 @@ export default function MyGuides() {
               <p style={{ fontSize: 13, color: '#A0B8D0', margin: 0 }}>No guides in progress</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div className="myguides-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10 }}>
               {inProgress.map(p => (
                 <div key={p.id} style={{ background: 'white', border: '1.5px solid #DDE8F5', borderRadius: 14, padding: 16 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -149,7 +149,7 @@ export default function MyGuides() {
               <p style={{ fontSize: 13, color: '#A0B8D0', margin: 0 }}>No bookmarks yet — tap the star in any guide</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div className="myguides-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 8 }}>
               {bookmarks.map(b => (
                 <div key={b.id} style={{ background: 'white', border: '1.5px solid #DDE8F5', borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
                   <i className="ti ti-star-filled" style={{ fontSize: 16, color: '#BA7517', flexShrink: 0 }} />
