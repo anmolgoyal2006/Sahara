@@ -91,7 +91,7 @@ create policy "elder or caregiver access progress"
   on public.guide_progress for all using (
     auth.uid() = elder_id
     or auth.uid() in (
-      select caregiver_id from public.users where id = guide_progress.elder_id
+      select id from public.users where elder_id = guide_progress.elder_id
     )
   );
 
@@ -99,7 +99,7 @@ create policy "elder or caregiver access bookmarks"
   on public.guide_bookmarks for all using (
     auth.uid() = elder_id
     or auth.uid() in (
-      select caregiver_id from public.users where id = guide_bookmarks.elder_id
+      select id from public.users where elder_id = guide_bookmarks.elder_id
     )
   );
 
@@ -107,6 +107,6 @@ create policy "elder or caregiver access volunteer requests"
   on public.volunteer_requests for all using (
     auth.uid() = elder_id
     or auth.uid() in (
-      select caregiver_id from public.users where id = volunteer_requests.elder_id
+      select id from public.users where elder_id = volunteer_requests.elder_id
     )
   );

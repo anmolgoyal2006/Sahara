@@ -15,11 +15,13 @@
  * Privacy: the uploaded image is processed entirely in memory.
  * It is NEVER written to disk, Supabase Storage, or any database.
  * It is discarded once the response is sent.
+ *
+ * Text reading (OCR) is handled natively by Gemini Vision — it reads any
+ * on-screen text directly from the image, so no separate OCR pass is needed.
  */
 
 const express  = require('express')
 const multer   = require('multer')
-const Tesseract = require('tesseract.js')
 const { GoogleGenerativeAI } = require('@google/generative-ai')
 
 const router = express.Router()
@@ -38,8 +40,8 @@ const upload = multer({
 
 // ─── Gemini vision client ─────────────────────────────────────────────────────
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-// Use a vision-capable model; gemini-1.5-flash supports inline image parts.
-const visionModel = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+// Vision-capable model — reads on-screen text and locates UI elements from the image.
+const visionModel = genAI.getGenerativeModel({ model: 'gemini-3.1-flash' })
 
 // ─── Route ───────────────────────────────────────────────────────────────────
 router.post('/', upload.single('image'), async (req, res) => {
@@ -58,26 +60,15 @@ router.post('/', upload.single('image'), async (req, res) => {
     const imageBuffer = req.file.buffer
     const mimeType    = req.file.mimetype
 
-    // 2. Run OCR (server-side Tesseract, in-memory buffer)
-    let ocrText = ''
-    try {
-      const { data: { text } } = await Tesseract.recognize(imageBuffer, 'eng', {
-        logger: () => {}, // suppress Tesseract progress logs
-      })
-      ocrText = (text || '').trim().slice(0, 2000) // cap to avoid prompt bloat
-    } catch (ocrErr) {
-      // OCR failure is non-fatal — we still send the image to Gemini
-      console.error('[screenshot-help] OCR error:', ocrErr.message)
-    }
-
-    // 3. Build Gemini Vision prompt
+    // 2. Build Gemini Vision prompt — Gemini reads on-screen text natively,
+    //    so no separate OCR pass is needed.
     const prompt = `You are a compassionate digital literacy assistant helping an elderly person in India use a smartphone.
 
 The user is currently on step ${current_step} of a digital guide.
 Step instruction: "${step_instruction}"
 User's question: "${question}"
 
-${ocrText ? `Text visible in the screenshot (from OCR): "${ocrText}"` : ''}
+Read any text visible in the screenshot directly from the image.
 
 Look carefully at the screenshot provided. Your task:
 1. Locate the UI element the user is asking about (or the button/action needed for this step).
@@ -104,7 +95,7 @@ If the element isn't visible, respond:
   "found": false
 }`
 
-    // 4. Call Gemini Vision with inline image
+    // 3. Call Gemini Vision with inline image
     const imagePart = {
       inlineData: {
         data: imageBuffer.toString('base64'),
@@ -124,7 +115,7 @@ If the element isn't visible, respond:
       })
     }
 
-    // 5. Parse Gemini response
+    // 4. Parse Gemini response
     let parsed
     try {
       const cleaned = geminiRaw
@@ -141,14 +132,14 @@ If the element isn't visible, respond:
       }
     }
 
-    // 6. Respond — imageBuffer goes out of scope here and is garbage-collected.
+    // 5. Respond — imageBuffer goes out of scope here and is garbage-collected.
     //    No file was written anywhere.
     return res.json({
       success: true,
       location_description: parsed.location_description || '',
       explanation: parsed.explanation || '',
       found: parsed.found ?? true,
-      ocr_text: ocrText || null,
+      ocr_text: null,
     })
 
   } catch (err) {
