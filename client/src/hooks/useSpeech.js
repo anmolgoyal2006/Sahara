@@ -1,31 +1,32 @@
-import { useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
+
+// pa falls back to hi-IN — no Punjabi TTS voice available on most devices
+const LANG_MAP = { en: 'en-IN', hi: 'hi-IN', pa: 'hi-IN' }
 
 export function useSpeech() {
-  const speak = useCallback((text, lang = 'hi-IN') => {
-    if (!window.speechSynthesis) return
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  const utteranceRef = useRef(null)
+
+  const speak = useCallback((text, language = 'en') => {
+    if (!window.speechSynthesis || !text) return
     window.speechSynthesis.cancel()
     const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = lang
-    utterance.rate = 1.0
-    utterance.pitch = 1.0
-    utterance.volume = 1.0
-    const voices = window.speechSynthesis.getVoices()
-    
-    // Try to find a more natural-sounding Indian voice
-    const indianVoice = voices.find(v =>
-      (v.lang.includes('hi') || v.lang.includes('IN') || v.name.includes('India')) &&
-      (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Enhanced'))
-    ) || voices.find(v =>
-      v.lang.includes('hi') || v.lang.includes('IN') || v.name.includes('India')
-    )
-    
-    if (indianVoice) utterance.voice = indianVoice
+    utterance.lang = LANG_MAP[language] || 'en-IN'
+    utterance.rate = 0.8
+    utterance.pitch = 1
+    utterance.onstart = () => setIsSpeaking(true)
+    utterance.onend   = () => setIsSpeaking(false)
+    utterance.onerror = () => setIsSpeaking(false)
+    utteranceRef.current = utterance
     window.speechSynthesis.speak(utterance)
   }, [])
 
   const stop = useCallback(() => {
-    window.speechSynthesis.cancel()
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel()
+      setIsSpeaking(false)
+    }
   }, [])
 
-  return { speak, stop }
+  return { speak, stop, isSpeaking }
 }

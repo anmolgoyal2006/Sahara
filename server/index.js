@@ -69,6 +69,9 @@ app.use('/api/geofence', geofenceRoutes)
 const schemesRoutes = require('./routes/schemes')
 app.use('/api/schemes', schemesRoutes)
 
+const guidesRoutes = require('./routes/guides')
+app.use('/api/guides', guidesRoutes)
+
 app.listen(PORT, () => {
   console.log(`Sahara server running on http://localhost:${PORT}`)
 })

@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { icon: 'ti-pill',               label: 'Medicines', route: '/elder/medicines' },
   { icon: 'ti-folder',             label: 'Reports',   route: '/elder/medical-records' },
   { icon: 'ti-building-bank',      label: 'Schemes',   route: '/elder/schemes' },
+  { icon: 'ti-device-mobile',      label: 'Guides',    route: '/elder/guides' },
 ]
 
 export default function ElderLayout({ children, userName }) {
