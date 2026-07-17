@@ -322,6 +322,116 @@ Output ONLY valid JSON, no markdown fences, no extra text:
 })
 
 /* ─────────────────────────────────────────────────────────────
+   Phase 15J — Screenshot-based help (static POST, before /:slug/*)
+───────────────────────────────────────────────────────────── */
+const screenshotHelpRouter = require('./screenshotHelp')
+router.use('/screenshot-help', screenshotHelpRouter)
+
+/* ─────────────────────────────────────────────────────────────
+   Phase 15K — Live error detection (static POST, before /:slug/*)
+───────────────────────────────────────────────────────────── */
+
+// POST /api/guides/explain-error
+router.post('/explain-error', async (req, res) => {
+  const { error_text, guide_slug, current_step, language } = req.body
+
+  const raw = (error_text || '').trim()
+  if (!raw)
+    return res.status(400).json({ success: false, error: 'error_text is required' })
+
+  // Detect vague inputs early — send back a clarification request without
+  // calling Gemini so we don't waste a round-trip on a known-useless prompt.
+  const VAGUE_PATTERNS = [
+    /^it'?s?\s+(not\s+)?working$/i,
+    /^not\s+working$/i,
+    /^doesn'?t\s+work$/i,
+    /^help$/i,
+    /^idk$/i,
+    /^i\s+don'?t\s+know$/i,
+    /^nothing$/i,
+    /^stuck$/i,
+    /^\?+$/,
+  ]
+  if (VAGUE_PATTERNS.some(p => p.test(raw))) {
+    return res.json({
+      success: true,
+      needs_more_detail: true,
+      possible_reasons: [],
+      fix_steps: [],
+      clarification_prompt: 'Could you describe what the screen shows? For example: does it show a red message, a spinning circle, or something else?',
+    })
+  }
+
+  const stepContext = guide_slug
+    ? `The user is on step ${current_step || '?'} of the guide "${guide_slug.replace(/-/g, ' ')}".`
+    : `The user is on step ${current_step || '?'} of a digital guide.`
+
+  const langNote = language && language !== 'en'
+    ? `Respond in English — translation happens on the client side.`
+    : ''
+
+  const prompt = `You are a patient digital literacy helper assisting elderly smartphone users in India.
+
+${stepContext}
+The user typed this error or problem: "${raw}"
+${langNote}
+
+Your task — provide a SHORT, practical diagnosis. STRICT RULES:
+1. Stick ONLY to well-known, common causes for this kind of error (e.g. Caps Lock on, wrong password format, OTP expired, no internet, app needs update, storage full, field left empty). Do NOT speculate about account-specific, bank-specific, or security issues you cannot diagnose from text alone.
+2. If the error text is too vague to diagnose (e.g. "it's not working", "help"), set needs_more_detail to true and fill clarification_prompt. Leave possible_reasons and fix_steps empty.
+3. possible_reasons: max 3-4 items, each a single short sentence.
+4. fix_steps: concrete numbered actions, one action per step, plain language, no jargon. Max 5 steps.
+5. Each fix step must name the EXACT button or setting to tap.
+
+Output ONLY valid JSON, no markdown fences, no extra text:
+{
+  "needs_more_detail": false,
+  "clarification_prompt": "",
+  "possible_reasons": [
+    "Reason one.",
+    "Reason two."
+  ],
+  "fix_steps": [
+    "1. Tap the Password box and check that Caps Lock is off.",
+    "2. Make sure your password is at least 8 characters long."
+  ]
+}`
+
+  let geminiRaw
+  try {
+    const result = await model.generateContent(prompt)
+    geminiRaw = result.response.text().trim()
+  } catch (e) {
+    return res.status(502).json({ success: false, error: 'AI call failed: ' + e.message })
+  }
+
+  let parsed
+  try {
+    const cleaned = geminiRaw
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```$/, '')
+      .trim()
+    parsed = JSON.parse(cleaned)
+  } catch {
+    // Gemini didn't return valid JSON — surface as a plain error
+    return res.status(422).json({
+      success: false,
+      error: 'Could not parse AI response',
+      raw: geminiRaw.slice(0, 400),
+    })
+  }
+
+  // Safety clamp: never return more than 4 reasons or 5 fix steps
+  return res.json({
+    success: true,
+    needs_more_detail: parsed.needs_more_detail ?? false,
+    clarification_prompt: parsed.clarification_prompt || '',
+    possible_reasons: (parsed.possible_reasons || []).slice(0, 4),
+    fix_steps: (parsed.fix_steps || []).slice(0, 5),
+  })
+})
+
+/* ─────────────────────────────────────────────────────────────
    PARAMETERISED GET route
 ───────────────────────────────────────────────────────────── */
 
@@ -417,6 +527,85 @@ router.post('/:slug/struggle', async (req, res) => {
       .single()
     if (error) throw error
     return res.json({ success: true, struggle_count: newCount, progress: data })
+  } catch (e) {
+    return res.status(500).json({ success: false, error: e.message })
+  }
+})
+
+/* ─────────────────────────────────────────────────────────────
+   Phase 15M — Category filtering
+───────────────────────────────────────────────────────────── */
+
+// GET /api/guides/by-category/:category
+router.get('/by-category/:category', async (req, res) => {
+  const { category } = req.params
+  try {
+    const { data, error } = await supabase
+      .from('guides')
+      .select('id, slug, title, category, difficulty, estimated_minutes, is_popular, tags, source')
+      .eq('category', category)
+      .order('title', { ascending: true })
+    if (error) throw error
+    return res.json({ success: true, guides: data || [] })
+  } catch (e) {
+    return res.status(500).json({ success: false, error: e.message })
+  }
+})
+
+/* ─────────────────────────────────────────────────────────────
+   Phase 15M — Volunteer request
+───────────────────────────────────────────────────────────── */
+
+// POST /api/guides/volunteer-request
+router.post('/volunteer-request', async (req, res) => {
+  const { elder_id, guide_slug, step_number, request_type } = req.body
+  if (!elder_id || !request_type)
+    return res.status(400).json({ success: false, error: 'elder_id and request_type required' })
+
+  try {
+    // 1. Insert into volunteer_requests
+    const { data: volReq, error: volErr } = await supabase
+      .from('volunteer_requests')
+      .insert({
+        elder_id,
+        guide_slug: guide_slug || null,
+        step_number: step_number || null,
+        request_type,           // 'call' | 'chat'
+        status: 'pending',
+      })
+      .select()
+      .single()
+    if (volErr) throw volErr
+
+    // 2. Look up elder's name and linked family members so they get notified
+    const { data: elderUser } = await supabase
+      .from('users')
+      .select('name')
+      .eq('id', elder_id)
+      .single()
+
+    const { data: familyMembers } = await supabase
+      .from('users')
+      .select('id')
+      .eq('elder_id', elder_id)
+      .eq('role', 'family')
+
+    // 3. Write a notification row for every linked family member.
+    //    Uses the same pattern as the SOS system — no extra infrastructure needed.
+    if (familyMembers && familyMembers.length > 0) {
+      const notifRows = familyMembers.map(f => ({
+        user_id:   f.id,
+        type:      'volunteer_request',
+        title:     `${elderUser?.name || 'Your elder'} needs help with a guide`,
+        body:      `They requested a volunteer ${request_type === 'call' ? 'phone call' : 'chat'} while following "${(guide_slug || 'a guide').replace(/-/g, ' ')}". Step ${step_number || '?'}.`,
+        read:      false,
+        created_at: new Date().toISOString(),
+      }))
+      // Best-effort — silently ignored if the notifications table doesn't exist yet
+      await supabase.from('notifications').insert(notifRows).catch(() => {})
+    }
+
+    return res.json({ success: true, request: volReq })
   } catch (e) {
     return res.status(500).json({ success: false, error: e.message })
   }
