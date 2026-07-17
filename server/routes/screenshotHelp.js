@@ -41,7 +41,8 @@ const upload = multer({
 // ─── Gemini vision client ─────────────────────────────────────────────────────
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 // Vision-capable model — reads on-screen text and locates UI elements from the image.
-const visionModel = genAI.getGenerativeModel({ model: 'gemini-3.1-flash' })
+// Uses the same model family as the rest of the app (see lib/gemini.js).
+const visionModel = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' })
 
 // ─── Route ───────────────────────────────────────────────────────────────────
 router.post('/', upload.single('image'), async (req, res) => {
