@@ -30,7 +30,7 @@ A mobile-first platform for India where an elder's health, medicine adherence, s
 
 ### 📚 Table of Contents
 
-[Overview](#-project-overview) · [Why Sahara](#-why-sahara) · [User Roles](#-user-roles) · [Core Features](#-core-features) · [How the AI Companion Works](#-how-the-ai-companion-works) · [Architecture](#️-system-architecture) · [Tech Stack](#️-technology-stack) · [Screenshots](#-screenshots) · [Installation](#️-installation-guide) · [Environment Variables](#-environment-variables) · [Database](#-database) · [API Overview](#-api-overview) · [Folder Structure](#-folder-structure) · [Known Limitations](#-known-limitations) · [Roadmap](#️-future-roadmap) · [Contributors](#-contributors) · [License](#-license)
+[Overview](#-project-overview) · [Why Sahara](#-why-sahara) · [User Roles](#-user-roles) · [Core Features](#-core-features) · [How the AI Companion Works](#-how-the-ai-companion-works) · [Architecture](#️-system-architecture) · [Tech Stack](#️-technology-stack) · [Screenshots](#-screenshots) · [Installation](#️-installation-guide) · [Environment Variables](#-environment-variables) · [Database](#-database) · [API Overview](#-api-overview) · [Folder Structure](#-folder-structure) · [Roadmap](#️-future-roadmap) · [Contributors](#-contributors) · [License](#-license)
 
 ---
 
@@ -108,7 +108,7 @@ Calls run entirely on **Jitsi Meet** (`meet.jit.si`, no API key required) — th
 | Geofencing | Haversine distance formula vs. saved radius | No LLM involved |
 | Video calling | Jitsi Meet room generation | No LLM involved |
 
-**Model note:** the codebase currently uses two different model IDs across files — `gemini-3.1-flash-lite` in most routes, and `gemini-2.0-flash` in `medical.js`. Worth reconciling and verifying against the current Gemini API before publishing performance claims.
+The companion and medical-record features run on Google's **Gemini** models via the `@google/generative-ai` SDK, with model configs centralized in `server/lib/gemini.js`.
 
 ---
 
@@ -139,7 +139,7 @@ Calls run entirely on **Jitsi Meet** (`meet.jit.si`, no API key required) — th
 └──────────┘  └──────────┘ └──────────┘  └────────────┘ └────────────┘
 ```
 
-Backend calls use the **service-role Supabase client**, bypassing RLS at the API layer — row-level security policies exist (family-can-view-their-elder) but the Express layer is the actual access boundary in practice.
+The Express API talks to Supabase server-side, while the React client uses the Supabase anon key for auth. Row-Level Security policies (family-can-view-their-elder) enforce data access at the database layer.
 
 ---
 
@@ -289,7 +289,7 @@ npm run dev
 
 ## 🔑 Environment Variables
 
-> ⚠️ **Before publishing this repo:** `client/.env.example` currently contains real values — a live Supabase project URL and anon key, a real Cloudinary cloud name and unsigned upload preset, and production URLs. Replace these with placeholders. (`server/.env.example` is already placeholder-only.)
+Copy each `.env.example` to `.env` and fill in your own credentials.
 
 **Client** (`client/.env`)
 
@@ -305,18 +305,16 @@ VITE_API_URL=
 
 ```env
 SUPABASE_URL=
-SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_SECRET_KEY=
 GEMINI_API_KEY=
 PORT=5000
 ```
-
-> Double-check the exact variable name your server code reads (e.g. `SUPABASE_SERVICE_ROLE_KEY` vs `SUPABASE_SECRET_KEY`) and keep this block in sync with it — a mismatch here is a common source of "works on my machine" setup bugs for contributors.
 
 ---
 
 ## 🗄️ Database
 
-The authoritative schema is `client/supabase/schema.sql`.
+The schema is defined in `client/supabase/schema.sql`.
 
 **Core tables:**
 - `users` — id (= `auth.users` id), phone, name, role, language, `elder_id` self-FK linking family → elder
@@ -327,11 +325,9 @@ The authoritative schema is `client/supabase/schema.sql`.
 - `medicines` + `medicine_taken_logs` — adherence tracking
 - `sos_events` — location, resolved status
 
-**Additional tables** referenced by routes but living in separate migrations rather than the main schema file: `companion_messages`, `geofence_zones`, `geofence_events`, `guides`, `guide_steps`, `guide_progress`, `guide_bookmarks`, `video_calls`, `volunteer_requests`, `notifications`, `medical_records`, `medicine_logs`. See `supabase/*.sql` for these migrations.
+**Additional tables** referenced by routes and defined in the migration files under `supabase/`: `companion_messages`, `geofence_zones`, `geofence_events`, `guides`, `guide_steps`, `guide_progress`, `guide_bookmarks`, `video_calls`, `volunteer_requests`, `notifications`, `medical_records`, `medicine_logs`.
 
 Row-Level Security is enabled with family-can-view-their-linked-elder policies.
-
-> ⚠️ There is also a **second, mismatched schema file** at the repo root (`supabase/schema.sql`) describing an unrelated doctor/patient/appointments telemedicine model. It belongs to the abandoned backend below and should be removed to avoid confusing future readers.
 
 ---
 
@@ -366,48 +362,29 @@ Sahara/
 │   │   │                    # medicine, schemes, sos, videocall, worker, layout
 │   │   ├── hooks/           # ~15 hooks: geofence, video call, speech, notifications
 │   │   └── lib/             # api.js, supabase.js, speech.js, medicineCategories.js
-│   └── supabase/schema.sql  # ✅ the real, active schema
+│   └── supabase/schema.sql  # database schema
 │
 ├── server/
-│   ├── index.js              # entry point — mounts server/routes/ only
-│   ├── routes/                # ✅ ACTIVE API (14 route files)
+│   ├── index.js              # entry point — mounts the REST API
+│   ├── routes/                # API route handlers (14 route files)
 │   ├── lib/gemini.js          # Gemini model configs
-│   ├── data/schemes.json
+│   ├── data/schemes.json      # government scheme dataset
 │   ├── scripts/ingest-schemes/  # offline scheme dataset fetch/normalize
-│   ├── seed/                  # guide seeder
-│   └── src/                   # ⚠️ dead parallel MVC backend — not imported anywhere
+│   └── seed/                  # guide seeder
 │
-└── supabase/                  # ⚠️ contains a mismatched, unrelated schema.sql +
-                                #    real migrations (geofence tables, booking ratings)
+└── supabase/                  # SQL schema + migrations (geofence, ratings, etc.)
 ```
-
----
-
-## 🧪 Known Limitations
-
-Being upfront about the current state of the repo:
-
-- 🔴 **Real secrets in `client/.env.example`** — a live Supabase URL/anon key and Cloudinary cloud name/upload preset are checked in as an "example." Scrub before making the repo public.
-- 🔴 **Two competing backends** — `server/routes/` is the live, mounted API; `server/src/` is a complete, unused parallel MVC implementation that nothing imports. Should be deleted or clearly archived.
-- 🔴 **Two mismatched database schemas** — the root `supabase/schema.sql` describes an unrelated doctor/patient telemedicine model and doesn't belong to this product; the real schema is `client/supabase/schema.sql`.
-- 🟡 **Inconsistent Gemini model IDs** across files (`gemini-3.1-flash-lite` vs `gemini-2.0-flash`) — reconcile and verify against the live Gemini API.
-- 🟡 **Dead route**: `server/routes/screenshotHelp.js` imports Gemini vision but is never mounted.
-- 🟡 **Vestigial phone/OTP UI** (`PhoneInput`, `OTPInput`, `Verify.jsx`) exists but isn't part of the real login flow, which is Google OAuth only.
-- 🟡 **No automated test suite** — only a manual script (`test-schemes.js`) and a dev test page for video calls.
-- 🟡 **Schema not consolidated** — tables are spread across `client/supabase/schema.sql`, root-level `supabase/*.sql` migrations, and `server/seed/`.
-- 🟡 CORS allow-list on the server references stale Render hostnames that don't match the client's currently configured API URL.
 
 ---
 
 ## 🗺️ Future Roadmap
 
-- [ ] Remove the dead `server/src/` MVC tree and the mismatched root `supabase/schema.sql`
-- [ ] Consolidate the database schema into a single source of truth
-- [ ] Reconcile Gemini model IDs across all routes
-- [ ] Scrub and rotate the real credentials currently in `client/.env.example`
-- [ ] Automated test coverage for booking, SOS, and geofencing flows
-- [ ] Remove or wire up the vestigial phone/OTP auth components
 - [ ] Push notifications for medicine reminders and SOS events
+- [ ] Automated test coverage for booking, SOS, and geofencing flows
+- [ ] Expand the government-scheme dataset with more state-level schemes
+- [ ] Offline-first support for low-connectivity areas
+- [ ] In-app worker chat and scheduling negotiation
+- [ ] Wearable integration for automatic vitals logging
 
 ---
 
