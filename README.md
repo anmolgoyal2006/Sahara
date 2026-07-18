@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="client/public/logo.jpeg" alt="Sahara — Premium Elderly Care" width="200" />
+
 # 🌿 Sahara
 
 ### Eldercare, Connected
