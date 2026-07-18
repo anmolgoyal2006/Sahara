@@ -1,9 +1,8 @@
 <div align="center">
 
-<h1>
-  <img src="client/public/logo.jpeg" alt="Sahara" width="120" style="vertical-align: middle;" />
-  &nbsp;&nbsp;&nbsp;Sahara
-</h1>
+<p align="center">
+<img src="client/public/logo.jpeg" alt="Sahara" width="70" style="vertical-align: middle;" /> <span style="font-size: 2em; font-weight: 700; vertical-align: middle;">Sahara</span>
+</p>
 
 ### Eldercare, Connected
 
