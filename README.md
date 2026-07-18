@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="client/public/logo.jpeg" alt="Sahara — Premium Elderly Care" width="200" />
+<img src="client/public/logo.jpeg" alt="Sahara — Premium Elderly Care" width="320" />
 
-# 🌿 Sahara
+# Sahara
 
 ### Eldercare, Connected
 
@@ -416,7 +416,7 @@ Being upfront about the current state of the repo:
 | | |
 |---|---|
 | **Anmol Goyal** | [github.com/anmolgoyal2006](https://github.com/anmolgoyal2006) |
-| **Arnav Badal** | — |
+| **Arnav Badal** | [github.com/arnavbadal](https://github.com/arnavbadal) |
 
 Contributions from others are welcome:
 
@@ -436,7 +436,7 @@ This project is licensed under the **MIT License**.
 
 <div align="center">
 
-**Built by [Anmol Goyal](https://github.com/anmolgoyal2006) & Arnav Badal**
+**Built by [Anmol Goyal](https://github.com/anmolgoyal2006) & [Arnav Badal](https://github.com/arnavbadal)**
 
 🔗 **Repository:** [github.com/anmolgoyal2006/Sahara](https://github.com/anmolgoyal2006/Sahara) · 🌐 **Live:** [sahara-seven-virid.vercel.app](https://sahara-seven-virid.vercel.app/)
 
