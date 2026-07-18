@@ -2,7 +2,7 @@
 
 <img src="client/public/logo.jpeg" alt="Sahara — Premium Elderly Care" width="200" />
 
-# 🌿 Sahara
+# Sahara
 
 ### Eldercare, Connected
 
@@ -10,7 +10,7 @@
 
 A mobile-first platform for India where an elder's health, medicine adherence, service bookings, and emergencies are visible to family in real time, while care workers get a live job queue and location sharing.
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-16A34A?style=for-the-badge&logo=vercel&logoColor=white)](https://sahara-seven-virid.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-16A34A?style=for-the-badge&logo=vercel&logoColor=white)](https://sahara-seven-virid.vercel.app/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-1E3A8A?style=for-the-badge&logo=github&logoColor=white)](https://github.com/anmolgoyal2006/Sahara)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](#-license)
 
@@ -30,7 +30,7 @@ A mobile-first platform for India where an elder's health, medicine adherence, s
 
 ### 📚 Table of Contents
 
-[Overview](#-project-overview) · [Why Sahara](#-why-sahara) · [User Roles](#-user-roles) · [Core Features](#-core-features) · [How the AI Companion Works](#-how-the-ai-companion-works) · [Architecture](#️-system-architecture) · [Tech Stack](#️-technology-stack) · [Screenshots](#-screenshots) · [Installation](#️-installation-guide) · [Environment Variables](#-environment-variables) · [Database](#-database) · [API Overview](#-api-overview) · [Folder Structure](#-folder-structure) · [Known Limitations](#-known-limitations) · [Roadmap](#️-future-roadmap) · [License](#-license)
+[Overview](#-project-overview) · [Why Sahara](#-why-sahara) · [User Roles](#-user-roles) · [Core Features](#-core-features) · [How the AI Companion Works](#-how-the-ai-companion-works) · [Architecture](#️-system-architecture) · [Tech Stack](#️-technology-stack) · [Screenshots](#-screenshots) · [Installation](#️-installation-guide) · [Environment Variables](#-environment-variables) · [Database](#-database) · [API Overview](#-api-overview) · [Folder Structure](#-folder-structure) · [Known Limitations](#-known-limitations) · [Roadmap](#️-future-roadmap) · [Contributors](#-contributors) · [License](#-license)
 
 ---
 
@@ -245,11 +245,10 @@ Backend calls use the **service-role Supabase client**, bypassing RLS at the API
 </td>
 </tr>
 <tr>
-<td width="50%" align="center">
-<img src="Screenshots/Screenshot%202026-07-19%20000049.png" alt="Worker Profile" /><br/>
+<td colspan="2" align="center">
+<img src="Screenshots/Screenshot%202026-07-19%20000049.png" alt="Worker Profile" width="50%" /><br/>
 <sub><b>Care Worker Profile — skills, languages, verification</b></sub>
 </td>
-<td width="50%"></td>
 </tr>
 </table>
 
@@ -306,10 +305,12 @@ VITE_API_URL=
 
 ```env
 SUPABASE_URL=
-SUPABASE_SECRET_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 GEMINI_API_KEY=
 PORT=5000
 ```
+
+> Double-check the exact variable name your server code reads (e.g. `SUPABASE_SERVICE_ROLE_KEY` vs `SUPABASE_SECRET_KEY`) and keep this block in sync with it — a mismatch here is a common source of "works on my machine" setup bugs for contributors.
 
 ---
 
@@ -410,7 +411,14 @@ Being upfront about the current state of the repo:
 
 ---
 
-## 🤝 Contribution Guide
+## 🤝 Contributors
+
+| | |
+|---|---|
+| **Anmol Goyal** | [github.com/anmolgoyal2006](https://github.com/anmolgoyal2006) |
+| **Arnav Badal** | — |
+
+Contributions from others are welcome:
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/your-feature-name`
