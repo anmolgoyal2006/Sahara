@@ -11,10 +11,6 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 // Raise this value to require more "Need Help" clicks before auto-simplifying.
 const STRUGGLE_THRESHOLD = 2
 
-// ─── Phase 15M config ────────────────────────────────────────────────────────
-// struggle_count >= this value triggers the emergency/volunteer card automatically.
-const EMERGENCY_THRESHOLD = 3
-
 // Returns text in the requested language, falling back to English
 function getText(field, lang) {
   if (!field) return ''
@@ -99,14 +95,6 @@ export default function GuideViewer() {
   const streamRef         = useRef(null)                          // MediaStream reference
   const videoRef          = useRef(null)                          // local preview <video>
 
-  // ─── Phase 15M: Emergency / volunteer mode ────────────────────────────────
-  // Shown automatically when struggle_count >= EMERGENCY_THRESHOLD OR when the
-  // user explicitly taps the persistent "I'm stuck" button.
-  const [emergencyOpen,   setEmergencyOpen]   = useState(false)
-  const [volRequesting,   setVolRequesting]   = useState(false)   // call in flight
-  const [volDone,         setVolDone]         = useState(null)    // 'call'|'chat' after success
-  const [volError,        setVolError]        = useState(null)
-
   /* ── Load guide + progress + bookmarks ── */
   useEffect(() => {
     async function load() {
@@ -167,13 +155,6 @@ export default function GuideViewer() {
     if (autoRead) speak(text, language)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stepIndex, started, displayMode, autoRead, struggleCount, showStandardOverride])
-
-  /* ── Phase 15M: auto-open emergency card at threshold ── */
-  useEffect(() => {
-    if (struggleCount >= EMERGENCY_THRESHOLD && started && !completed) {
-      setEmergencyOpen(true)
-    }
-  }, [struggleCount, started, completed])
 
   /* ── Actions ── */
   const postProgress = useCallback(async (idx) => {
@@ -362,31 +343,6 @@ export default function GuideViewer() {
       setErrorApiError(e.message)
     } finally {
       setErrorLoading(false)
-    }
-  }
-
-  // ─── Phase 15M: volunteer request handler ────────────────────────────────
-  async function handleVolunteerRequest(type) {
-    setVolRequesting(true)
-    setVolError(null)
-    try {
-      const res = await fetch(`${API_URL}/api/guides/volunteer-request`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          elder_id:    userId,
-          guide_slug:  slug,
-          step_number: stepIndex + 1,
-          request_type: type,   // 'call' | 'chat'
-        }),
-      })
-      const data = await res.json()
-      if (!data.success) throw new Error(data.error || 'Request failed')
-      setVolDone(type)
-    } catch (e) {
-      setVolError(e.message)
-    } finally {
-      setVolRequesting(false)
     }
   }
 
@@ -908,112 +864,6 @@ export default function GuideViewer() {
             </button>
           </div>
         )}
-
-        {/* ── Phase 15M: Persistent "I'm stuck" button ── */}
-        {/* Always visible regardless of struggle count — independent of the error helper */}
-        <div style={{ marginBottom: 10 }}>
-          <button
-            onClick={() => { setEmergencyOpen(v => !v); setVolDone(null); setVolError(null) }}
-            aria-label="I'm stuck — get extra help"
-            style={{
-              width: '100%', height: 48, borderRadius: 12,
-              background: emergencyOpen ? '#FFF0F0' : (/* inherit card bg */ 'white'),
-              border: `1.5px solid ${emergencyOpen ? '#E24B4A' : '#DDE8F5'}`,
-              color: '#E24B4A', fontSize: 15, fontWeight: 700,
-              cursor: 'pointer', fontFamily: 'inherit',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            }}
-          >
-            <i className="ti ti-hand-stop" style={{ fontSize: 17 }} />
-            {emergencyOpen ? 'Hide extra help' : "I'm stuck — get extra help"}
-          </button>
-
-          {/* Emergency / volunteer card */}
-          {emergencyOpen && (
-            <div style={{
-              background: '#FFF8F8', border: '1.5px solid #FFC5C5',
-              borderRadius: 14, padding: 20, marginTop: 6,
-            }}>
-              {volDone ? (
-                /* Success state */
-                <div style={{ textAlign: 'center' }}>
-                  <i className="ti ti-circle-check" style={{ fontSize: 40, color: '#1D9E75', display: 'block', marginBottom: 10 }} />
-                  <p style={{ fontSize: 18, fontWeight: 800, color: '#0A2540', margin: '0 0 6px' }}>
-                    {volDone === 'call' ? 'Call requested!' : 'Chat requested!'}
-                  </p>
-                  <p style={{ fontSize: 16, color: '#5A7A9A', margin: '0 0 16px', lineHeight: 1.5 }}>
-                    A volunteer has been notified. Someone will reach out to you shortly.
-                  </p>
-                  <button
-                    onClick={() => { setVolDone(null); setEmergencyOpen(false) }}
-                    style={{
-                      height: 48, padding: '0 24px', borderRadius: 12,
-                      background: '#1D9E75', border: 'none', color: 'white',
-                      fontSize: 16, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
-                    }}
-                  >
-                    OK, thank you
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <p style={{ fontSize: 17, fontWeight: 800, color: '#0A2540', margin: '0 0 6px' }}>
-                    Would you like some extra help?
-                  </p>
-                  <p style={{ fontSize: 16, color: '#5A7A9A', margin: '0 0 18px', lineHeight: 1.5 }}>
-                    A volunteer can help you finish this step.
-                    Choose how you'd like to be helped:
-                  </p>
-
-                  {volError && (
-                    <p style={{ fontSize: 14, color: '#E24B4A', margin: '0 0 12px', fontWeight: 600 }}>
-                      {volError}
-                    </p>
-                  )}
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    <button
-                      onClick={() => handleVolunteerRequest('call')}
-                      disabled={volRequesting}
-                      aria-label="Request a phone call from a volunteer"
-                      style={{
-                        height: 56, borderRadius: 14,
-                        background: volRequesting ? '#A0B8D0' : '#185FA5',
-                        border: 'none', color: 'white', fontSize: 17, fontWeight: 700,
-                        cursor: volRequesting ? 'not-allowed' : 'pointer',
-                        fontFamily: 'inherit', display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', gap: 10,
-                      }}
-                    >
-                      {volRequesting
-                        ? <div style={{ width: 18, height: 18, border: '2px solid rgba(255,255,255,0.4)', borderTop: '2px solid white', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-                        : <i className="ti ti-phone" style={{ fontSize: 20 }} />}
-                      Call a Volunteer
-                    </button>
-
-                    <button
-                      onClick={() => handleVolunteerRequest('chat')}
-                      disabled={volRequesting}
-                      aria-label="Request a chat with a volunteer"
-                      style={{
-                        height: 56, borderRadius: 14,
-                        background: volRequesting ? '#A0B8D0' : 'white',
-                        border: '1.5px solid #185FA5', color: '#185FA5',
-                        fontSize: 17, fontWeight: 700,
-                        cursor: volRequesting ? 'not-allowed' : 'pointer',
-                        fontFamily: 'inherit', display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', gap: 10,
-                      }}
-                    >
-                      <i className="ti ti-message-circle" style={{ fontSize: 20 }} />
-                      Chat with a Volunteer
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </div>
 
         {/* Action buttons — Phase 15M accessibility pass: ≥44px height, ≥16px font, aria-labels */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
