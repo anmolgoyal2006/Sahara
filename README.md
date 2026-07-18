@@ -1,10 +1,6 @@
 <div align="center">
 
-<img src="client/public/logo.jpeg" alt="Sahara" width="80" align="left" />
-
-# Sahara
-
-<br clear="left" />
+# 🌿 Sahara
 
 ### Eldercare, Connected
 
