@@ -87,26 +87,42 @@ alter table public.guide_progress enable row level security;
 alter table public.guide_bookmarks enable row level security;
 alter table public.volunteer_requests enable row level security;
 
+-- Helper: is the current user a family member linked to this elder?
+-- SECURITY DEFINER bypasses RLS on public.users, preventing the
+-- "infinite recursion detected in policy for relation users" error
+-- that occurs when a policy on another table sub-queries users while
+-- users itself has self-referencing RLS policies.
+create or replace function public.is_linked_family(p_elder uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from public.users
+    where id = auth.uid()
+      and elder_id = p_elder
+  );
+$$;
+
+drop policy if exists "elder or caregiver access progress" on public.guide_progress;
 create policy "elder or caregiver access progress"
   on public.guide_progress for all using (
     auth.uid() = elder_id
-    or auth.uid() in (
-      select id from public.users where elder_id = guide_progress.elder_id
-    )
+    or public.is_linked_family(elder_id)
   );
 
+drop policy if exists "elder or caregiver access bookmarks" on public.guide_bookmarks;
 create policy "elder or caregiver access bookmarks"
   on public.guide_bookmarks for all using (
     auth.uid() = elder_id
-    or auth.uid() in (
-      select id from public.users where elder_id = guide_bookmarks.elder_id
-    )
+    or public.is_linked_family(elder_id)
   );
 
+drop policy if exists "elder or caregiver access volunteer requests" on public.volunteer_requests;
 create policy "elder or caregiver access volunteer requests"
   on public.volunteer_requests for all using (
     auth.uid() = elder_id
-    or auth.uid() in (
-      select id from public.users where elder_id = volunteer_requests.elder_id
-    )
+    or public.is_linked_family(elder_id)
   );

@@ -85,6 +85,11 @@ export default function GuideViewer() {
   const [errorApiError,   setErrorApiError]   = useState(null)      // network/server error msg
 
   // ─── Phase 15L: Watch My Screen Mode ─────────────────────────────────────
+  // Screen capture (getDisplayMedia) is desktop-only — phone browsers
+  // (Android Chrome / iOS Safari) do not allow web pages to capture the
+  // screen. On phones we point users to the Upload Screenshot flow instead.
+  const canWatchScreen = typeof navigator !== 'undefined'
+    && !!navigator.mediaDevices?.getDisplayMedia
   const [watchConsent,    setWatchConsent]    = useState(false)   // user agreed to sharing
   const [watchActive,     setWatchActive]     = useState(false)   // stream is live
   const [watchChecking,   setWatchChecking]   = useState(false)   // single check in flight
@@ -1186,19 +1191,27 @@ export default function GuideViewer() {
           </div>
         )}
 
-        {/* Entry button — only shown when not active, not analysing, and consent modal closed */}
-        {!watchActive && !showConsentFlow && !watchChecking && (
-          <button onClick={() => setShowConsentFlow(true)}
-            style={{
-              width: '100%', height: 44, borderRadius: 12, marginTop: 10,
-              background: 'white', border: '1.5px solid #DDE8F5',
-              color: '#5A7A9A', fontSize: 13, fontWeight: 700,
-              cursor: 'pointer', fontFamily: 'inherit',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            }}>
-            <i className="ti ti-screen-share" style={{ fontSize: 15 }} />
-            Watch My Screen
-          </button>
+        {/* Entry button — desktop only (phones can't capture their own screen).
+            On phones we show a hint pointing to the screenshot-upload flow. */}
+        {canWatchScreen ? (
+          !watchActive && !showConsentFlow && !watchChecking && (
+            <button onClick={() => setShowConsentFlow(true)}
+              style={{
+                width: '100%', height: 44, borderRadius: 12, marginTop: 10,
+                background: 'white', border: '1.5px solid #DDE8F5',
+                color: '#5A7A9A', fontSize: 13, fontWeight: 700,
+                cursor: 'pointer', fontFamily: 'inherit',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              }}>
+              <i className="ti ti-screen-share" style={{ fontSize: 15 }} />
+              Watch My Screen
+            </button>
+          )
+        ) : (
+          <p style={{ fontSize: 12, color: '#A0B8D0', margin: '10px 0 0', textAlign: 'center', lineHeight: 1.5 }}>
+            📷 On a phone? Take a screenshot of the app you're learning, then tap{' '}
+            <strong>Need Help → Upload Screenshot</strong> above.
+          </p>
         )}
 
         {/* Active session: local preview + "Check My Screen" button */}
