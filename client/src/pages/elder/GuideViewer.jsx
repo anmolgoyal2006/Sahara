@@ -387,18 +387,31 @@ export default function GuideViewer() {
 
   // ─── Phase 15L: Watch My Screen handlers ───────────────────────────────────
 
-  // Stop the screen-capture stream and reset all related state.
-  function stopScreenShare() {
+  // Stop the screen-capture stream. Pass keepResult=true to leave the last
+  // analysis visible (used by the automatic stop after "Check My Screen").
+  function stopScreenShare(keepResult = false) {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(t => t.stop())
       streamRef.current = null
     }
     if (videoRef.current) videoRef.current.srcObject = null
     setWatchActive(false)
-    setWatchResult(null)
-    setWatchError(null)
     setWatchChecking(false)
+    if (!keepResult) {
+      setWatchResult(null)
+      setWatchError(null)
+    }
   }
+
+  // Attach the live stream to the preview <video> once it is actually mounted.
+  // (The element only renders after watchActive flips true, so setting
+  // srcObject inside startScreenShare would hit a null ref → black preview.)
+  useEffect(() => {
+    if (watchActive && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current
+      videoRef.current.play().catch(() => {})
+    }
+  }, [watchActive])
 
   // Clean up on unmount or when the user navigates away from the guide.
   useEffect(() => {
@@ -415,12 +428,10 @@ export default function GuideViewer() {
         audio: false,
       })
       streamRef.current = stream
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        videoRef.current.play().catch(() => {})
-      }
-      // If the user closes the browser-native share dialog, stop cleanly.
-      stream.getVideoTracks()[0].addEventListener('ended', stopScreenShare)
+      // If the user stops sharing via the browser's native UI, stop cleanly.
+      stream.getVideoTracks()[0].addEventListener('ended', () => stopScreenShare())
+      // NOTE: the preview <video> mounts only after watchActive flips true —
+      // the effect above attaches the stream to it once it exists.
       setWatchActive(true)
       setWatchConsent(true)
       setShowConsentFlow(false)
@@ -431,28 +442,33 @@ export default function GuideViewer() {
     }
   }
 
-  // Capture one frame from the live stream and send it to the screenshot-help
-  // endpoint (same Vision + OCR pipeline as Phase 15J — no extra server code needed).
+  // Capture one frame from the live preview, stop sharing immediately
+  // (one snapshot per session), then send the frame to the screenshot-help
+  // endpoint (same Vision pipeline as Phase 15J — no extra server code needed).
   async function handleCheckMyScreen() {
     if (!streamRef.current || watchChecking) return
     setWatchChecking(true)
     setWatchResult(null)
     setWatchError(null)
     try {
-      const track = streamRef.current.getVideoTracks()[0]
-      // ImageCapture API — supported in all modern browsers
-      const imageCapture = new ImageCapture(track)
-      const bitmap = await imageCapture.grabFrame()
-
-      // Draw to offscreen canvas → get Blob
+      // Grab the current frame straight from the preview <video> element —
+      // works in every browser (unlike the Chrome-only ImageCapture API).
+      const video = videoRef.current
+      const w = video?.videoWidth
+      const h = video?.videoHeight
+      if (!video || !w || !h) {
+        throw new Error('Screen preview is not ready yet — wait a second and try again')
+      }
       const canvas = document.createElement('canvas')
-      canvas.width  = bitmap.width
-      canvas.height = bitmap.height
-      const ctx = canvas.getContext('2d')
-      ctx.drawImage(bitmap, 0, 0)
-      bitmap.close()
-
+      canvas.width  = w
+      canvas.height = h
+      canvas.getContext('2d').drawImage(video, 0, 0, w, h)
       const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85))
+      if (!blob) throw new Error('Could not capture the screen — please try again')
+
+      // Frame captured — stop the screen share right away. Analysis continues
+      // below; the result stays visible after sharing ends.
+      stopScreenShare(true)
 
       const currentStep = steps[stepIndex]
       const formData = new FormData()
@@ -1119,7 +1135,7 @@ export default function GuideViewer() {
                 Screen sharing active
               </span>
             </div>
-            <button onClick={stopScreenShare}
+            <button onClick={() => stopScreenShare()}
               style={{
                 height: 32, padding: '0 14px', borderRadius: 8,
                 background: '#E24B4A', border: 'none', color: 'white',
@@ -1141,8 +1157,8 @@ export default function GuideViewer() {
             </p>
             <p style={{ fontSize: 14, color: '#5A7A9A', margin: '0 0 14px', lineHeight: 1.6 }}>
               Sahara will take a single snapshot of your screen when you tap{' '}
-              <strong>"Check My Screen"</strong>. The snapshot is <strong>not saved</strong>.
-              You can stop sharing at any time.
+              <strong>"Check My Screen"</strong>, then <strong>stop sharing automatically</strong>.
+              The snapshot is <strong>not saved</strong>. You can also stop at any time.
             </p>
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={startScreenShare}
@@ -1170,8 +1186,8 @@ export default function GuideViewer() {
           </div>
         )}
 
-        {/* Entry button — only shown when not yet active and consent modal is closed */}
-        {!watchActive && !showConsentFlow && (
+        {/* Entry button — only shown when not active, not analysing, and consent modal closed */}
+        {!watchActive && !showConsentFlow && !watchChecking && (
           <button onClick={() => setShowConsentFlow(true)}
             style={{
               width: '100%', height: 44, borderRadius: 12, marginTop: 10,
@@ -1191,6 +1207,7 @@ export default function GuideViewer() {
             {/* Small local preview so the user always sees what's being shared */}
             <video
               ref={videoRef}
+              autoPlay
               muted
               playsInline
               style={{
@@ -1210,39 +1227,54 @@ export default function GuideViewer() {
                 fontFamily: 'inherit',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               }}>
-              {watchChecking
-                ? <><div style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.4)', borderTop: '2px solid white', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} /> Checking…</>
-                : <><i className="ti ti-eye" style={{ fontSize: 17 }} /> Check My Screen</>}
+              <i className="ti ti-camera" style={{ fontSize: 17 }} /> Check My Screen
             </button>
+            <p style={{ fontSize: 11, color: '#A0B8D0', margin: '6px 0 0', textAlign: 'center' }}>
+              Takes one snapshot, then sharing stops automatically. Nothing is saved.
+            </p>
+          </div>
+        )}
 
-            {watchError && (
-              <p style={{ fontSize: 12, color: '#E24B4A', margin: '8px 0 0', fontWeight: 600 }}>
-                {watchError}
+        {/* Analysing state — shown after capture, when sharing has already stopped */}
+        {watchChecking && !watchActive && (
+          <div style={{
+            marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+            background: '#F4F8FC', border: '1.5px solid #DDE8F5', borderRadius: 12, padding: '14px 16px',
+          }}>
+            <div style={{ width: 18, height: 18, border: '2.5px solid #DDE8F5', borderTop: '2.5px solid #185FA5', borderRadius: '50%', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#185FA5' }}>
+              Screenshot taken — analysing your screen…
+            </span>
+          </div>
+        )}
+
+        {/* Error — shown whether or not sharing is still active */}
+        {watchError && (
+          <p style={{ fontSize: 12, color: '#E24B4A', margin: '8px 0 0', fontWeight: 600 }}>
+            {watchError}
+          </p>
+        )}
+
+        {/* Screen-check result — persists after sharing has stopped */}
+        {watchResult && (
+          <div style={{
+            marginTop: 12, background: 'white',
+            border: '1.5px solid #1D9E75', borderRadius: 12, padding: '12px 14px',
+          }}>
+            <p style={{
+              fontSize: 13, fontWeight: 800, color: '#0A2540',
+              margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: 6,
+            }}>
+              <i className="ti ti-eye-check" style={{ fontSize: 14, color: '#1D9E75' }} />
+              Screen feedback
+            </p>
+            <p style={{ fontSize: 15, fontWeight: 700, color: '#185FA5', margin: '0 0 8px', lineHeight: 1.4 }}>
+              {watchResult.location_description}
+            </p>
+            {watchResult.explanation && (
+              <p style={{ fontSize: 13, color: '#5A7A9A', margin: 0, lineHeight: 1.5 }}>
+                {watchResult.explanation}
               </p>
-            )}
-
-            {/* Screen-check result */}
-            {watchResult && (
-              <div style={{
-                marginTop: 12, background: 'white',
-                border: '1.5px solid #1D9E75', borderRadius: 12, padding: '12px 14px',
-              }}>
-                <p style={{
-                  fontSize: 13, fontWeight: 800, color: '#0A2540',
-                  margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: 6,
-                }}>
-                  <i className="ti ti-eye-check" style={{ fontSize: 14, color: '#1D9E75' }} />
-                  Screen feedback
-                </p>
-                <p style={{ fontSize: 15, fontWeight: 700, color: '#185FA5', margin: '0 0 8px', lineHeight: 1.4 }}>
-                  {watchResult.location_description}
-                </p>
-                {watchResult.explanation && (
-                  <p style={{ fontSize: 13, color: '#5A7A9A', margin: 0, lineHeight: 1.5 }}>
-                    {watchResult.explanation}
-                  </p>
-                )}
-              </div>
             )}
           </div>
         )}
