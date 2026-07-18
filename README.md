@@ -1,7 +1,7 @@
 <div align="center">
 
 <h1>
-  <img src="client/public/logo.jpeg" alt="Sahara" width="70" valign="middle" />
+  <img src="client/public/logo.jpeg" alt="Sahara" width="120" valign="middle" />
   &nbsp;Sahara
 </h1>
 
