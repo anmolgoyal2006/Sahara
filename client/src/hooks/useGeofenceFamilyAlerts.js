@@ -35,15 +35,19 @@ export function useGeofenceFamilyAlerts(familyUserId) {
       lastAlertIdRef.current = latestAlert.id
       lastStatusRef.current = latestAlert.event_type
 
-      // Show browser notification
+      // Show browser notification using the Gemini-generated message when available
       if (Notification.permission === 'granted') {
         const isLeft = latestAlert.event_type === 'left'
         const title = isLeft
           ? '📍 Sahara — Safety Alert'
           : '✅ Sahara — Returned Home'
-        const body = isLeft
-          ? `Your parent has moved ${latestAlert.distance_from_center}m outside their safe zone. Tap to view their location.`
-          : `Your parent has returned to their safe zone. They are home safely.`
+
+        // Prefer server-persisted AI message; fall back to deterministic strings
+        const body = latestAlert.ai_message ||
+          latestAlert.aiMessage ||
+          (isLeft
+            ? `Your parent has moved ${latestAlert.distance_from_center}m outside their safe zone. Tap to view their location.`
+            : `Your parent has returned to their safe zone. They are home safely.`)
 
         const notification = new Notification(title, {
           body,

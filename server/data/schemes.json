@@ -179,10 +179,10 @@
       "Age proof"
     ],
     "how_to_apply": [
-      "Visit any LIC branch office",
-      "Apply online at licindia.in"
+      "Note: PMVVY closed for new subscriptions on 31 March 2023; existing policyholders can manage policies at LIC branches",
+      "For current senior citizen pension options, explore SCSS or NPS at any bank or post office"
     ],
-    "apply_url": "https://licindia.in/home/insurance-plan/pension-plans/pm-vaya-vandana-yojana",
+    "apply_url": "https://licindia.in/products/pension-plans",
     "helpline": "022-68276827",
     "helpline_free": false,
     "tags": [
@@ -378,7 +378,7 @@
       "Visit your bank branch or net banking portal",
       "Enroll under PMSBY with auto-debit consent"
     ],
-    "apply_url": "https://financialservices.gov.in/insurance-divisions/Government-Sponsored-&-Social-Security-Schemes/Pradhan-Mantri-Suraksha-Bima-Yojana(PMSBY)",
+    "apply_url": "https://financialservices.gov.in/insurance-divisions/Government-Sponsored-Social-Security-Schemes/Pradhan-Mantri-Suraksha-Bima-Yojana",
     "helpline": "1800-180-1111",
     "helpline_free": true,
     "tags": [
@@ -423,7 +423,7 @@
     "how_to_apply": [
       "Enroll through your bank branch, net banking, or mobile banking"
     ],
-    "apply_url": "https://financialservices.gov.in/insurance-divisions/Government-Sponsored-&-Social-Security-Schemes/Pradhan-Mantri-Jeevan-Jyoti-Bima-Yojana(PMJJBY)",
+    "apply_url": "https://financialservices.gov.in/insurance-divisions/Government-Sponsored-Social-Security-Schemes/Pradhan-Mantri-Jeevan-Jyoti-Bima-Yojana",
     "helpline": "1800-180-1111",
     "helpline_free": true,
     "tags": [
@@ -472,7 +472,7 @@
       "Visit your bank branch or use net banking",
       "Fill APY registration form with nominee details"
     ],
-    "apply_url": "https://npscra.nsdl.co.in/scheme-details.php",
+    "apply_url": "https://www.npscra.proteantech.in/scheme-details.php",
     "helpline": "1800-110-069",
     "helpline_free": true,
     "tags": [
@@ -669,9 +669,9 @@
     ],
     "how_to_apply": [
       "Apply through ALIMCO camps or district office",
-      "Register at adip.msje.gov.in"
+      "Register at adip.depwd.gov.in"
     ],
-    "apply_url": "https://adip.msje.gov.in",
+    "apply_url": "https://adip.depwd.gov.in",
     "helpline": "1800-180-5129",
     "helpline_free": true,
     "tags": [
@@ -717,10 +717,10 @@
       "Age proof"
     ],
     "how_to_apply": [
-      "Register at rashtriyavayoshri.gov.in or contact district Social Welfare office",
+      "Register at socialjustice.gov.in or contact district Social Welfare office",
       "Attend designated camp for device distribution"
     ],
-    "apply_url": "https://rashtriyavayoshri.gov.in",
+    "apply_url": "https://socialjustice.gov.in/schemes/rashtriya-vayoshri-yojana",
     "helpline": "1800-180-5129",
     "helpline_free": true,
     "tags": [
@@ -919,10 +919,10 @@
       "Caste certificate (if applicable)"
     ],
     "how_to_apply": [
-      "Apply online at kviconline.gov.in/pmegpeportal",
+      "Apply online at pmegp.msme.gov.in",
       "Submit to nearest KVIC/KVIB/DIC office"
     ],
-    "apply_url": "https://kviconline.gov.in/pmegpeportal",
+    "apply_url": "https://pmegp.msme.gov.in",
     "helpline": "1800-3000-0034",
     "helpline_free": true,
     "tags": [
@@ -1589,6 +1589,1018 @@
       "rural",
       "BPL",
       "Swachh Bharat"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmfby",
+    "name": "Pradhan Mantri Fasal Bima Yojana",
+    "short_name": "PMFBY",
+    "category": "agriculture",
+    "ministry": "Ministry of Agriculture and Farmers Welfare",
+    "description": "Crop insurance scheme providing financial support to farmers suffering crop loss or damage due to unforeseen natural calamities, pests, and diseases.",
+    "benefit": {
+      "type": "insurance",
+      "amount": "Full sum insured equal to scale of finance per hectare; premium capped at 2% (kharif), 1.5% (rabi), 5% (commercial/horticultural crops) for farmers",
+      "duration": "per cropping season"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be a farmer with insurable interest in the notified crop in a notified area",
+        "Mandatory for loanee farmers; voluntary for non-loanee farmers"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Land records / Khasra number",
+      "Bank passbook",
+      "Sowing certificate"
+    ],
+    "how_to_apply": [
+      "Apply through nearest bank branch, CSC, or pmfby.gov.in before the cut-off date for the season"
+    ],
+    "apply_url": "https://pmfby.gov.in",
+    "helpline": "1800-200-7710",
+    "helpline_free": true,
+    "tags": [
+      "agriculture",
+      "crop insurance",
+      "farmer",
+      "natural calamity"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "kcc",
+    "name": "Kisan Credit Card Scheme",
+    "short_name": "KCC",
+    "category": "agriculture",
+    "ministry": "Ministry of Agriculture and Farmers Welfare",
+    "description": "Short-term credit at subsidised interest rates (4–7% p.a. with interest subvention) to farmers for agricultural and allied activities, consumption needs, and maintenance of farm assets.",
+    "benefit": {
+      "type": "loan",
+      "amount": "Credit limit based on land holding and crop pattern; interest at 4% p.a. (with 3% prompt-repayment subvention on loans up to ₹3 lakh)",
+      "duration": "revolving credit, renewed annually"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be a farmer — individual or joint borrower, tenant farmer, oral lessee, or share-cropper",
+        "SHGs and JLGs of farmers also eligible"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Land records",
+      "Passport-size photograph",
+      "Bank account details"
+    ],
+    "how_to_apply": [
+      "Apply at any nationalised bank, cooperative bank, or RRB branch",
+      "Also available online at respective bank portals"
+    ],
+    "apply_url": "https://www.nabard.org/content1.aspx?id=572",
+    "helpline": "1800-200-7710",
+    "helpline_free": true,
+    "tags": [
+      "agriculture",
+      "credit",
+      "farmer",
+      "interest subvention",
+      "Kisan"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pm-svamitva",
+    "name": "SVAMITVA Scheme",
+    "short_name": "SVAMITVA",
+    "category": "housing",
+    "ministry": "Ministry of Panchayati Raj",
+    "description": "Survey of villages and mapping with improvised technology for determining property rights. Issues property cards to residents of inhabited land in rural areas (Abadi land), enabling them to use property as a financial asset.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "Legal property card (Rights of Record) for residential land in rural abadi area, enabling bank loans against property",
+      "duration": "permanent ownership record"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be resident of rural abadi (inhabited village land)",
+        "Village must be covered under the SVAMITVA survey drone mapping"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Proof of residence in village",
+      "Existing occupancy proof if any"
+    ],
+    "how_to_apply": [
+      "No individual application needed — state Revenue department and Panchayati Raj carry out village survey",
+      "Property card delivered via SMS link to download or at Gram Panchayat"
+    ],
+    "apply_url": "https://svamitva.nic.in",
+    "helpline": "1800-11-8111",
+    "helpline_free": true,
+    "tags": [
+      "housing",
+      "rural",
+      "property rights",
+      "land record",
+      "village"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmkvy",
+    "name": "Pradhan Mantri Kaushal Vikas Yojana",
+    "short_name": "PMKVY",
+    "category": "employment",
+    "ministry": "Ministry of Skill Development and Entrepreneurship",
+    "description": "Free short-term skill training and certification under National Skills Qualification Framework (NSQF) with monetary reward on certification, to improve employability of Indian youth.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "Free skill training (up to 3 months) + ₹500–₹8,000 monetary reward on assessment pass + placement support",
+      "duration": "one-time training per qualification"
+    },
+    "eligibility": {
+      "min_age": 15,
+      "max_age": 45,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be an Indian national who is school/college dropout OR unemployed/underemployed"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Educational qualification certificate",
+      "Bank passbook"
+    ],
+    "how_to_apply": [
+      "Register at pmkvyofficial.org or visit a PMKVY Training Centre (TC)",
+      "Select a NSQF-aligned course and enroll"
+    ],
+    "apply_url": "https://pmkvyofficial.org",
+    "helpline": "1800-123-9626",
+    "helpline_free": true,
+    "tags": [
+      "employment",
+      "skill training",
+      "youth",
+      "certification",
+      "vocational"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "naps",
+    "name": "National Apprenticeship Promotion Scheme",
+    "short_name": "NAPS",
+    "category": "employment",
+    "ministry": "Ministry of Skill Development and Entrepreneurship",
+    "description": "Stipend support scheme where the government shares 25% of prescribed stipend (up to ₹1,500/month) with employers engaging apprentices under the Apprentices Act.",
+    "benefit": {
+      "type": "cash",
+      "amount": "Government shares 25% of stipend subject to maximum ₹1,500/month per apprentice",
+      "duration": "duration of apprenticeship contract (1–3 years)"
+    },
+    "eligibility": {
+      "min_age": 14,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be engaged as an apprentice under the Apprentices Act 1961 with a registered establishment"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Educational certificates",
+      "Apprenticeship contract",
+      "Bank passbook"
+    ],
+    "how_to_apply": [
+      "Register as apprentice on apprenticeshipindia.gov.in",
+      "Apply to registered establishments for apprenticeship openings"
+    ],
+    "apply_url": "https://apprenticeshipindia.gov.in",
+    "helpline": "1800-123-9626",
+    "helpline_free": true,
+    "tags": [
+      "employment",
+      "apprenticeship",
+      "skill",
+      "stipend",
+      "on-the-job training"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "ddugky",
+    "name": "Deen Dayal Upadhyaya Grameen Kaushalya Yojana",
+    "short_name": "DDU-GKY",
+    "category": "employment",
+    "ministry": "Ministry of Rural Development",
+    "description": "Placement-linked skill training for rural youth from poor families, ensuring a minimum wage job after training. Targets youth aged 15–35 from rural BPL households.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "Free residential/non-residential skill training + placement in jobs paying minimum ₹6,000/month",
+      "duration": "training duration 3–12 months; placement support up to 1 year"
+    },
+    "eligibility": {
+      "min_age": 15,
+      "max_age": 35,
+      "income_limit": null,
+      "bpl_required": true,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be from a rural household listed in SECC 2011",
+        "Must be willing to relocate for placement if required"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "BPL/SECC listing proof",
+      "Educational certificates",
+      "Bank passbook"
+    ],
+    "how_to_apply": [
+      "Contact nearest District Programme Coordinator (DPC) under DRDA",
+      "Apply through ddugky.gov.in"
+    ],
+    "apply_url": "https://ddugky.info",
+    "helpline": "1800-111-555",
+    "helpline_free": true,
+    "tags": [
+      "employment",
+      "skill training",
+      "rural",
+      "BPL",
+      "placement"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pm-wani",
+    "name": "Pradhan Mantri Wi-Fi Access Network Interface",
+    "short_name": "PM-WANI",
+    "category": "welfare",
+    "ministry": "Ministry of Communications",
+    "description": "Framework for proliferation of broadband through public Wi-Fi hotspots by local entrepreneurs (PDOs) without requiring a licence, to democratise internet access.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "Affordable public Wi-Fi access; PDO providers earn revenue from hotspot usage",
+      "duration": "ongoing"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": false,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Any individual/entity can become a Public Data Office (PDO) to set up hotspots without licence"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Registration on PM-WANI portal (for PDOs)"
+    ],
+    "how_to_apply": [
+      "Register as Public Data Office (PDO) at pmwani.gov.in",
+      "Citizens use hotspot without registration"
+    ],
+    "apply_url": "https://pmwani.gov.in",
+    "helpline": "1800-110-303",
+    "helpline_free": true,
+    "tags": [
+      "internet",
+      "wifi",
+      "digital",
+      "broadband",
+      "connectivity"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmgdisha",
+    "name": "Pradhan Mantri Gramin Digital Saksharta Abhiyan",
+    "short_name": "PMGDISHA",
+    "category": "education",
+    "ministry": "Ministry of Electronics and Information Technology",
+    "description": "Free digital literacy training for rural households — covering internet use, digital payments, email, and government services — targeting one person per eligible rural household.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "Free 20-hour digital literacy training with certificate; no monetary payment",
+      "duration": "one-time training per household"
+    },
+    "eligibility": {
+      "min_age": 14,
+      "max_age": 60,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be from a rural household where no member has basic digital literacy",
+        "SC/ST, BPL, women, differently-abled, and minorities given priority",
+        "Note: Training officially concluded on 31 March 2024; scheme may not be accepting new enrollments — verify current status at the helpline"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Proof of rural residence"
+    ],
+    "how_to_apply": [
+      "Register at pmgdisha.in or through nearest CSC (Common Service Centre)",
+      "Note: The scheme concluded on 31 March 2024; contact nearest CSC or MeitY for successor digital literacy programs"
+    ],
+    "apply_url": "https://www.meity.gov.in/digital-saksharta-abhiyan",
+    "helpline": "1800-3000-3468",
+    "helpline_free": true,
+    "tags": [
+      "education",
+      "digital literacy",
+      "rural",
+      "internet",
+      "training"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "nrlm-shg",
+    "name": "Deendayal Antyodaya Yojana – National Rural Livelihoods Mission",
+    "short_name": "DAY-NRLM",
+    "category": "women",
+    "ministry": "Ministry of Rural Development",
+    "description": "Organises rural poor women into Self Help Groups (SHGs) providing bank credit linkage, skill training, and livelihoods support to reduce poverty.",
+    "benefit": {
+      "type": "loan",
+      "amount": "Revolving fund of ₹10,000–₹15,000 per SHG; bank credit linkage up to ₹3 lakh (CCL) at 7% interest with interest subvention; skill and livelihood support",
+      "duration": "ongoing; credit renews annually"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": true,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "female",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be a woman from a rural BPL or vulnerable household",
+        "Must be willing to form or join a Self Help Group"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "BPL listing or vulnerable household proof",
+      "SHG group registration documents",
+      "Bank passbook"
+    ],
+    "how_to_apply": [
+      "Contact nearest Block Mission Management Unit (BMMU) or Gram Panchayat",
+      "State Rural Livelihoods Mission (SRLM) facilitates SHG formation"
+    ],
+    "apply_url": "https://aajeevika.gov.in",
+    "helpline": "1800-180-2570",
+    "helpline_free": true,
+    "tags": [
+      "women",
+      "SHG",
+      "rural",
+      "BPL",
+      "livelihoods",
+      "credit"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "bbbp",
+    "name": "Beti Bachao Beti Padhao",
+    "short_name": "BBBP",
+    "category": "women",
+    "ministry": "Ministry of Women and Child Development",
+    "description": "Multi-sectoral programme to address declining Child Sex Ratio (CSR) and promote education and empowerment of the girl child, with awareness drives and convergent action across education, health, and social sectors.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "Awareness, conditional incentive payments, and access-linked support for girl child registration, immunisation, and school enrolment (amounts vary by state)",
+      "duration": "ongoing"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": false,
+      "bank_account_required": false,
+      "gender": "female",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Targeted at girl children and their families; specific incentives vary by state and district"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Girl child's birth certificate",
+      "Parent/guardian Aadhaar"
+    ],
+    "how_to_apply": [
+      "Contact nearest Anganwadi centre, government school, or district Women and Child Development office"
+    ],
+    "apply_url": "https://wcd.nic.in/bbbp-schemes",
+    "helpline": "1800-180-1104",
+    "helpline_free": true,
+    "tags": [
+      "women",
+      "girl child",
+      "education",
+      "gender equality"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pmmvy",
+    "name": "Pradhan Mantri Matru Vandana Yojana",
+    "short_name": "PMMVY",
+    "category": "women",
+    "ministry": "Ministry of Women and Child Development",
+    "description": "Maternity benefit programme providing cash incentives of ₹5,000 in three instalments to pregnant and lactating mothers for the first living child, to compensate for wage loss and improve health and nutrition.",
+    "benefit": {
+      "type": "cash",
+      "amount": "₹5,000 in three instalments (₹1,000 + ₹2,000 + ₹2,000) for first child; ₹6,000 for second child if female",
+      "duration": "one-time per eligible pregnancy"
+    },
+    "eligibility": {
+      "min_age": 19,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "female",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must be pregnant with first or second living child (second child benefit only if girl)",
+        "Excludes central and state government employees receiving similar benefits"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "MCP card (Mother and Child Protection card)",
+      "Bank passbook",
+      "Marriage certificate"
+    ],
+    "how_to_apply": [
+      "Register at nearest Anganwadi Centre or approved health facility",
+      "Submit PMMVY form within 150 days of last menstrual period for first instalment"
+    ],
+    "apply_url": "https://pmmvy.wcd.gov.in",
+    "helpline": "7998799804",
+    "helpline_free": false,
+    "tags": [
+      "women",
+      "maternity",
+      "pregnancy",
+      "nutrition",
+      "cash transfer"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "nsfdc",
+    "name": "National Scheduled Castes Finance and Development Corporation Loan Schemes",
+    "short_name": "NSFDC",
+    "category": "welfare",
+    "ministry": "Ministry of Social Justice and Empowerment",
+    "description": "Concessional term loans for income-generating activities to SC individuals below double the poverty line, channelled through State Channelising Agencies (SCAs).",
+    "benefit": {
+      "type": "loan",
+      "amount": "Term loan at 6% p.a. (up to ₹10 lakh) or 5% p.a. (up to ₹1 crore for Mahila Samridhi Yojana); Micro Credit up to ₹50,000 at 1% p.a. for SC women",
+      "duration": "up to 5 years repayment"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must belong to Scheduled Caste",
+        "Annual family income must not exceed ₹3,00,000 (urban) or ₹2,50,000 (rural) — double the poverty line"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "SC caste certificate",
+      "Income certificate",
+      "Project report",
+      "Bank passbook"
+    ],
+    "how_to_apply": [
+      "Apply through State Channelising Agency (SCA) — typically the State SC Finance Corporation",
+      "Details at nsfdc.nic.in"
+    ],
+    "apply_url": "https://nsfdc.nic.in",
+    "helpline": "011-49539300",
+    "helpline_free": false,
+    "tags": [
+      "welfare",
+      "SC",
+      "Scheduled Caste",
+      "loan",
+      "income generation"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "nstfdc",
+    "name": "National Scheduled Tribes Finance and Development Corporation Loan Schemes",
+    "short_name": "NSTFDC",
+    "category": "welfare",
+    "ministry": "Ministry of Tribal Affairs",
+    "description": "Concessional loans and grants for economic development of Scheduled Tribe individuals through State Channelising Agencies, including Adivasi Mahila Sashaktikaran Yojana for ST women.",
+    "benefit": {
+      "type": "loan",
+      "amount": "Loan at 6% p.a. up to ₹10 lakh; micro credit at 4% p.a. up to ₹1 lakh for ST women",
+      "duration": "up to 7 years repayment"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must belong to Scheduled Tribe",
+        "Annual family income must not exceed ₹3,00,000 (urban) or ₹2,50,000 (rural)"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "ST caste certificate",
+      "Income certificate",
+      "Project report",
+      "Bank passbook"
+    ],
+    "how_to_apply": [
+      "Apply through State Channelising Agency (State Tribal Finance Corporation)",
+      "Details at nstfdc.nic.in"
+    ],
+    "apply_url": "https://nstfdc.nic.in",
+    "helpline": "011-26196882",
+    "helpline_free": false,
+    "tags": [
+      "welfare",
+      "ST",
+      "Scheduled Tribe",
+      "tribal",
+      "loan"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pm-daksh",
+    "name": "Pradhan Mantri DAKSH Yojana",
+    "short_name": "PM-DAKSH",
+    "category": "employment",
+    "ministry": "Ministry of Social Justice and Empowerment",
+    "description": "Free skill training programme for marginalised communities — SC, OBC, EBC, sanitation workers, and de-notified tribes — with stipend during training and placement support.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "Free skill training + ₹1,000–₹1,500/month stipend during training + placement assistance",
+      "duration": "short-term (1–3 months) or long-term (up to 1 year) course"
+    },
+    "eligibility": {
+      "min_age": 18,
+      "max_age": 45,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must belong to SC, OBC (with income ≤ ₹3 lakh/year for non-creamy layer), EBC (income ≤ ₹1 lakh/year), sanitation worker, or de-notified tribe"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Caste certificate (SC/OBC/EBC/DNT)",
+      "Income certificate (for OBC/EBC)",
+      "Bank passbook"
+    ],
+    "how_to_apply": [
+      "Register at pmdaksh.dosje.gov.in",
+      "Select training course and Training Partner (TP)"
+    ],
+    "apply_url": "https://pmdaksh.dosje.gov.in",
+    "helpline": "1800-11-5546",
+    "helpline_free": true,
+    "tags": [
+      "employment",
+      "skill training",
+      "SC",
+      "OBC",
+      "marginalised",
+      "placement"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "nphce",
+    "name": "National Programme for Health Care of the Elderly",
+    "short_name": "NPHCE",
+    "category": "health",
+    "ministry": "Ministry of Health and Family Welfare",
+    "description": "Dedicated geriatric healthcare programme providing free outpatient and inpatient geriatric services through District Hospitals, Regional Geriatric Centres, and Dedicated Geriatric Wards at Medical Colleges.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "Free OPD, IPD, specialist geriatric consultation, medicines, and day-care services at empanelled government hospitals",
+      "duration": "ongoing while enrolled"
+    },
+    "eligibility": {
+      "min_age": 60,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [],
+      "verifiable_by_rules": true
+    },
+    "documents": [
+      "Aadhaar card",
+      "Age proof"
+    ],
+    "how_to_apply": [
+      "Visit the nearest District Hospital or government medical college with geriatric department",
+      "Show age proof at the OPD counter"
+    ],
+    "apply_url": "https://nhm.gov.in/index4.php?lang=1&level=0&linkid=400&lid=222",
+    "helpline": "1800-180-1104",
+    "helpline_free": true,
+    "tags": [
+      "health",
+      "elderly",
+      "geriatric",
+      "senior citizen",
+      "free treatment"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "senior-citizen-rail-concession",
+    "name": "Indian Railways Senior Citizen Concession",
+    "short_name": "Rail Senior Concession",
+    "category": "welfare",
+    "ministry": "Ministry of Railways",
+    "description": "Concessional railway fares for senior citizens: 40% discount for male passengers aged 60+ and 50% discount for female passengers aged 58+ on all classes and trains.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "40% fare discount (men aged 60+) or 50% fare discount (women aged 58+) on Indian Railways tickets",
+      "duration": "ongoing entitlement"
+    },
+    "eligibility": {
+      "min_age": 58,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": false,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Male passengers must be aged 60 or above; female passengers must be aged 58 or above"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Valid age proof (Aadhaar, voter ID, passport, or birth certificate)"
+    ],
+    "how_to_apply": [
+      "Select 'Senior Citizen concession' while booking ticket on IRCTC or at railway counter",
+      "Carry original age-proof document for verification during travel"
+    ],
+    "apply_url": "https://www.irctc.co.in",
+    "helpline": "139",
+    "helpline_free": true,
+    "tags": [
+      "railway",
+      "concession",
+      "senior citizen",
+      "travel",
+      "discount"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "indira-awaas-convergence",
+    "name": "PM Accessible India Campaign (Sugamya Bharat Abhiyan)",
+    "short_name": "Accessible India",
+    "category": "disability",
+    "ministry": "Ministry of Social Justice and Empowerment",
+    "description": "Campaign to create a barrier-free and accessible India for persons with disabilities, covering built environment, transport, and ICT ecosystem with universal accessibility standards.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "Accessibility retrofitting of government buildings, transport, and websites; no direct cash payment to individuals",
+      "duration": "ongoing programme"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": false,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Benefit is infrastructure/accessibility improvement for persons with disabilities; UDID registration preferred for individual access tracking"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "UDID card (Unique Disability ID) recommended",
+      "Disability certificate (40%+)"
+    ],
+    "how_to_apply": [
+      "Register for UDID at swavlambancard.gov.in",
+      "No separate application required; accessibility improvements are systematic"
+    ],
+    "apply_url": "https://accessible-india.gov.in",
+    "helpline": "1800-180-5129",
+    "helpline_free": true,
+    "tags": [
+      "disability",
+      "accessibility",
+      "barrier-free",
+      "UDID",
+      "infrastructure"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "diksha-scholarship",
+    "name": "Dr. Ambedkar Post-Matric Scholarship for OBC Students",
+    "short_name": "OBC Post-Matric Scholarship",
+    "category": "education",
+    "ministry": "Ministry of Social Justice and Empowerment",
+    "description": "Post-matriculation scholarship for OBC students pursuing studies beyond Class X at recognised institutions, covering maintenance allowance and reimbursement of compulsory fees.",
+    "benefit": {
+      "type": "cash",
+      "amount": "₹230–₹1,200/month maintenance allowance depending on course and residence type + compulsory non-refundable fee reimbursement",
+      "duration": "duration of the course"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": 300000,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": true,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Must belong to Other Backward Class (OBC)",
+        "Annual parental/guardian income must not exceed ₹3,00,000 per year",
+        "Must be studying at post-matriculation level at a recognised institution"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "OBC caste certificate (non-creamy layer)",
+      "Income certificate",
+      "Previous year marksheet",
+      "Admission letter",
+      "Bank passbook"
+    ],
+    "how_to_apply": [
+      "Apply online at scholarships.gov.in (National Scholarship Portal) during the annual window (typically July–October)"
+    ],
+    "apply_url": "https://scholarships.gov.in",
+    "helpline": "0120-6619540",
+    "helpline_free": false,
+    "tags": [
+      "education",
+      "scholarship",
+      "OBC",
+      "post-matric",
+      "maintenance allowance"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "national-trust-schemes",
+    "name": "National Trust – Supported Independent Living and Community Care",
+    "short_name": "National Trust",
+    "category": "disability",
+    "ministry": "Ministry of Social Justice and Empowerment",
+    "description": "Schemes under the National Trust for Welfare of Persons with Autism, Cerebral Palsy, Mental Retardation and Multiple Disabilities providing day-care, residential care, caregiver training, and legal guardianship.",
+    "benefit": {
+      "type": "in-kind",
+      "amount": "Day-care, residential, and support services at subsidised or free rates through registered organisations; Niramaya health insurance ₹1 lakh/year at ₹250–₹500 premium",
+      "duration": "ongoing while registered"
+    },
+    "eligibility": {
+      "min_age": null,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [
+        "Person must have one of the four disabilities covered: autism, cerebral palsy, mental retardation, or multiple disabilities",
+        "Must register with the National Trust through a registered local-level organisation (RLO)"
+      ],
+      "verifiable_by_rules": false
+    },
+    "documents": [
+      "Aadhaar card",
+      "Disability certificate from government medical authority",
+      "Legal guardian documents"
+    ],
+    "how_to_apply": [
+      "Contact a Registered Local Level Organisation (RLO) under the National Trust in your district",
+      "Apply at thenationaltrust.gov.in"
+    ],
+    "apply_url": "https://thenationaltrust.gov.in",
+    "helpline": "1800-116-981",
+    "helpline_free": true,
+    "tags": [
+      "disability",
+      "autism",
+      "cerebral palsy",
+      "caregiving",
+      "health insurance"
+    ],
+    "last_verified": "2025-07-14",
+    "source": "manual curation"
+  },
+  {
+    "id": "pm-ayushman-senior",
+    "name": "Ayushman Bharat – Pradhan Mantri Jan Arogya Yojana (Senior Citizen 70+)",
+    "short_name": "AB-PMJAY Senior 70+",
+    "category": "health",
+    "ministry": "Ministry of Health and Family Welfare",
+    "description": "Extended Ayushman Bharat health cover of ₹5 lakh per year for all senior citizens aged 70 and above, regardless of existing coverage, introduced in 2024.",
+    "benefit": {
+      "type": "insurance",
+      "amount": "₹5,00,000/year per senior citizen (additional top-up over any existing PMJAY family cover)",
+      "duration": "annual, renewable"
+    },
+    "eligibility": {
+      "min_age": 70,
+      "max_age": null,
+      "income_limit": null,
+      "bpl_required": false,
+      "aadhaar_required": true,
+      "bank_account_required": false,
+      "gender": "all",
+      "states": [
+        "all"
+      ],
+      "conditions": [],
+      "verifiable_by_rules": true
+    },
+    "documents": [
+      "Aadhaar card",
+      "Age proof"
+    ],
+    "how_to_apply": [
+      "Enroll at mera.pmjay.gov.in by providing Aadhaar and mobile OTP",
+      "Or visit nearest Common Service Centre or empanelled hospital for Ayushman card"
+    ],
+    "apply_url": "https://mera.pmjay.gov.in",
+    "helpline": "14555",
+    "helpline_free": true,
+    "tags": [
+      "health",
+      "insurance",
+      "senior citizen",
+      "elderly",
+      "Ayushman",
+      "hospitalisation"
     ],
     "last_verified": "2025-07-14",
     "source": "manual curation"

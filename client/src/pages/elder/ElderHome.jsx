@@ -13,6 +13,7 @@ import NotificationPermissionBanner from '../../components/elder/NotificationPer
 import ActiveBookingMap from '../../components/elder/ActiveBookingMap'
 import { useMedicineNotifications } from '../../hooks/useMedicineNotifications'
 import { useActiveBookingLocation } from '../../hooks/useActiveBookingLocation'
+import { useGeofenceMonitor } from '../../hooks/useGeofenceMonitor'
 import { supabase } from '../../lib/supabase'
 import { useIncomingCall } from '../../hooks/useIncomingCall'
 import IncomingCallModal from '../../components/videocall/IncomingCallModal'
@@ -30,6 +31,8 @@ export default function ElderHome() {
   const [showNotifBanner, setShowNotifBanner] = useState(
     'Notification' in window && Notification.permission === 'default'
   )
+  // Geofence monitoring state — populated once session loads
+  const [hasGeofenceZone, setHasGeofenceZone] = useState(false)
 
   // Active booking live location (polls every 30s)
   const {
@@ -43,6 +46,10 @@ export default function ElderHome() {
 
   // Incoming video call polling — Phase 12D
   const { incomingCall, dismissCall } = useIncomingCall(userId)
+
+  // Geofence monitor — 2-minute interval, starts only when elder has an active zone.
+  // elderId is derived from userId (same UUID). hasGeofenceZone is fetched on mount below.
+  useGeofenceMonitor(userId, hasGeofenceZone)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -60,6 +67,11 @@ export default function ElderHome() {
       fetch(`${API_URL}/api/medical/list/${uid}`)
         .then(r => r.json())
         .then(data => { if (data.success) setRecordCount(data.total) })
+        .catch(() => {})
+      // Fetch active geofence zone so the 2-minute monitor knows whether to run
+      fetch(`${API_URL}/api/geofence/zone/${uid}`)
+        .then(r => r.json())
+        .then(data => { setHasGeofenceZone(!!(data.zone && data.zone.is_active)) })
         .catch(() => {})
       // Update elder location silently for family dashboard visibility
       if (navigator.geolocation) {

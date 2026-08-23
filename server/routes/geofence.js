@@ -208,22 +208,9 @@ router.post('/check', async (req, res) => {
       .update({ lat, lng })
       .eq('id', elder_id)
 
-    // Log the geofence check/event
-    const { data: event } = await supabase
-      .from('geofence_events')
-      .insert({
-        elder_id,
-        event_type: eventType,
-        elder_lat: lat,
-        elder_lng: lng,
-        distance_from_center: Math.round(distance),
-        radius_meters: zone.radius_meters,
-        zone_label: zone.label
-      })
-      .select()
-      .single()
-
-    // If alert needed, generate AI context message
+    // If a state transition occurred, generate the AI alert message first,
+    // then persist the event WITH the message so the family endpoint can
+    // return it. Gemini failure must NEVER prevent event persistence.
     let alertMessage = null
     let elderName = null
 
@@ -236,6 +223,11 @@ router.post('/check', async (req, res) => {
 
       elderName = elderUser?.name || null
 
+      // Deterministic fallback — used when Gemini is unavailable
+      const fallbackMessage = eventType === 'left'
+        ? `${elderUser?.name || 'Your parent'} has moved outside their safe zone. They are ${formatDistance(distance)} from home.`
+        : `${elderUser?.name || 'Your parent'} has returned home safely.`
+
       try {
         const prompt = eventType === 'left'
           ? `Generate a brief, calm safety alert message for a family member whose elderly parent named ${elderUser?.name || 'your parent'} has moved ${formatDistance(distance)} away from their home (safe zone radius: ${formatDistance(zone.radius_meters)}). Write 1-2 sentences only. Be informative but not alarming. This may be intentional — they could be visiting a shop or taking a walk. Suggest checking in with them. No formatting, no bullet points.`
@@ -245,11 +237,25 @@ router.post('/check', async (req, res) => {
         alertMessage = result.response.text().trim()
       } catch (geminiErr) {
         console.error('Gemini alert message failed:', geminiErr)
-        alertMessage = eventType === 'left'
-          ? `${elderUser?.name || 'Your parent'} has moved outside their safe zone. They are ${formatDistance(distance)} from home.`
-          : `${elderUser?.name || 'Your parent'} has returned home safely.`
+        alertMessage = fallbackMessage
       }
     }
+
+    // Log the geofence check/event — ai_message included for LEFT/RETURNED events
+    const { data: event } = await supabase
+      .from('geofence_events')
+      .insert({
+        elder_id,
+        event_type: eventType,
+        elder_lat: lat,
+        elder_lng: lng,
+        distance_from_center: Math.round(distance),
+        radius_meters: zone.radius_meters,
+        zone_label: zone.label,
+        ...(shouldAlert && alertMessage ? { ai_message: alertMessage } : {}),
+      })
+      .select()
+      .single()
 
     return res.json({
       success: true,
@@ -337,7 +343,7 @@ router.get('/family-alerts/:familyUserId', async (req, res) => {
     // Get recent alert events only
     const { data: alerts } = await supabase
       .from('geofence_events')
-      .select('*')
+      .select('id, elder_id, event_type, elder_lat, elder_lng, distance_from_center, radius_meters, zone_label, ai_message, acknowledged, acknowledged_at, triggered_at')
       .eq('elder_id', elderId)
       .in('event_type', ['left', 'returned'])
       .order('triggered_at', { ascending: false })
@@ -349,7 +355,11 @@ router.get('/family-alerts/:familyUserId', async (req, res) => {
 
     return res.json({
       success: true,
-      alerts: alerts || [],
+      alerts: (alerts || []).map(a => ({
+        ...a,
+        // Surface ai_message at the top level for convenience
+        aiMessage: a.ai_message || null,
+      })),
       zone,
       currentStatus,
       isOutside: currentStatus === 'left'
