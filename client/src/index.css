@@ -82,23 +82,25 @@ input::placeholder { color: #A0B8D0; }
 /* ── AI Companion full-screen layout ─────────────────────────────────────────
    Uses position:fixed so the chat fills the exact visible viewport at all
    times — not affected by the mobile browser chrome resizing.
+   On mobile: bottom stops at 64px so the bottom nav stays visible.
    On desktop (≥1024px) we offset left by the sidebar width (240px). */
 .companion-container {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 64px; /* bottom nav height — keeps nav visible on mobile */
   display: flex;
   flex-direction: column;
   background: #EBF4FF;
   font-family: 'Noto Sans', sans-serif;
-  z-index: 110;
+  z-index: 99; /* below bottom nav (100) so nav stays on top */
 }
 
 @media (min-width: 1024px) {
   .companion-container {
     left: 240px;
+    bottom: 0; /* no bottom nav on desktop */
     z-index: 10;
   }
 }
