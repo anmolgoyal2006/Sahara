@@ -27,10 +27,11 @@ const WELCOME = {
 }
 
 import { speak } from '../../lib/speech'
+import { speakWithElevenLabs } from '../../lib/voiceService'
 
 function speakForLanguage(lang) {
   const entry = WELCOME[lang] || WELCOME['hi-IN']
-  speak(entry.text, entry.lang)
+  speakWithElevenLabs(entry.text, entry.lang)
 }
 
 // ── Service definitions ──────────────────────────────────────────────────────

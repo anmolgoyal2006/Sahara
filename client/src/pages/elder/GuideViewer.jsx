@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import ElderLayout from '../../components/layout/ElderLayout'
 import { useGuideLanguage } from '../../hooks/useGuideLanguage'
-import { useSpeech } from '../../hooks/useSpeech'
+import { speakWithElevenLabs, stopSpeaking as stopElevenLabs, isSpeaking as isElevenLabsSpeaking } from '../../lib/voiceService'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -11,10 +11,12 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 // Raise this value to require more "Need Help" clicks before auto-simplifying.
 const STRUGGLE_THRESHOLD = 2
 
-// Returns text in the requested language, falling back to English
+// Returns text in the requested language, falling back gracefully.
+// Punjabi ('pa') falls back to Hindi ('hi') first since guide steps
+// rarely have a 'pa' key, and Hindi is mutually intelligible.
 function getText(field, lang) {
   if (!field) return ''
-  return field[lang] || field['en'] || ''
+  return field[lang] || (lang === 'pa' ? field['hi'] : null) || field['en'] || ''
 }
 
 function formatSlug(slug) {
@@ -37,7 +39,16 @@ export default function GuideViewer() {
   const { slug } = useParams()
   const navigate = useNavigate()
   const [language, setLanguage] = useGuideLanguage()
-  const { speak, stop, isSpeaking } = useSpeech()
+  const [guideIsSpeaking, setGuideIsSpeaking] = useState(false)
+
+  // Wrappers so the rest of the component reads like before
+  function speak(text, lang) {
+    speakWithElevenLabs(text, lang === 'pa' ? 'hi-IN' : (lang === 'hi' ? 'hi-IN' : 'en-IN'), {
+      onSpeakingChange: setGuideIsSpeaking,
+    })
+  }
+  function stop() { stopElevenLabs(); setGuideIsSpeaking(false) }
+  const isSpeaking = guideIsSpeaking
 
   const [guide,       setGuide]       = useState(null)
   const [steps,       setSteps]       = useState([])
@@ -138,8 +149,8 @@ export default function GuideViewer() {
       }
     }
     load()
-    return () => stop() // clean up speech on unmount
-  }, [slug, navigate, stop])
+    return () => { stopElevenLabs(); setGuideIsSpeaking(false) }
+  }, [slug, navigate]) // eslint-disable-line
 
   /* ── Auto-read on step change ── */
   useEffect(() => {

@@ -78,3 +78,27 @@ input::placeholder { color: #A0B8D0; }
 .fill-bar {
   animation: fillBar 5s linear forwards;
 }
+
+/* ── AI Companion full-screen layout ─────────────────────────────────────────
+   Uses position:fixed so the chat fills the exact visible viewport at all
+   times — not affected by the mobile browser chrome resizing.
+   On desktop (≥1024px) we offset left by the sidebar width (240px). */
+.companion-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  background: #EBF4FF;
+  font-family: 'Noto Sans', sans-serif;
+  z-index: 110;
+}
+
+@media (min-width: 1024px) {
+  .companion-container {
+    left: 240px;
+    z-index: 10;
+  }
+}

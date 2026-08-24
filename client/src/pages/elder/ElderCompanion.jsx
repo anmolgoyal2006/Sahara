@@ -399,7 +399,12 @@ export default function ElderCompanion() {
 
   return (
     <ElderLayout>
-      <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100dvh - 88px)', background: '#EBF4FF', fontFamily: 'Noto Sans, sans-serif', margin: '-20px -16px -88px' }}>
+      {/* .companion-container — position:fixed, fills visible viewport exactly.
+          On mobile: covers full screen above bottom nav (z-index 110).
+          On desktop: offset by sidebar (left: 240px, z-index 10).
+          This prevents the blank-space bug caused by browser chrome
+          resizing making calc(100dvh - X) inaccurate on phones. */}
+      <div className="companion-container">
 
         {/* Header */}
         <div style={{ background: 'white', borderBottom: '1px solid #EEF4FB', padding: '0 12px', height: 64, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 10, gap: 6 }}>

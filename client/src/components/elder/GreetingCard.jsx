@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { useSpeech } from '../../hooks/useSpeech'
+import { speakWithElevenLabs } from '../../lib/voiceService'
+
+const LANG_MAP = { hi: 'hi-IN', en: 'en-IN', pa: 'hi-IN' }
 
 function getTimeGreeting() {
   const h = new Date().getHours()
@@ -18,7 +20,6 @@ function getFormattedDate(language) {
 }
 
 export default function GreetingCard({ user, profile, userId }) {
-  const { speak } = useSpeech()
   const hasSpoken = useRef(false)
 
   const greeting   = getTimeGreeting()
@@ -47,21 +48,21 @@ export default function GreetingCard({ user, profile, userId }) {
     hasSpoken.current = true
     const timer = setTimeout(() => {
       if (language === 'hi') {
-        speak(`Namaste ${name} ji. Aapka sahara yahan hai. Aaj aap kaisa mehsoos kar rahe hain?`, 'hi-IN')
+        speakWithElevenLabs(`Namaste ${name} ji. Aapka sahara yahan hai. Aaj aap kaisa mehsoos kar rahe hain?`, LANG_MAP[language])
       } else if (language === 'pa') {
-        speak(`Sat Sri Akal ${name} ji. Sahara te jee aayan nu.`, 'pa-IN')
+        speakWithElevenLabs(`Sat Sri Akal ${name} ji. Sahara te jee aayan nu.`, LANG_MAP[language])
       } else {
-        speak(`Namaste ${name} ji. Welcome to Sahara. How are you feeling today?`, 'en-IN')
+        speakWithElevenLabs(`Namaste ${name} ji. Welcome to Sahara. How are you feeling today?`, LANG_MAP[language])
       }
     }, 1500)
     return () => clearTimeout(timer)
-  }, [name, language, speak])
+  }, [name, language])
 
   function handleSpeak() {
     if (language === 'hi') {
-      speak(`Namaste ${name} ji. Aapka sahara yahan hai.`, 'hi-IN')
+      speakWithElevenLabs(`Namaste ${name} ji. Aapka sahara yahan hai.`, LANG_MAP[language])
     } else {
-      speak(`Namaste ${name} ji. Welcome to Sahara.`, 'en-IN')
+      speakWithElevenLabs(`Namaste ${name} ji. Welcome to Sahara.`, LANG_MAP[language])
     }
   }
 

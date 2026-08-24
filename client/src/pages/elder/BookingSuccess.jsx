@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ElderLayout from '../../components/layout/ElderLayout'
+import { speakWithElevenLabs } from '../../lib/voiceService'
 
 // ── Step indicator (all done) ─────────────────────────────────────────────────
 function StepDots() {
@@ -85,14 +86,9 @@ export default function BookingSuccess() {
     const lang = sessionStorage.getItem('booking_lang') || 'en-IN'
 
     const timer = setTimeout(() => {
-      if (!window.speechSynthesis) return
-      const utterance = new SpeechSynthesisUtterance(
-        `Booking confirmed. ${workerName} will arrive on ${dateDesc} at ${timeDesc}.` +
+      const text = `Booking confirmed. ${workerName} will arrive on ${dateDesc} at ${timeDesc}.` +
         (phoneNumber ? ` Their phone number is ${phoneNumber}.` : '')
-      )
-      utterance.lang = lang
-      utterance.rate = 0.9
-      window.speechSynthesis.speak(utterance)
+      speakWithElevenLabs(text, lang)
     }, 500)
 
     return () => clearTimeout(timer)
