@@ -7,7 +7,7 @@ import QuickChips from '../../components/companion/QuickChips'
 import ChatInput from '../../components/companion/ChatInput'
 import { useElderContext } from '../../hooks/useElderContext'
 import { useVoiceInput } from '../../hooks/useVoiceInput'
-import { speak as speakShared } from '../../lib/speech'
+import { speakWithElevenLabs, stopSpeaking as stopElevenLabs } from '../../lib/voiceService'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -26,8 +26,11 @@ function getDefaultGreeting(name, lang) {
   return `Namaste ${name} ji! Aap aaj kaisa mehsoos kar rahe hain?`
 }
 
-function speakText(text, lang, rate) {
-  speakShared(text, lang, rate ? { rate } : {})
+// speakMsg: sends text to ElevenLabs (with browser fallback).
+// Stops mic recognition while speaking to prevent the assistant's own
+// voice from being picked up as user input.
+function speakText(text, lang, rate, onSpeakingChange) {
+  speakWithElevenLabs(text, getSpeechLangCode(lang), { rate, onSpeakingChange })
 }
 
 // ── Action card ───────────────────────────────────────────────────────────────
@@ -114,6 +117,7 @@ export default function ElderCompanion() {
   const [messages, setMessages] = useState([])
   const [isTyping, setIsTyping] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSpeaking, setIsSpeaking] = useState(false)
   const [language, setLanguage] = useState('hi')
   const [pendingAction, setPendingAction] = useState(null)
   const [lastResponseVitals, setLastResponseVitals] = useState(null)
@@ -135,7 +139,7 @@ export default function ElderCompanion() {
     useVoiceInput(getRecognitionLangCode(language))
   function changeFontSize(sz) { setFontSize(sz); localStorage.setItem('sahara_companion_font_size', String(sz)) }
   function changeSpeechRate(r) { setSpeechRate(r); localStorage.setItem('sahara_speech_rate', String(r)) }
-  function speakMsg(text, lang) { speakText(text, lang, speechRate) }
+  function speakMsg(text, lang) { speakText(text, lang, speechRate, setIsSpeaking) }
 
   // Online/offline
   useEffect(() => {
@@ -171,14 +175,29 @@ export default function ElderCompanion() {
     return false
   }
 
-  // Voice auto-send
+  // Voice auto-send: when recognition ends and there's a transcript, send it.
+  // Guard: don't auto-send if the assistant is currently speaking (prevents
+  // the assistant's own voice from being picked up as a new user command).
   useEffect(() => {
-    if (!isListening && transcript.trim()) {
+    if (!isListening && transcript.trim() && !isSpeaking) {
       clearTimeout(autoSendTimer.current)
       autoSendTimer.current = setTimeout(() => { sendMessage(transcript.trim()); resetTranscript() }, 600)
     }
     return () => clearTimeout(autoSendTimer.current)
   }, [isListening]) // eslint-disable-line
+
+  // Mic-conflict prevention: stop recognition while the assistant is speaking.
+  // If the mic somehow starts during playback, stop it immediately.
+  useEffect(() => {
+    if (isSpeaking && isListening) {
+      stopListening()
+    }
+  }, [isSpeaking, isListening]) // eslint-disable-line
+
+  // Cleanup: stop any in-progress audio when the page unmounts
+  useEffect(() => {
+    return () => { stopElevenLabs() }
+  }, [])
 
   useEffect(() => {
     if (voiceError) { setVoiceToast('Microphone error. Please type instead.'); setTimeout(() => setVoiceToast(null), 3000) }
@@ -391,8 +410,10 @@ export default function ElderCompanion() {
             <div>
               <p style={{ fontSize: 16, fontWeight: 800, color: '#0A2540', margin: 0 }}>AI Companion</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: isOnline ? '#1D9E75' : '#F59E0B' }} />
-                <span style={{ fontSize: 10, color: '#5A7A9A' }}>{isOnline ? 'Online · Sahara AI' : 'Offline'}</span>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: isSpeaking ? '#185FA5' : isLoading ? '#F59E0B' : isOnline ? '#1D9E75' : '#F59E0B' }} />
+                <span style={{ fontSize: 10, color: '#5A7A9A' }}>
+                  {!isOnline ? 'Offline' : isSpeaking ? 'Speaking…' : isLoading ? 'Thinking…' : isListening ? 'Listening…' : 'Online · Sahara AI'}
+                </span>
               </div>
             </div>
           </div>
@@ -502,10 +523,11 @@ export default function ElderCompanion() {
         {/* Chat input */}
         <ChatInput
           onSend={sendMessage}
-          onVoiceStart={startListening}
+          onVoiceStart={() => { if (!isSpeaking) startListening() }}
           onVoiceStop={stopListening}
           isListening={isListening}
           isLoading={isLoading || !isOnline}
+          isSpeaking={isSpeaking}
           transcript={transcript}
           onTranscriptChange={() => {}}
         />

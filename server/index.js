@@ -72,6 +72,9 @@ app.use('/api/schemes', schemesRoutes)
 const guidesRoutes = require('./routes/guides')
 app.use('/api/guides', guidesRoutes)
 
+const voiceRoutes = require('./routes/voice')
+app.use('/api/voice', voiceRoutes)
+
 app.listen(PORT, () => {
   console.log(`Sahara server running on http://localhost:${PORT}`)
 })

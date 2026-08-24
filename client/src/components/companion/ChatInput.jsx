@@ -6,6 +6,7 @@ export default function ChatInput({
   onVoiceStop,
   isListening = false,
   isLoading = false,
+  isSpeaking = false,
   transcript = '',
   onTranscriptChange,
 }) {
@@ -52,6 +53,24 @@ export default function ChatInput({
 
   return (
     <div style={{ background: 'white', borderTop: '1px solid #EEF4FB', padding: '12px 16px', fontFamily: 'Noto Sans, sans-serif' }}>
+
+      {/* Speaking indicator */}
+      {isSpeaking && !isListening && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          background: '#F0FBF7', border: '1px solid #9FE1CB',
+          borderRadius: 8, padding: '6px 12px', marginBottom: 8,
+        }}>
+          <div style={{
+            width: 8, height: 8, borderRadius: '50%', background: '#1D9E75',
+            animation: 'listeningPulse 1s infinite',
+            flexShrink: 0,
+          }} />
+          <span style={{ fontSize: 12, color: '#1D9E75', fontWeight: 600 }}>
+            Speaking… mic is paused
+          </span>
+        </div>
+      )}
 
       {/* Listening indicator */}
       {isListening && (
@@ -112,17 +131,20 @@ export default function ChatInput({
         <button
           type="button"
           onClick={isListening ? onVoiceStop : onVoiceStart}
-          aria-label={isListening ? 'Stop listening' : 'Start voice input'}
+          disabled={isSpeaking}
+          aria-label={isListening ? 'Stop listening' : isSpeaking ? 'Assistant is speaking' : 'Start voice input'}
+          title={isSpeaking ? 'Mic paused while assistant speaks' : undefined}
           style={{
             width: 44, height: 44, borderRadius: '50%',
-            border: 'none', cursor: 'pointer', flexShrink: 0,
-            background: isListening ? '#E24B4A' : '#1D9E75',
+            border: 'none', cursor: isSpeaking ? 'not-allowed' : 'pointer', flexShrink: 0,
+            background: isListening ? '#E24B4A' : isSpeaking ? '#A0B8D0' : '#1D9E75',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             animation: isListening ? 'listeningPulse 1s infinite' : 'none',
             transition: 'background 0.2s',
+            opacity: isSpeaking ? 0.6 : 1,
           }}
         >
-          <i className={`ti ${isListening ? 'ti-microphone-off' : 'ti-microphone'}`}
+          <i className={`ti ${isListening ? 'ti-microphone-off' : isSpeaking ? 'ti-microphone-off' : 'ti-microphone'}`}
             style={{ fontSize: 20, color: 'white' }} />
         </button>
 
